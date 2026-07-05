@@ -141,15 +141,25 @@ function renderPlants() {
     <div class="filters"><button class="fbtn ${ST.groupByRoom?'on':''}" data-act="grouproom">▦ by room</button>${filters.map(fb => `<button class="fbtn ${ST.filter===fb[0]?'on':''}" data-act="filter" data-f="${fb[0]}">${fb[1]}</button>`).join("")}</div>
     <div class="grid">${body || '<p class="hand" style="font-size:18px">Nothing matches.</p>'}</div><div style="height:8px"></div></div>`;
 }
+const SOILLESS_TIPS = {
+  leca: "Semi-hydro. No food in the clay pebbles, so feed at <b>every top-up</b> with dilute hydroponic nutrients (¼–½ strength), year-round — ease back in winter but don't stop. Keep a shallow reservoir in the bottom third, let the top pebbles dry between, and flush the whole pot every couple weeks to clear salt build-up. Watering rides the reservoir — check about every 4 days.",
+  pon: "Inorganic mineral mix. Drains and dries fast and feeds nothing, so <b>top-water often with dilute nutrients</b>. Excellent for rot-prone roots and gnat resistance since there's no organic matter to breed in."
+};
 function renderSoil() {
   const r = C.RECIPES[ST.calcBucket], total = { "Small":4,"Medium":8,"Large":16,"Extra large":32 }[ST.calcSize];
   const calcRows = r.parts.map(pt => `<div class="recipe"><span>${pt[0]}</span><span class="amt">${(pt[1]/100*total).toFixed(1)} cups · ${pt[1]}%</span></div>`).join("");
   const recipeCards = Object.entries(C.RECIPES).map(([k,v]) => `<div class="block"><h3><span class="k">${v.name}</span></h3>${v.parts.map(pt=>`<div class="recipe"><span>${pt[0]}</span><span class="amt">${pt[1]}%</span></div>`).join("")}${v.note?`<div class="tweak">${v.note}</div>`:""}</div>`).join("");
+  const matches = ST.order.map(k => ST.plants[k]).filter(pp => pp.med === ST.calcBucket);
+  const soillessTip = SOILLESS_TIPS[ST.calcBucket];
+  const matchBlock = `<div class="block"><h3><span class="k">Your plants on ${r.name.toLowerCase()}</span></h3>
+    ${matches.length ? `<div class="chips" style="margin-bottom:0">${matches.map(pp => `<span class="rchip" data-act="open" data-id="${pp.id}">${esc(pp.name)}</span>`).join("")}</div>` : `<div class="fac">None of your plants are on this mix yet. Tap a plant's Growing medium to assign it.</div>`}
+    ${soillessTip ? `<div class="tweak">${soillessTip}</div>` : (matches.length ? `<div class="fac" style="margin-top:8px">Tap any plant to open its page and see its exact cups, watering, and feeding.</div>` : "")}</div>`;
   return `<div class="pad" style="padding-bottom:0"><p class="eyebrow">no guessing</p><h1 style="font-size:24px">Soil &amp; protocol</h1>
     <p class="hand" style="font-size:16px;color:var(--muted);margin:4px 0 0">Buckets are the start. Each plant's page builds the exact mix from its real pot volume.</p></div>
     <div class="block"><h3><span class="k">Mix calculator</span></h3><div class="calc">
       <select data-inp="calcBucket">${Object.entries(C.RECIPES).map(([k,v])=>`<option value="${k}" ${ST.calcBucket===k?'selected':''}>${v.name}</option>`).join("")}</select>
       <select data-inp="calcSize">${["Small","Medium","Large","Extra large"].map(s=>`<option ${ST.calcSize===s?'selected':''}>${s}</option>`).join("")}</select></div>${calcRows}</div>
+    ${matchBlock}
     ${recipeCards}
     <div class="block"><h3><span class="k">Gnat protocol · every repot</span></h3>${C.PROTOCOL.map((s,i)=>`<div class="recipe"><span>${i+1}. ${s.t}</span></div>`).join("")}<div class="tweak">Do all of it. One layer alone will not end it.</div></div>`;
 }
@@ -236,6 +246,7 @@ function renderDetail() {
   if (!p.intvMan) p.intv = C.suggestIntv(p);
   const sug = C.suggestIntv(p);
   const soilless = !C.MEDIA[p.med].soil;
+  const lu = ST.lenUnit, dL = cm => lu === "in" ? +C.cmIn(cm).toFixed(1) : Math.round(cm), stepL = lu === "in" ? 0.5 : 1;
   return `<div class="grab"></div><div class="close" data-act="back">×</div>
   <div class="navrow" style="margin-top:46px"><button class="navb" data-act="prev">‹</button><div class="navname">${esc(p.name)}<small>${idx+1} of 24</small></div><button class="navb" data-act="next">›</button></div>
   <div class="badges"><span class="badge">${esc(p.latin)}</span>${p.tox?`<span class="badge tox">Toxic to pets</span>`:`<span class="badge">Pet-safe</span>`}</div>
@@ -249,7 +260,7 @@ function renderDetail() {
   </div>
 
   <div class="pcardb"><h3><span class="ic"></span>Vitals</h3>
-    <div class="row"><label>Height</label><input type="range" id="s_h" min="8" max="${p.matureCm}" value="${p.hCm}"><span class="val" id="v_h"></span></div>
+    <div class="row"><label>Height (${lu})</label><input type="range" id="s_h" min="8" max="${p.matureCm}" step="0.5" value="${p.hCm}"><input type="number" class="cnum" id="s_hn" step="${stepL}" value="${dL(p.hCm)}"></div>
     <div class="row"><label>Health</label>${seg("health",C.HEALTH.map((n,i)=>[i,n]),p.hi)}</div>
   </div>
 
@@ -271,9 +282,9 @@ function renderDetail() {
     <div class="pick" style="margin-bottom:8px">${Object.entries(C.MATS).map(([k,m])=>`<span class="pchip ${k===p.mat?'on':''}" data-mat="${k}">${m.label}</span>`).join("")}</div>
     <div class="between" style="margin-bottom:8px"><span style="font-size:12px;color:var(--muted)">Drainage holes</span>${seg("drain",[["y","Yes"],["n","No (cachepot)"]],p.drain?"y":"n","sm")}</div>
     <div class="potwrap"><div class="potdraw" id="potdraw"></div><div class="potnums" id="potnums"></div></div>
-    <div class="row"><label>Top</label><input type="range" id="s_top" min="8" max="45" value="${p.top}"><span class="val" id="v_top"></span></div>
-    <div class="row"><label>Base</label><input type="range" id="s_bot" min="6" max="40" value="${p.bot}"><span class="val" id="v_bot"></span></div>
-    <div class="row"><label>Height</label><input type="range" id="s_ph" min="8" max="45" value="${p.ph}"><span class="val" id="v_ph"></span></div>
+    <div class="row"><label>Top (${lu})</label><input type="range" id="s_top" min="8" max="45" step="0.5" value="${p.top}"><input type="number" class="cnum" id="s_topn" step="${stepL}" value="${dL(p.top)}"></div>
+    <div class="row"><label>Base (${lu})</label><input type="range" id="s_bot" min="6" max="40" step="0.5" value="${p.bot}"><input type="number" class="cnum" id="s_botn" step="${stepL}" value="${dL(p.bot)}"></div>
+    <div class="row"><label>Height (${lu})</label><input type="range" id="s_ph" min="8" max="45" step="0.5" value="${p.ph}"><input type="number" class="cnum" id="s_phn" step="${stepL}" value="${dL(p.ph)}"></div>
     <div class="read" id="matnote"></div>
     <div class="fac" id="potsize"></div>
   </div>
@@ -281,7 +292,7 @@ function renderDetail() {
   <div class="pcardb"><h3><span class="ic"></span>Watering</h3>
     <div class="between"><div><div style="font-size:12px;color:var(--muted);margin-bottom:4px">Last watered</div><input type="date" class="datei" id="lastwd" value="${C.dstr(p.lastW)}"></div><button class="mini go" data-act="watered">Watered today</button></div>
     <div class="read" id="waternext" style="margin-top:10px"></div>
-    <div class="row"><label>Schedule</label><input type="range" id="s_iv" min="2" max="30" value="${p.intv}"><span class="val" id="v_iv"></span></div>
+    <div class="row"><label>Every (days)</label><input type="range" id="s_iv" min="2" max="30" value="${p.intv}"><input type="number" class="cnum" id="s_ivn" step="1" min="2" value="${p.intv}"></div>
     <div class="between" style="margin-top:-2px"><span class="fac" id="sugline"></span>${p.intvMan&&p.intv!==sug?`<span class="pchip sug" data-act="matchsug">use ${sug}d</span>`:''}</div>
     <div class="row" style="margin-top:6px"><label>Water</label>${seg("water",[["tap","Tap"],["filtered","Filtered"],["distilled","Distilled"]],p.water,"sm")}</div>
     <div class="read" id="wqnote"></div>
@@ -295,7 +306,7 @@ function renderDetail() {
   </div>
 
   <div class="pcardb"><h3><span class="ic"></span>When to check for repotting</h3>
-    <div class="row"><label>Root-snug</label><input type="range" id="s_snug" min="0" max="100" value="${p.snug}"><span class="val" id="v_snug"></span></div>
+    <div class="row"><label>Root-snug %</label><input type="range" id="s_snug" min="0" max="100" value="${p.snug}"><input type="number" class="cnum" id="s_snugn" step="5" min="0" max="100" value="${p.snug}"></div>
     <div class="read" id="repotwin"></div><div class="pnote" id="repotnote"></div><div class="fac" id="repotfac"></div>
     <div style="margin-top:11px;font-size:12px;color:var(--muted)">Root check at last repot (remembered)</div>
     <div class="pick" style="margin-top:6px">${Object.entries(C.ROOTS).map(([k,r])=>`<span class="pchip ${k===p.rootcond?'on':''}" data-root="${k}">${r.label}</span>`).join("")}</div>
@@ -321,38 +332,44 @@ function seg(id, opts, cur, cls) { return `<div class="seg ${cls||''}">${opts.ma
 function detailRefresh() {
   const p = P(); if (!p || ST.view !== "detail") return;
   const lu = ST.lenUnit, vu = ST.volUnit;
+  if (!p.intvMan) p.intv = C.suggestIntv(p);
   const g = C.clamp(p.hCm/p.matureCm,0,1), h = C.HVAL[p.hi], soilless = !C.MEDIA[p.med].soil;
   const $ = id => document.getElementById(id);
+  const dLn = cm => lu === "in" ? +C.cmIn(cm).toFixed(1) : Math.round(cm);
+  const setNum = (nId, sId, val, isLen) => {
+    const n = $(nId); if (n && document.activeElement !== n) n.value = isLen ? dLn(val) : val;
+    const s = $(sId); if (s && document.activeElement !== s) s.value = val;
+  };
   if ($("stage")) $("stage").innerHTML = plantArt(p);
   if ($("photos")) $("photos").innerHTML = (p.photos||[]).map((ph,i)=>`<div class="ph"><img src="${ph.dataUrl}" alt=""><button class="del" data-act="delphoto" data-i="${i}">×</button></div>`).join("") + `<div class="addphoto" data-act="capture">＋<br>photo</div>`;
   const stage = g<0.35?"a young start":g<0.7?"filling in":"near its mature form";
   if ($("growcap")) $("growcap").innerHTML = `Drawn at <b>${Math.round(g*100)}% to its ${C.len(p.matureCm,lu)} ceiling</b>, ${stage}, reading ${C.HEALTH[p.hi].toLowerCase()}.`;
-  if ($("v_h")) $("v_h").textContent = C.len(p.hCm,lu);
+  setNum("s_hn", "s_h", p.hCm, true);
   if ($("lightnote")) $("lightnote").innerHTML = p.light==="bright"?"Bright. Dries faster, grows faster, water sooner.":p.light==="low"?"Low. Slower growth, dries slowly, ease off water.":"Medium. Steady pace.";
   const m = C.MEDIA[p.med];
   if ($("mednote")) $("mednote").innerHTML = m.soil?`<b>${m.label}.</b> Feeds through its amendments, normal dry-down watering.`:(p.med==="leca"?`<b>LECA, semi-hydro.</b> No food in the medium. Feed through the water, keep a shallow reservoir, flush every couple weeks, never bone dry.`:`<b>Pon, inorganic.</b> Drains and dries fast, feeds nothing. Top-water often with dilute nutrients.`);
   const L = C.potVolL(p), cups = C.lCup(L), sc = 52/Math.max(p.top,p.ph,10), tw = p.top*sc, bw = p.bot*sc, hh = p.ph*sc, cx = 60, topY = 110-hh, botY = 110;
   if ($("potdraw")) $("potdraw").innerHTML = `<svg viewBox="0 0 120 120"><g filter="url(#wob)" stroke="var(--pen)" stroke-width="1.2" fill="#e7dcbc"><path d="M${(cx-tw/2).toFixed(1)},${topY.toFixed(1)} L${(cx-bw/2).toFixed(1)},${botY} Q${cx},${botY+5} ${(cx+bw/2).toFixed(1)},${botY} L${(cx+tw/2).toFixed(1)},${topY.toFixed(1)} Z"/><ellipse cx="${cx}" cy="${topY.toFixed(1)}" rx="${(tw/2).toFixed(1)}" ry="3.2"/>${p.drain?`<circle cx="${cx}" cy="${botY-2}" r="1.6" fill="#f3ead2"/>`:""}</g></svg>`;
   if ($("potnums")) $("potnums").innerHTML = `<div class="n"><span>Top circ.</span><b>${C.len(Math.PI*p.top,lu)}</b></div><div class="n"><span>Base circ.</span><b>${C.len(Math.PI*p.bot,lu)}</b></div><div class="n"><span>Soil volume</span><b>${C.vol(L,vu)}</b></div><div class="n"><span>Mix needed</span><b style="color:var(--sage)">${cups.toFixed(1)} cups</b></div>`;
-  if ($("v_top")) $("v_top").textContent = C.len(p.top,lu);
-  if ($("v_bot")) $("v_bot").textContent = C.len(p.bot,lu);
-  if ($("v_ph")) $("v_ph").textContent = C.len(p.ph,lu);
+  setNum("s_topn", "s_top", p.top, true);
+  setNum("s_botn", "s_bot", p.bot, true);
+  setNum("s_phn", "s_ph", p.ph, true);
   if ($("matnote")) $("matnote").innerHTML = p.drain?`<b>${C.MATS[p.mat].label}, draining.</b> ${C.MATS[p.mat].note}`:`<b>${C.MATS[p.mat].label}, no drainage.</b> Water sparingly, tip out any that pools, never let the roots sit wet. This is where rot and gnats start.`;
   const bracket = C.potBracket(p.top);
   if ($("potsize")) $("potsize").innerHTML = `Top is ${C.len(p.top,lu)}, a <b>${bracket}</b> pot. Small 10-15 cm / 4-6 in, medium 15-25 cm / 6-10 in, large 25 cm+ / 10 in+. Pot up one size at a time, about 5 cm / 2 in wider, never two.`;
   const due = p.intv - p.lastW;
   if ($("waternext")) $("waternext").innerHTML = due<=0?`<b>Water due now.</b> Last watered ${p.lastW===0?'today':p.lastW+' days ago'}.`:`Next water <b>in ${due} day${due===1?'':'s'}</b>. Last ${p.lastW===0?'today':p.lastW+'d ago'}.`;
-  if ($("v_iv")) $("v_iv").textContent = "every "+p.intv+"d";
+  setNum("s_ivn", "s_iv", p.intv, false);
   const sug = C.suggestIntv(p);
   if ($("sugline")) $("sugline").textContent = p.intvMan?`Suggested ${sug} days. You set ${p.intv}.`:`Suggested ${sug} days from the factors below.`;
   if ($("wqnote")) $("wqnote").innerHTML = (p.water==="tap")?C.WSENS[p.wsens]:(p.wsens>=1?`${p.water.charAt(0).toUpperCase()+p.water.slice(1)} water. Good call for a sensitive one.`:`${p.water.charAt(0).toUpperCase()+p.water.slice(1)} water is fine.`);
   if ($("waterfac")) $("waterfac").textContent = `Built from: ${p.pace} pace, ${C.MEDIA[p.med].label.toLowerCase()}, ${C.MATS[p.mat].label.toLowerCase()} pot ${p.drain?"with drainage":"with no drainage"}, ${C.vol(C.potVolL(p),vu)} of it, ${p.light} light, ${Math.round(g*100)}% grown, ${C.season()?"growing season":"dormant"}. Finger-check the top two inches first.`;
   const f = C.FERTS[p.fert];
   if ($("feednote")) { if (soilless) $("feednote").innerHTML = `Soilless, so the water is the only food. Add ${f.label} at every watering, ${f.str}. Ease back in winter, don't stop, there's no soil reserve.`; else if (!C.season()) $("feednote").innerHTML = `Dormant. Hold ${f.label} until spring. Last fed ${p.lastF}d ago.`; else { const fdue = 14-p.lastF; $("feednote").innerHTML = `Growing season. ${f.label} at ${f.str} every 2 weeks. ${fdue<=0?"<b>Feed due now.</b>":"Next feed <b>in "+fdue+"d</b>."} Last fed ${p.lastF===0?'today':p.lastF+'d ago'}.`; } }
-  const snug = p.snug/100;
-  if ($("v_snug")) $("v_snug").textContent = snug<0.33?"roomy":snug<0.66?"cosy":"bursting";
+  const snug = p.snug/100, snugWord = snug<0.33?"roomy":snug<0.66?"cosy":"bursting";
+  setNum("s_snugn", "s_snug", p.snug, false);
   if (p.med==="leca") { if ($("repotwin")) $("repotwin").innerHTML = `In semi-hydro. Root-check on sight, not schedule.`; if ($("repotnote")) $("repotnote").textContent = "Watch the water level and rinse the LECA."; if ($("repotfac")) $("repotfac").textContent = ""; }
-  else { const win = C.repotWindow(p); if ($("repotwin")) $("repotwin").innerHTML = `Check the roots in about <b class="big">${win[0]} to ${win[1]} months</b>.`; if ($("repotnote")) $("repotnote").textContent = "This narrows when to look. Roots circling the pot or out the drainage holes make the call. Loose and roomy means wait."; if ($("repotfac")) $("repotfac").textContent = `Moved by: ${p.pace} grower, ${$("v_snug")?$("v_snug").textContent:''} in the pot, watered every ${p.intv} days, ${C.MATS[p.mat].label.toLowerCase()}.`; }
+  else { const win = C.repotWindow(p); if ($("repotwin")) $("repotwin").innerHTML = `Check the roots in about <b class="big">${win[0]} to ${win[1]} months</b>.`; if ($("repotnote")) $("repotnote").textContent = "This narrows when to look. Roots circling the pot or out the drainage holes make the call. Loose and roomy means wait."; if ($("repotfac")) $("repotfac").textContent = `Moved by: ${p.pace} grower, ${snugWord} in the pot, watered every ${p.intv} days, ${C.MATS[p.mat].label.toLowerCase()}.`; }
   if ($("rootnote")) $("rootnote").innerHTML = p.rootcond?C.ROOTS[p.rootcond].note:"Not checked yet. Pick what you found at the last repot and it sticks, feeding ongoing care.";
   const dir = p.trapN<p.trapL?"down":p.trapN>p.trapL?"up":"flat";
   if ($("gnatline")) $("gnatline").innerHTML = `Last week ${p.trapL}. Trend <b>${dir}</b>. ${dir==="down"?"You're winning. Keep the protocol on.":dir==="flat"&&p.trapN===0?"Clean. Hold the line.":"Re-drench with BTI and keep the top dry."}`;
@@ -720,16 +737,26 @@ document.addEventListener("input", e => {
   const p = P();
   if (!p) return;
   if (el.id==="roomi") { p.room = el.value; saveDebounced(p); return; }
-  if (el.id==="s_h") { p.hCm = +el.value; }
-  else if (el.id==="s_iv") { p.intv = +el.value; p.intvMan = true; save(p); render(); return; }
-  else if (el.id==="s_top") { p.top = +el.value; if (!p.intvMan) { save(p); render(); return; } }
-  else if (el.id==="s_bot") { p.bot = +el.value; }
-  else if (el.id==="s_ph") { p.ph = +el.value; if (!p.intvMan) { save(p); render(); return; } }
-  else if (el.id==="s_snug") { p.snug = +el.value; }
-  else if (el.id==="trapc") { p.trapN = Math.max(0, +el.value||0); }
-  else if (el.id==="lastwd") { p.lastW = C.daysAgo(el.value); }
-  else if (el.id==="lastfd") { p.lastF = C.daysAgo(el.value); }
-  else return;
+  // sliders are in cm (length) or raw units; number boxes are in the chosen length unit.
+  const fromLen = v => ST.lenUnit === "in" ? C.inCm(+v || 0) : (+v || 0);
+  switch (el.id) {
+    case "s_h":    p.hCm = C.clamp(+el.value, 8, p.matureCm); break;
+    case "s_hn":   p.hCm = C.clamp(fromLen(el.value), 1, Math.round(p.matureCm * 1.5)); break;
+    case "s_top":  p.top = +el.value; break;
+    case "s_topn": p.top = C.clamp(fromLen(el.value), 4, 60); break;
+    case "s_bot":  p.bot = +el.value; break;
+    case "s_botn": p.bot = C.clamp(fromLen(el.value), 3, 55); break;
+    case "s_ph":   p.ph = +el.value; break;
+    case "s_phn":  p.ph = C.clamp(fromLen(el.value), 4, 60); break;
+    case "s_iv":   p.intv = +el.value; p.intvMan = true; save(p); render(); return;
+    case "s_ivn":  p.intv = C.clamp(Math.round(+el.value || 2), 2, 60); p.intvMan = true; break;
+    case "s_snug":  p.snug = +el.value; break;
+    case "s_snugn": p.snug = C.clamp(Math.round(+el.value || 0), 0, 100); break;
+    case "trapc":  p.trapN = Math.max(0, +el.value || 0); break;
+    case "lastwd": p.lastW = C.daysAgo(el.value); break;
+    case "lastfd": p.lastF = C.daysAgo(el.value); break;
+    default: return;
+  }
   saveDebounced(p); detailRefresh();
 });
 function readNote() { const n = document.getElementById("noteField"); if (n) ST.note = n.value; }

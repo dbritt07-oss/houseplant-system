@@ -17,6 +17,8 @@ Status key: ✅ done · 🔨 in progress · ⏭️ next · 📋 queued · 💡 i
 - ✅ Fix: sheets keep scroll position on chip/toggle/date edits (no more jump to top)
 - ✅ Repot flow redesign: pot (same/new + measure) → recommended mix (cups from real volume) → unpot & roots (photo + condition) → gnat-kill checklist → review & ink. Plain-language "Mosquito Bits (BTI)" copy. Writes pot size + soil + root condition back to the plant.
 - ✅ Measurements & units: independent Length (cm/in) and Volume (L/mL/gal) pickers, cups always for mix. Default inches + gallons. Repot pot page labels its unit, shows the volume→cups readout, and a "leave headroom" note. Cleaner settings icon.
+- ✅ Typeable number boxes on every slider (height, pot top/base/height, schedule, root-snug), 0.5-step sliders, unit-aware and synced to the slider.
+- ✅ Soil tab: "Your plants on this mix" — selecting a bucket in the calculator lists your matching plants (tap to open), with LECA/Pon liquid-nutrient + watering guidance.
 
 ## Next
 - ⏭️ Photo-capture pre-fill UI: snap → review → accept/override screens (manual values for now), the scaffold auto-ID drops into
