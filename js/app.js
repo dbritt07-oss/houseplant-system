@@ -24,6 +24,10 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
+const BUILD = "v9";
+/* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
+let _rafPending = false;
+function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
 
 /* ---------- icons ---------- */
 const ICON = {
@@ -236,6 +240,7 @@ function renderSettings() {
     <div class="block"><h3><span class="k">Reset</span></h3>
       <p class="muted" style="font-size:13px;line-height:1.5">Re-seed the 24 from constants. Wipes your entered data on this device. Export first.</p>
       <button class="btn ghost" data-act="reseed" style="width:100%;margin:12px 0 0;color:var(--rust);border-color:#cf9d8b">Reset to a fresh sketchbook</button></div>
+    <div class="read" style="font-size:12px;color:var(--faint);text-align:center;margin:14px 0 4px">Plant Daddy HQ · build ${BUILD}</div>
     <div style="height:10px"></div>`;
 }
 
@@ -758,7 +763,7 @@ document.addEventListener("input", e => {
     case "s_botn": p.bot = C.clamp(fromLen(el.value), 3, 55); break;
     case "s_ph":   p.ph = +el.value; break;
     case "s_phn":  p.ph = C.clamp(fromLen(el.value), 4, 60); break;
-    case "s_iv":   p.intv = +el.value; p.intvMan = true; save(p); render(); return;
+    case "s_iv":   p.intv = +el.value; p.intvMan = true; break;
     case "s_ivn":  p.intv = C.clamp(Math.round(+el.value || 2), 2, 60); p.intvMan = true; break;
     case "s_snug":  p.snug = +el.value; break;
     case "s_snugn": p.snug = C.clamp(Math.round(+el.value || 0), 0, 100); break;
@@ -767,7 +772,7 @@ document.addEventListener("input", e => {
     case "lastfd": p.lastF = C.daysAgo(el.value); break;
     default: return;
   }
-  saveDebounced(p); detailRefresh();
+  saveDebounced(p); detailRefreshThrottled();
 });
 function readNote() { const n = document.getElementById("noteField"); if (n) ST.note = n.value; }
 function readAddFields() {
