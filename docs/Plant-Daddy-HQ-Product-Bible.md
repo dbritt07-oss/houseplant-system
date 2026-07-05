@@ -8,11 +8,24 @@ Philosophy, product strategy, UX, technical direction, and long-term vision.
 | **Document** | Plant Daddy HQ Product Bible |
 | **Status** | Living document — update as decisions change |
 | **Owner** | Dorian (Founder) · Head of Product |
-| **Version** | 1.0 |
+| **Version** | 2.0 |
 | **Last updated** | July 2026 |
 | **Related docs** | `Houseplant-System-Master-Doc.md` (care models + collection), `design/brand-board.html` (visual system), `BACKLOG.md` (execution tracker), `WHATS-NEW.md` (release verification) |
 
-> **How to use this document.** This is the constitution, not the changelog. It defines what is true and what we believe. When a feature, design, or business decision is proposed, it must be justified against this document. When reality forces a change, change it *here first*, then let it flow downstream. If a new team read only this file, they could rebuild Plant Daddy HQ and make it feel like itself.
+> **How to use this document.** This is the constitution, not the changelog. It defines what is true and what we believe. When a feature, design, or business decision is proposed, it must be justified against this document. When reality forces a change, change it *here first*, then let it flow downstream. The care models and species constants live in `Houseplant-System-Master-Doc.md`; this Bible governs *why* and *what*, that doc governs the *math*.
+
+---
+
+## 0. Resolved Decisions (v2)
+
+v1 preserved four ambiguities that would have quietly broken the product. v2 resolves them. These are settled unless this section is deliberately reopened.
+
+1. **Data: local-first, cloud-backed.** On-device is the working copy; the owner's own cloud (Google Drive) is the *automatic* safety net. Data safety beats local-only purity. Thin optional services (a key-proxy, later a sync relay) are allowed — they never hold the primary copy and never gate core use. We stop saying "no servers, ever"; we say "your data, never held hostage."
+2. **Measurement: on-device insight + opt-in anonymous telemetry.** Metrics the *user* cares about are computed on-device and shown to them. Product metrics come from clearly-disclosed, opt-in, aggregate-only, no-plant-data telemetry — off by default. We only claim metrics we can actually gather.
+3. **The fork is closed: this is a product.** Built personal-first *as a method* (the founder is the design partner and first user), but the destination is a focused, premium product for people like him. It does not stay N=1.
+4. **Audience: the Intentional Keeper, first and narrowly.** We win one specific person completely before widening. "Operating system for plant ownership" is the long-term north star we *earn*, not the V1 pitch.
+
+**Default philosophy (the tie-breakers):** focused & premium over broad; founder informs the wedge but isn't the ceiling; data safety over local-only purity; AI valuable but never required; MVP buildable by one person; beauty matters, daily utility wins.
 
 ---
 
@@ -20,21 +33,21 @@ Philosophy, product strategy, UX, technical direction, and long-term vision.
 
 Plant Daddy HQ is a mobile-first, **local-first** houseplant-care companion built around a simple conviction: *plant care software should respect the grower's judgment and their privacy.* It replaces rigid, nagging, one-size-fits-all care apps with a system that computes real, per-plant guidance from the actual pot, medium, light, and season — then always defers to the human and the finger-check.
 
-The product is an installable Progressive Web App (PWA). It ships **pre-seeded with a locked 24-plant collection** and their species constants, works **fully offline**, keeps all personal data **on the device**, and backs up to a **single file the owner controls**. There are no accounts, no servers required, and no dark patterns.
+The product is an installable Progressive Web App (PWA). It works **fully offline**, keeps all personal data **on the device as the working copy**, and — new in v2 — **automatically backs up to the owner's own cloud (Google Drive)** so years of records survive a lost phone or an OS storage wipe. There are no forced accounts and no dark patterns; the owner's data is always theirs and always portable.
 
 Its signature is a **living, hand-drawn field-journal aesthetic**: each plant is a botanical specimen whose illustration evolves with its growth and health, wrapped in a naturalist's journal of care data, rituals, and field notes.
 
-The near-term product exists and works. This Bible governs the next phase: a **botanical-journal design system**, an **AI-assisted photo layer**, and expansion from a single home into a **multi-room, multi-property plant world** — without ever betraying the founding values of privacy, honesty, and craft.
+The near-term product exists and works. This Bible governs the next phase: a **botanical-journal design system**, an **opt-in AI photo layer**, and — only after the core is beautiful and effortless — a careful expansion toward a multi-room plant world. We expand by earning it, never by betraying the founding values of privacy, honesty, and craft.
 
-**The strategic fork this document resolves:** Plant Daddy HQ is being built first as a tool the founder genuinely wants. This Bible is written so it can *also* become a product for others — but every "for others" decision is held to the same values. We do not compromise the personal tool to chase a market; we let the personal tool's integrity *be* the market position.
+**This is a product, not a permanent personal toy.** It is built *personal-first as a method* — the founder is the design partner and first real user, which keeps taste and honesty high — but the destination is a **focused, premium product for people like him** (see §6, the Intentional Keeper). Founder-use defines the wedge; it is not the ceiling. The larger "operating system for plant ownership" idea is our long-term north star (see *The North Star*), reached only by nailing that wedge first.
 
 ---
 
-## The Ambition — The Operating System for Plant Ownership
+## The North Star — Toward an Operating System for Plant Ownership (Long-Term)
 
-**Plant Daddy HQ is not another plant-identification or watering-reminder app.** Those are features, not a product. The ambition is to become the **operating system for plant ownership** — the single, calm, intelligent home for everything a plant keeper thinks about, decides, and does.
+**Read this as the destination, not the V1 pitch.** Today Plant Daddy HQ is a focused, premium care journal for one kind of person (see §6). The *north star* — years out, earned only after we've won that wedge — is to become the **operating system for plant ownership**: the single, calm, intelligent home for everything a plant keeper thinks about, decides, and does. We keep it here to steer long-range choices, not to license building all of it now. **Nothing in this section is an MVP or V1 commitment.**
 
-It becomes that OS by fusing seven pillars into one coherent experience:
+It would become that OS by fusing seven pillars into one coherent experience (most are explicitly *Not Now* — see §14):
 
 1. **AI** — vision-based identification and health reads, and (later) intelligent assistance that turns observation into guidance. An accelerant, never a dependency.
 2. **Gardening science** — real horticulture: pot geometry and volume, soil chemistry and drainage, light and season, root behavior. Guidance is *computed from physics*, not looked up in a generic table.
@@ -80,7 +93,9 @@ Plant care that's **computed, yours, and alive** — the science does the thinki
 
 ## 3. Mission
 
-**To give every plant keeper a beautiful, honest, private system that turns plant care from guesswork and guilt into a repeatable, rewarding ritual.**
+**To give the intentional plant keeper a beautiful, honest, private system that turns plant care from guesswork and guilt into a repeatable, rewarding ritual.**
+
+*(We say "the intentional keeper," not "everyone," on purpose — see §6. Widening the audience is a later, earned move, not a founding promise.)*
 
 We do this by:
 - Computing **real per-plant guidance** from physical reality (pot geometry, medium, material, light, season) instead of generic tables.
@@ -96,7 +111,7 @@ These are non-negotiable. Every screen, feature, and interaction is tested again
 
 1. **Respect the grower's judgment.** The app advises; the human decides. Every computed schedule is overridable with a one-tap snap-back to the suggestion. The finger-check of the top two inches of soil always overrides the number.
 2. **Honesty over engagement.** We never invent urgency, never nag to drive "streaks," and never hide capability behind manufactured friction. If a platform limits us (e.g., iOS PWA notifications), we say so plainly rather than fake it.
-3. **Local-first and private.** Personal data (photos, measurements, logs) lives on the device and backs up to the owner's own cloud. It is never required to touch our servers. Code lives in version control; plant data never does.
+3. **Local-first, cloud-backed, private.** The device holds the working copy; the owner's own cloud (Google Drive) holds an automatic backup. **Data safety beats local-only purity** — we would rather the owner's years of records survive a lost phone than score ideological points for never touching a server. Optional thin services (a key-proxy, later a sync relay) are permitted, but they never hold the primary copy and never gate core use. We never sell, mine, or hold data hostage; code lives in version control, plant data never does.
 4. **Beauty with a job.** The aesthetic is not decoration. Every beautiful element (the evolving art, the specimen plate, the swatch strip) is load-bearing — it communicates growth, health, or care state.
 5. **Calm, not clever.** Default to whitespace, clarity, and one obvious action. Cleverness is earned only when it removes work.
 6. **Fast daily, rich occasionally.** The 5-second interactions (log a watering, glance at what's due) must be effortless. The 5-minute interactions (a repot, a check-in) can be immersive.
@@ -124,14 +139,18 @@ Plant Daddy HQ is **one artifact doing three jobs**. Keeping these distinct is t
 
 ## 6. User Personas
 
-### Primary — "The Intentional Keeper" (Dorian)
-A design-literate plant owner with a growing, characterful collection (24+). Cares about both the *health* of the plants and how they read *on camera / in the home*. Frustrated by generic apps that overwater and nag. Wants a system that is accurate, private, beautiful, and teaches. Comfortable with technology, values craft and control. **This is who we build for first, and whose taste sets the bar.**
+**Focus rule:** we build for **one** persona through V1 — the Intentional Keeper. The other two are *later* audiences we design *toward* but do not optimize for yet. Chasing all three at once is how the product loses its edge.
 
-### Secondary — "The Anxious New Parent"
-Recently caught the plant bug, killed one or two, feels guilty and unsure. Needs confidence more than data: clear "what do I do today," gentle guidance, and forgiveness (undo, "it's okay, here's how to recover"). Terrified of overwatering. **We win them by being calm and non-judgmental where competitors are shrill.**
+**Evidence honesty:** these personas currently rest on **N=1 (the founder) plus competitive review** — a hypothesis, not validated research. Before V1 ships to anyone but the founder, we talk to ~5 real keepers who aren't us. Until then, the founder is a *design partner*, not a market.
 
-### Tertiary — "The Collector / Aesthete"
-Dozens to hundreds of plants, possibly rare cultivars, active in the plant community, may create content. Wants organization at scale (rooms, search, sort, propagation tracking), a gorgeous interface worth showing off, and accuracy for finicky species. **They stress-test scale and beauty.**
+### Primary (build target) — "The Intentional Keeper" (Dorian is the archetype)
+A design-literate plant owner with a growing, characterful collection (roughly 20–100). Cares about both the *health* of the plants and how they read *in the home*. Frustrated by generic apps that overwater and nag. Wants a system that is accurate, private, beautiful, and teaches. Comfortable with technology, values craft and control. **This is who every MVP/V1 decision serves, and whose taste sets the bar.**
+
+### Later audience (design toward, don't optimize for yet) — "The Collector / Aesthete"
+Dozens to hundreds of plants, possibly rare cultivars, active in the plant community. Wants organization at scale (rooms, search, sort, propagation). **They stress-test scale — a V2 concern, not a V1 one.** We keep the architecture from blocking them; we don't build for them first.
+
+### Later audience (explicitly deferred) — "The Anxious New Parent"
+Recently caught the bug, killed one or two, feels guilty. Needs confidence and hand-holding more than precision. **We deliberately do not target them in V1** — their ideal product (heavy onboarding, simplified guidance) pulls against the Intentional Keeper's (control, precision, density). Serving both at once dilutes both. Revisit once the wedge is won.
 
 ### Anti-persona — "The Gamified Streak-Chaser"
 Someone who wants points, badges, social leaderboards, and daily-login mechanics. **We are explicitly not for them.** Serving them would corrupt the calm, honest core.
@@ -174,27 +193,24 @@ Grounded in competitive review and the founder's lived experience.
 
 ## 9. Success Metrics
 
-Because we optimize for *honest utility*, not engagement-at-all-costs, our metrics are deliberately not "daily active users / streaks."
+**The honest constraint:** we cannot measure what we refuse to collect. A local-first app sends nothing off-device by default, so v1's aspirational dashboard of KPIs was fiction. v2 splits measurement into two layers — one for the user, one for us — and only claims numbers we can actually get.
 
-**North Star:** *Plants kept healthy over time per active keeper* — proxied by the share of a user's collection at "Healthy" or "Thriving" trending stable-or-up over 90 days.
+**Layer 1 — Insight the user sees (computed on-device, private).** These need no server; they're shown back to the owner as their own "collection health" surface (the seed of the Analytics pillar). This is our *product* North Star made visible to the person it serves:
 
-**Primary (health & trust):**
-- % of plants in Healthy/Thriving state (and trend).
-- Repot-protocol completion rate (rituals finished vs started).
-- Data-completeness: % of variable fields filled per plant.
-- Backup adoption: % of active users who have exported at least once.
+- **North Star:** *share of the owner's collection trending stable-or-up in health over 90 days.* (Self-reported health is imperfect and gameable — we treat it as a directional signal for the owner, not a boast metric for us.)
+- Repot-protocol completion (finished vs started), computed locally.
+- Data-completeness per plant (how much of the real variable data is filled).
+- Time-to-log (measured on-device; target < 5s) surfaced only if it helps the user, never as a growth lever.
 
-**Engagement — quality, not volume:**
-- Log actions per active week (a *sufficiency* target, not "more is better" — we want enough to be useful, not addictive).
-- Weekly return rate (opened in last 7 days) — calm, not compulsive.
-- Time-to-log a watering (should trend toward < 5 seconds).
+**Layer 2 — Product metrics (opt-in, anonymous, aggregate-only).** To improve the product for *other* people we need real usage signal — but on our terms: a single, clearly-worded opt-in at setup, **off by default**, sending **event counts only** (e.g., "logged in <5s," "schedule overridden," "backup succeeded/failed," "notification opt-out"). **Never** plant data, photos, names, or locations. If the user says no, the app is 100% unaffected.
 
-**Guardrail metrics (things we watch to *not* break):**
-- Notification opt-out rate (spike = we're nagging).
-- Override rate on schedules (healthy signal that people feel in control; we never suppress it).
-- Rage-taps / undo usage on destructive actions.
+- Adoption & reliability: backup success rate, restore success rate, crash-free sessions.
+- Trust guardrails: notification opt-out rate (spike = we're nagging), schedule-override rate (we *want* this healthy — proof people feel in control), undo/rage-tap frequency on destructive actions.
+- Calm-engagement (sufficiency, not maximization): weekly return rate framed as "did it stay useful," never a target to inflate.
 
-**If/when monetized:** free→premium conversion, premium retention, and "value moments" (e.g., an AI ID that a user confirmed) — never conversion driven by crippling the free tier.
+**While the product is still N=1 (founder-only):** Layer 2 is effectively off; we evaluate qualitatively (does the founder actually run his whole collection on it?) plus Layer-1 numbers. We do **not** pretend to have quantitative product metrics before there are real users to generate them.
+
+**If/when monetized:** free→premium conversion, premium retention, and confirmed "value moments" (e.g., an AI ID the user accepted) — never conversion driven by crippling the free tier. These also come only from opt-in telemetry.
 
 ---
 
@@ -257,50 +273,60 @@ Because we optimize for *honest utility*, not engagement-at-all-costs, our metri
 - Local-first persistence (IndexedDB), offline PWA, one-tap export/import backup.
 - In-app due/overdue states + limited device notifications (honest about iOS limits).
 
-**Planned / near (see Roadmap):** sort/filter controls, botanical-journal reskin + light/dark, AI photo ID + health read, the living Home dashboard.
+**Planned / near — V1 (see Roadmap):** **automatic backup to the owner's Google Drive** (the data-safety fix — promoted into V1), sort/filter controls, botanical-journal reskin + light/dark, opt-in AI photo ID + health read, a minimal on-device "collection health" readout, opt-in anonymous telemetry (off by default).
 
-**Later (the OS pillars maturing):**
-- **Weather intelligence:** local forecast/daylight/temperature/humidity that modulates watering, feeding, and light guidance in real time; seasonal shifts handled automatically.
-- **Analytics:** an Apple-Health-style insights surface — collection health & growth trends, watering/feeding cadence, gnat-war progress, thriving vs. struggling, per-room and per-species patterns.
-- **Automation & routines:** batch/room actions, smart reminders, restock triggers, and rule-based intelligence ("hot dry forecast → tighten the Alocasias"; "gnat count rising → resurface the protocol").
-- Property/home layer with room light context; local events/nurseries discovery; propagation tracking; supplies thresholds/restock; automatic cloud sync; optional native wrapper.
+**V2 (earned after V1 is beautiful & effortless):** the living Home/rooms dashboard, weather intelligence, the fuller Analytics surface, automation v1 (batch/room actions, smart reminders, restock triggers), propagation tracking, supplies thresholds, automatic multi-device sync.
+
+**Not Now / Not Until Proven (see §14):** rule-based "when X do Y" automation, the on-demand AI assistant, multi-property/multi-home layer, local events/nurseries discovery, community, content-creator mode, native wrapper. These are the north-star pillars; each waits behind an explicit trigger, not a date.
 
 ---
 
 ## 14. Roadmap — MVP · V1 · V2 · Long-Term
 
+**Reality check on capacity:** this is built by one person (+ AI assistance). The roadmap is sequenced so each phase is shippable by a solo builder, and heavy multi-system work is pushed out or gated. No dates — only phase gates and triggers.
+
 **MVP (done / stabilizing) — "It works and it's honest."**
-Core care engine, 24 plants, repot ritual, offline persistence, backup, camera, quick-log, undo, delete, rooms, supplies, units. Goal: the founder can run the whole collection on it.
+Core care engine, 24 plants, repot ritual, offline persistence, **manual** export/import backup, camera, quick-log, undo, delete, rooms, supplies, units.
+*Gate to exit MVP:* the founder runs his entire real collection on it for a sustained stretch with no fallback to notes/memory.
 
-**V1 — "It's beautiful and effortless." (next)**
-- Botanical-journal **design system** + **Light/Dark/Auto**.
-- **Study page** as specimen plate; **Home** as calm command center; sort/filter.
-- **Photo ID + health read** (AI, opt-in, behind a serverless key-proxy; tap-to-pick fallback stays).
-- Interaction polish: transitions, swipe gestures, accessibility pass.
-- Goal: a stranger opens it and says *"whoa."*
+**V1 — "It's beautiful, effortless, and safe." (next)**
+The theme: make it a joy to open *and* make the data unloseable. Scoped to be solo-buildable.
+- **Automatic backup to the owner's Google Drive** — the data-safety decision, made real. One-time connect, then silent periodic backup + one-tap restore. Manual export stays as the offline/portable path. *This is V1's most important non-visual feature.*
+- Botanical-journal **design system** + **Light/Dark/Auto** (token-based).
+- **Study page** as specimen plate; **Home** as a calm command center; sort/filter on the collection.
+- **Opt-in AI photo ID + health read** (behind the serverless key-proxy; tap-to-pick fallback always present; fully skippable).
+- A **minimal on-device "collection health" readout** (the Analytics seed — Layer-1 metrics made visible).
+- **Opt-in anonymous telemetry** (off by default) so V1 can actually be measured once strangers use it.
+- Interaction polish + an **accessibility pass** (the journal palette tuned to pass AA — a release gate, §18).
+*Gate to exit V1:* a stranger opens it and says *"whoa,"* AND a phone can be lost/reset with zero data loss.
 
-**V2 — "It's a plant *world* with a brain, not a list."**
+**V2 — "It's a plant *world* with a brain, not a list."** (earned only after V1's gate)
 - The living **Home/rooms dashboard**.
-- **Property/home layer** (multi-room, multi-home) + room light context feeding care.
-- **Weather intelligence** — local conditions modulate care in real time.
-- **Analytics** — the collection as living, insightful data (health/growth trends, patterns).
-- **Automation (v1)** — batch/room actions, smart reminders, restock triggers.
+- **Weather intelligence** — local conditions modulate care (first real server-dependent pillar).
+- **Analytics** — the fuller insights surface (trends, cadence, per-room/species patterns).
+- **Automation v1** — batch/room actions, smart reminders, restock triggers (no rule engine yet).
 - **Propagation** tracking; supplies **thresholds + restock**.
-- Optional **automatic Google Drive sync**.
-- Goal: scales gracefully to a large, multi-room collection and starts to feel *intelligent*.
+- **Automatic multi-device sync** (built on the same Drive backend as V1 backup).
+*Gate to exit V2:* it stays calm and fast at 100+ plants across multiple rooms.
 
-**Long-Term additions — "It runs itself as much as you want it to."**
-- **Rule-based automation** ("when X, do/suggest Y") — the OS quietly working in the background.
-- Deeper **weather + seasonal modeling** and cross-plant insights.
+Sequencing rule: **beauty + effortlessness + data-safety (V1) before breadth (V2) before intelligence-at-scale.** We earn each phase; we never front-load the north star.
 
-**Long-Term — "It connects your plant life."**
-- **Local discovery**: plant events + nearby nurseries stocking what you're low on.
-- Community layer *(only if it can stay optional and non-toxic)*.
-- Species/photo-match to auto-file photos to the right plant.
-- Possible native wrapper for reliable notifications.
-- Goal: the connective tissue of a plant-filled life.
+---
 
-Sequencing rule: **beauty and effortlessness (V1) before breadth (V2).** We earn the right to expand by first being the app people love to open.
+### Not Now / Not Until Proven
+
+Each item names the **trigger** that would let it graduate. Absent the trigger, it does not get built — regardless of how exciting it is.
+
+| Deferred | Won't build until… |
+|---|---|
+| **Multi-property / multi-home layer** | a real user actually manages plants across ≥2 homes and the single-home model demonstrably strains. |
+| **Rule-based automation** ("when X do Y") | Automation v1 (V2) is used enough that users ask for conditional rules by name. |
+| **On-demand AI assistant** | AI photo ID has shipped, proven accurate and trusted, and weather+analytics exist for it to reason over. |
+| **Local discovery** (events / nurseries) | the core care loop is loved and retention is proven; this is reach, not core. |
+| **Community layer** | we can prove it stays optional, kind, and non-gamified — and users request it. Default answer is still "probably not." |
+| **Content-creator mode** | demand from the Collector/Aesthete persona is real and measured, not assumed. |
+| **Native wrapper** | notification unreliability on iOS is proven to be blocking real users (see §17) and no lighter fix works. |
+| **Widening to the Anxious-Beginner audience** | the Intentional Keeper wedge is won and validated with real users. |
 
 ---
 
@@ -376,11 +402,11 @@ Accessibility is a **release gate**, not a nice-to-have: a design isn't done unt
   - **Automatic cloud sync** across devices (hosting cost).
   - **Multi-property / advanced scale** features.
   - **AI watercolor portrait plates** for the whole collection (generation cost).
-- **Possible alternatives to weigh:** a **one-time purchase** ("buy the app, own it") which aligns beautifully with the anti-subscription ethos; or **keep it entirely free/personal** if this stays the founder's tool.
+**Chosen model (decision, not menu):** **free core + one ethical premium tier**, layered in *only when* we productize for others. The free tier is a complete, forever-usable app (full care engine, unlimited plants, rooms, ritual, photos, offline, and full backup/export — including automatic cloud backup). Premium sells the things that genuinely **cost us money** (AI vision calls, cross-device sync hosting) or deliver **disproportionate value** (multi-property, whole-collection portrait plates). Pricing mechanic within that (subscription vs. credits vs. a one-time unlock) is a tactical choice we make when we have real users — not a strategic fork. A one-time "own it" unlock is the preferred default because it fits the anti-subscription ethos.
 
-**Absolute no's:** ads, selling data, engagement-bait subscriptions, or gating core care behind a paywall.
+**Absolute no's:** ads, selling data, engagement-bait subscriptions, or gating core care (including basic ID fallback and backup/export) behind a paywall.
 
-**Open strategic decision (founder call):** Is Plant Daddy HQ a *personal masterpiece* (free, private, ours) or a *product for the world* (freemium)? The architecture supports both. This Bible recommends building it personal-first to the highest standard, then — only if it earns love — layering the ethical premium tier without ever degrading the free core.
+**The fork is closed (see §0).** Plant Daddy HQ is a *product*, built personal-first as a method. We are not preserving "maybe it just stays a toy" as a live strategy — that ambiguity was costing us clear decisions. We build to the highest personal standard *because* that is how this particular product wins, then layer the ethical premium tier once it earns real users. If it never earns them, it remains a superb personal tool — but we plan and build as a product.
 
 ---
 
@@ -388,14 +414,14 @@ Accessibility is a **release gate**, not a nice-to-have: a design isn't done unt
 
 **Architecture:** a lightweight, installable **PWA** in plain HTML/CSS/JS — no heavy framework unless something genuinely needs it. Static hosting (currently **GitHub Pages**).
 
-- **Data:** **IndexedDB**, local-first. Plant records, logs, and compressed photos live on-device. **One-tap export/import** to a single portable JSON file (photos as compressed data URLs) is the backup and the migration path. **Plant data never enters the git repo.**
+- **Data (local-first, cloud-backed):** **IndexedDB** holds the working copy on-device. **Automatic backup to the owner's own Google Drive** is the safety net (V1) — because iOS can silently evict PWA storage and "always export manually" is a plan that fails real humans. **One-tap export/import** to a single portable JSON file remains the offline/portable path and migration format. The owner's cloud holds their data; **we never do, and plant data never enters the git repo.** Multi-device *sync* (V2) is an additive layer over the same backend — not a precondition for safety.
 - **Domain layer:** the **care math is an isolated module** (`care.js`) — watering, feeding, repot window, frustum volume — so models are easy to tune without touching UI.
 - **Art:** resolution-independent, theme-able **parametric SVG** generators; AI-generated raster plates are optional assets layered on top.
 - **Design tokens:** all theming via CSS variables → light/dark and full reskin by swapping values.
 - **Offline / updates:** **service worker, network-first for the app shell** (updates appear immediately when online; cache is the offline fallback), precache bypasses HTTP cache, and a visible **build stamp** in Settings for verification. Cache version bumps on release.
 - **Separation of concerns (the data rule):** *app code* lives on GitHub (version-controlled, free host); *plant data* lives on the device + the owner's own cloud backup. Never mix them.
 - **AI/cloud (future):** any API key sits behind a **tiny serverless proxy**, never in the client. Cloud sync and AI are additive services, not the app's spine.
-- **Constraints to respect:** iOS PWA limits (notifications, storage eviction, home-screen removal can clear storage → *always export before resets*); image weight (compress on capture); no external runtime deps beyond the type fonts (cached by the SW).
+- **Constraints to respect:** iOS PWA limits (notifications, storage eviction, home-screen removal can clear storage → *this is exactly why automatic cloud backup is a V1 requirement, not an optional nicety*); image weight (compress on capture); no external runtime deps beyond the type fonts (cached by the SW).
 
 **Quality bar:** care math is unit-verifiable against known values; every release is syntax-checked and spot-tested; docs (`WHATS-NEW.md`) record what changed and where to see it.
 
@@ -425,7 +451,7 @@ Saying no is how the product stays itself.
 - **Streaks, badges, points, or daily-login gamification.** Corrupts the calm, honest core.
 - **Social feeds / leaderboards as a core requirement.** (Optional, opt-in community *maybe*; never the spine.)
 - **Ads, or selling/monetizing user data.** Ever.
-- **Forced accounts or forced cloud** for basic use. Local-first is sacred.
+- **Forced accounts, or forcing *our* cloud, for basic use.** Local-first is the working model, and backup goes to the *owner's* cloud, not ours. (Automatic backup is on-by-default and strongly encouraged for data safety — but it uses the user's own Google Drive and can be declined; it is never a login wall or a lock-in.)
 - **Paywalling core plant care** (including basic identification's fallback and backup/export).
 - **Fake or exaggerated notification reliability** (e.g., pretending iOS PWA push is dependable).
 - **Rigid, non-overridable schedules.** The exact thing we exist to replace.
@@ -436,4 +462,4 @@ Saying no is how the product stays itself.
 
 ---
 
-*Plant Daddy HQ — Product Bible v1.0. A living document. Change it here first, then let it flow downstream. Care, computed. Judgment, yours.*
+*Plant Daddy HQ — Product Bible v2.0. A living document. Four founding contradictions resolved (see §0). Change it here first, then let it flow downstream. Care, computed. Judgment, yours.*
