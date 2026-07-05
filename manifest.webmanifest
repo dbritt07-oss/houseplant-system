@@ -1,0 +1,16 @@
+{
+  "name": "Plant Daddy HQ",
+  "short_name": "Plant Daddy HQ",
+  "description": "Plant Daddy HQ — field-sketchbook care system for the locked 24-plant collection. Reference, ritual, record.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ece1c6",
+  "theme_color": "#ece1c6",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
