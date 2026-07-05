@@ -21,7 +21,8 @@ Status key: ✅ done · 🔨 in progress · ⏭️ next · 📋 queued · 💡 i
 - ✅ Soil tab: "Your plants on this mix" — selecting a bucket in the calculator lists your matching plants (tap to open), with LECA/Pon liquid-nutrient + watering guidance.
 - ✅ Pot accuracy: Round/Square shape toggle (cone vs pyramid volume), diameter/side labels (measure across, not around), and a realistic "fresh mix to prepare" figure (full capacity minus headroom + root ball) so repot amounts aren't overstated.
 - ✅ Update reliability: service worker switched to network-first (updates appear as soon as you're online), precache bypasses HTTP cache, and a visible "build vN" stamp in Settings to confirm the running version. Slider drags frame-throttled for smoothness.
-- ✅ Photo check-in (existing plant): "📷 Photo check-in" on the plant page → snap → confirm health + note → attaches photo, updates status, logs a timeline entry. This is the scaffold the AI health-read drops into. (New-plant photo-add already pre-fills via the add form.)
+- ✅ Photo check-in (existing plant): "📷 Photo check-in" on the plant page → snap → confirm health + note → attaches photo, updates status, logs a timeline entry. This is the scaffold the AI health-read drops into. (New-plant photo-add already pre-fills via the add form.) Button made full-width/prominent on the Photos card.
+- ✅ Soil tab recommendations: for the selected mix, "Would also thrive here" cross-references each plant's family-fit against what it's currently on (e.g., Pineapple → bark), with a plain "why this medium" note. Tap to open and switch. Learning + optimization.
 
 ## Next
 - ⏭️ Photo-capture pre-fill UI: snap → review → accept/override screens (manual values for now), the scaffold auto-ID drops into

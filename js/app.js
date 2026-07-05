@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v10";
+const BUILD = "v11";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -146,6 +146,27 @@ function renderPlants() {
     <div class="filters"><button class="fbtn ${ST.groupByRoom?'on':''}" data-act="grouproom">▦ by room</button>${filters.map(fb => `<button class="fbtn ${ST.filter===fb[0]?'on':''}" data-act="filter" data-f="${fb[0]}">${fb[1]}</button>`).join("")}</div>
     <div class="grid">${body || '<p class="hand" style="font-size:18px">Nothing matches.</p>'}</div><div style="height:8px"></div></div>`;
 }
+/* Which mediums each plant form thrives in (by art archetype). Drives the Soil-tab
+   "would also thrive here" recommendations vs. what each plant is currently on. */
+const ARCHETYPE_FIT = {
+  pMonstera: ["aroid", "general", "leca", "pon"],
+  pShield:   ["aroid", "leca", "pon"],
+  pSnake:    ["gritty", "leca", "pon"],
+  pStrap:    ["general", "gritty", "leca", "pon"],
+  pVine:     ["aroid", "general", "leca", "pon"],
+  pPaddle:   ["general"],
+  pBromeliad:["bark"],
+  pPalm:     ["general", "gritty"],
+  pTree:     ["general", "gritty"]
+};
+const MEDIUM_WHY = {
+  aroid:  "Chunky and airy for aerial-rooted tropicals — Monstera, Philodendron, Alocasia, Pothos.",
+  general:"Balanced all-rounder for most soil houseplants — Dracaenas, Strelitzia, Ficus, Tradescantia.",
+  gritty: "Fast-draining and lean for drought-lovers that rot in rich soil — snake plants, dragon trees, bonsai ficus.",
+  bark:   "Coarse and free-draining for epiphytic bromeliads that drink from their central cup.",
+  leca:   "Semi-hydro clay pebbles — best for rot-prone and aroid types, and there's no soil for gnats to breed in.",
+  pon:    "Inorganic mineral mix — rot-proof and gnat-resistant, suiting the same dry-loving and aroid plants as LECA."
+};
 const SOILLESS_TIPS = {
   leca: "Semi-hydro. No food in the clay pebbles, so feed at <b>every top-up</b> with dilute hydroponic nutrients (¼–½ strength), year-round — ease back in winter but don't stop. Keep a shallow reservoir in the bottom third, let the top pebbles dry between, and flush the whole pot every couple weeks to clear salt build-up. Watering rides the reservoir — check about every 4 days.",
   pon: "Inorganic mineral mix. Drains and dries fast and feeds nothing, so <b>top-water often with dilute nutrients</b>. Excellent for rot-prone roots and gnat resistance since there's no organic matter to breed in."
@@ -159,12 +180,19 @@ function renderSoil() {
   const matchBlock = `<div class="block"><h3><span class="k">Your plants on ${r.name.toLowerCase()}</span></h3>
     ${matches.length ? `<div class="chips" style="margin-bottom:0">${matches.map(pp => `<span class="rchip" data-act="open" data-id="${pp.id}">${esc(pp.name)}</span>`).join("")}</div>` : `<div class="fac">None of your plants are on this mix yet. Tap a plant's Growing medium to assign it.</div>`}
     ${soillessTip ? `<div class="tweak">${soillessTip}</div>` : (matches.length ? `<div class="fac" style="margin-top:8px">Tap any plant to open its page and see its exact cups, watering, and feeding.</div>` : "")}</div>`;
+  const recommend = ST.order.map(k => ST.plants[k]).filter(pp => pp.med !== ST.calcBucket && (ARCHETYPE_FIT[pp.art] || []).includes(ST.calcBucket));
+  const recBlock = `<div class="block"><h3><span class="k">Would also thrive on ${r.name.toLowerCase()}</span></h3>
+    ${MEDIUM_WHY[ST.calcBucket] ? `<div class="fac" style="margin-bottom:8px">${MEDIUM_WHY[ST.calcBucket]}</div>` : ""}
+    ${recommend.length ? `<div class="chips" style="margin-bottom:0">${recommend.map(pp => `<span class="rchip" data-act="open" data-id="${pp.id}">${esc(pp.name)} <span style="color:var(--faint)">· now ${C.MEDIA[pp.med].label.split(" ")[0].toLowerCase()}</span></span>`).join("")}</div>
+      <div class="fac" style="margin-top:8px">These would suit this mix too but are on something else. Tap one to open it and switch its Growing medium if you'd like to try it.</div>`
+      : `<div class="fac">Everything that suits this mix is already on it. Nice.</div>`}</div>`;
   return `<div class="pad" style="padding-bottom:0"><p class="eyebrow">no guessing</p><h1 style="font-size:24px">Soil &amp; protocol</h1>
     <p class="hand" style="font-size:16px;color:var(--muted);margin:4px 0 0">Buckets are the start. Each plant's page builds the exact mix from its real pot volume.</p></div>
     <div class="block"><h3><span class="k">Mix calculator</span></h3><div class="calc">
       <select data-inp="calcBucket">${Object.entries(C.RECIPES).map(([k,v])=>`<option value="${k}" ${ST.calcBucket===k?'selected':''}>${v.name}</option>`).join("")}</select>
       <select data-inp="calcSize">${["Small","Medium","Large","Extra large"].map(s=>`<option ${ST.calcSize===s?'selected':''}>${s}</option>`).join("")}</select></div>${calcRows}</div>
     ${matchBlock}
+    ${recBlock}
     ${recipeCards}
     <div class="block"><h3><span class="k">Gnat protocol · every repot</span></h3>${C.PROTOCOL.map((s,i)=>`<div class="recipe"><span>${i+1}. ${s.t}</span></div>`).join("")}<div class="tweak">Do all of it. One layer alone will not end it.</div></div>`;
 }
@@ -262,7 +290,7 @@ function renderDetail() {
 
   <div class="pcardb"><h3><span class="ic"></span>Photos</h3>
     <div class="photos" id="photos"></div>
-    <button class="mini go" data-act="photochk" style="margin-top:10px">📷 Photo check-in</button>
+    <button class="btn primary" data-act="photochk" style="width:100%;margin:12px 0 0">📷 Photo check-in</button>
     <div class="fac" style="margin-top:8px">A check-in snaps a photo and lets you confirm the plant's health in one step (the spot the AI read will drop into). The ＋ tile just attaches a photo.</div>
   </div>
 
