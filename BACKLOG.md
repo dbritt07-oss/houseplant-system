@@ -29,6 +29,9 @@ Status key: ✅ done · 🔨 in progress · ⏭️ next · 📋 queued · 💡 i
 - ✅ Move rooms: already supported via a plant's Room field + quick chips (tap a room to move it).
 
 ## Next
+- ⏭️ Sort & filter the Plants tab: sort A→Z, by room, by due-soonest, by health, by recently added;
+      keep the existing search + medium/attention filters. A "sort" control next to the filter row.
+- ⏭️ Process: maintain `WHATS-NEW.md` every release (feature + where to see it + checkbox) so updates are verifiable.
 - ⏭️ Usability wins (remaining, from UX + competitive review):
       - "apply to room" batch actions (water everything in a room at once)
       - Today = command center: repot windows opening + gnat re-checks surfaced alongside due
