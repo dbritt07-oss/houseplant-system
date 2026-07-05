@@ -16,6 +16,7 @@ let ST = {
   view: null,          // null | "detail" | "repot" | "run" | "supplies" | "settings" | "addmenu" | "addplant"
   sel: null,           // selected plant id
   repotStep: 0, repotChecks: [], root: "", note: "", potUsed: "Medium",
+  repotNewPot: false, repotPot: { top: 18, bot: 15, ph: 16 },
   calcBucket: "aroid", calcSize: "Medium",
   addDraft: null,      // { photo, name, latin, type, room, tox } while adding a plant
   notify: false
@@ -351,62 +352,114 @@ function detailRefresh() {
 }
 
 /* ================= REPOT RUN (bench mode) ================= */
+/* Plain-language kill-layer checklist for the repot bench flow. */
+const REPOTKILL = [
+  { t: "Repot at the same depth — holes required", s: "Use the mix from the last step. Same depth as before, and the pot must have drainage holes. No rock layer at the bottom — drainage comes from the chunky mix, not from rocks." },
+  { t: "Mix Mosquito Bits (BTI) through the soil", s: "Work a scoop of the little Mosquito Bits granules into the fresh mix. That's kill layer one — the BTI kills gnat larvae living in the soil." },
+  { t: "Bottom-water with the Bits drench, add nematodes", s: "Soak from below using the watering can where your Mosquito Bits have been steeping, then sprinkle NemaKnights nematodes on top. Kill layer two." },
+  { t: "Top-dress dry", s: "A thin layer of perlite or grit plus a dusting of cinnamon, so the surface stays dry and gnats can't breed in it." }
+];
+function effectivePot(p) { return ST.repotNewPot ? ST.repotPot : { top: p.top, bot: p.bot, ph: p.ph }; }
+
 function renderRepot() {
   const p = P(); if (!p) return "";
-  const r = C.RECIPES[p.med];
-  const rootKeys = Object.keys(C.ROOTS);
-  const screens = [
-    { steps: [C.PROTOCOL[0]] },
-    { steps: [C.PROTOCOL[1]] },
-    { steps: [C.PROTOCOL[2], C.PROTOCOL[3]], extra: soilCalcMini(p) },
-    { steps: [C.PROTOCOL[4], C.PROTOCOL[5], C.PROTOCOL[6]] },
-    { notes: true }
-  ];
-  const bar = screens.map((_, i) => `<div class="s ${i<=ST.repotStep?'on':''}"></div>`).join("");
+  const r = C.RECIPES[p.med], u = ST.units, rootKeys = Object.keys(C.ROOTS), STEPS = 5;
+  const bar = Array.from({ length: STEPS }, (_, i) => `<div class="s ${i<=ST.repotStep?'on':''}"></div>`).join("");
   const head = `<div class="grab"></div><div class="close" data-act="back">×</div>
     <div class="navrow" style="margin-top:16px"><div class="navname">Repotting ${esc(p.name)}<small>${esc(p.latin)} · ${r.name}</small></div></div>
-    <div class="steps">${bar}</div><div class="rstep"><div class="k">Step ${ST.repotStep+1} of 5</div></div>`;
-  if (ST.repotStep === 4) {
+    <div class="steps">${bar}</div><div class="rstep"><div class="k">Step ${ST.repotStep+1} of ${STEPS}</div></div>`;
+
+  // Step 0 — the pot
+  if (ST.repotStep === 0) {
+    const rp = ST.repotPot, L = C.potVolL(effectivePot(p)), cups = C.lCup(L);
     return head + `
-      <div class="pcardb"><h3><span class="ic"></span>Log the page — root condition</h3>
-        <div class="hand" style="font-size:16px;color:var(--muted);margin-bottom:6px">What did the roots look like? This sticks to the plant and tunes its care.</div>
+      <div class="pcardb"><h3><span class="ic"></span>The pot</h3>
+        <div class="between" style="margin-bottom:10px"><span style="font-size:12px;color:var(--muted)">Same pot, or moving up?</span>
+          <div class="seg sm"><button data-act="repotpot" data-v="same" class="${!ST.repotNewPot?'on':''}">Same pot</button><button data-act="repotpot" data-v="new" class="${ST.repotNewPot?'on':''}">New pot</button></div></div>
+        ${ST.repotNewPot ? `
+          <div class="fac" style="margin-bottom:6px">Enter the new pot — drag the slider or type the number. Pot up one size (about 5 cm / 2 in wider), never two.</div>
+          <div class="row"><label>Top</label><input type="range" id="rp_top" min="6" max="50" value="${rp.top}"><input type="number" id="rp_topn" class="cnum" value="${rp.top}"></div>
+          <div class="row"><label>Base</label><input type="range" id="rp_bot" min="5" max="45" value="${rp.bot}"><input type="number" id="rp_botn" class="cnum" value="${rp.bot}"></div>
+          <div class="row"><label>Height</label><input type="range" id="rp_ph" min="6" max="50" value="${rp.ph}"><input type="number" id="rp_phn" class="cnum" value="${rp.ph}"></div>
+          <div class="read" id="rp_vol">New pot holds <b>${C.vol(L,u)}</b> of mix (${cups.toFixed(1)} cups).</div>`
+        : `
+          <div class="read">Reusing the current pot — <b>${C.vol(L,u)}</b> of mix (${cups.toFixed(1)} cups). Fresh mix in the same size is fine while the roots aren't circling yet.</div>`}
+      </div>
+      <button class="btn primary" data-act="rnext">Next: your mix &rarr;</button><div style="height:16px"></div>`;
+  }
+  // Step 1 — the recommended mix
+  if (ST.repotStep === 1) {
+    const cups = C.lCup(C.potVolL(effectivePot(p)));
+    return head + `
+      <div class="pcardb"><h3><span class="ic"></span>Your mix — recommended for ${esc(p.name)}</h3>
+        <div class="fac" style="margin-bottom:6px">${r.name}, measured to this pot's ${cups.toFixed(1)} cups. Mix it up before you unpot.</div>
+        ${r.parts.map(x=>`<div class="recipe"><span>${x[0]}</span><span class="amt">${(x[1]/100*cups).toFixed(1)} cups · ${x[1]}%</span></div>`).join("")}
+        ${r.note?`<div class="tweak">${r.note}</div>`:""}</div>
+      <button class="btn ghost" data-act="rback">Back</button>
+      <button class="btn primary" data-act="rnext">Next: the roots &rarr;</button><div style="height:16px"></div>`;
+  }
+  // Step 2 — unpot & roots
+  if (ST.repotStep === 2) {
+    const rootPhoto = (p.photos||[]).slice(-1)[0];
+    return head + `
+      <div class="pcardb"><h3><span class="ic"></span>Unpot &amp; check the roots</h3>
+        <div class="read" style="margin-top:0">Slide it out of its pot and knock off the wet top inch — that's the gnat nursery. Keep your Mosquito Bits (BTI) drench steeping in the watering can while you work.</div>
+        <button class="mini" data-act="rootphoto" style="margin-top:10px">📷 Photo the roots (optional)</button>
+        ${rootPhoto?`<img src="${rootPhoto.dataUrl}" style="width:100%;max-width:150px;border-radius:6px;border:1.5px solid var(--line);margin-top:8px;display:block">`:""}
+        <div class="hand" style="font-size:16px;color:var(--muted);margin:14px 0 6px">What do the roots look like?</div>
         <div class="chips">${rootKeys.map(k=>`<span class="rchip ${ST.root===k?'on':''}" data-act="rootchip" data-v="${k}">${C.ROOTS[k].label}</span>`).join("")}</div>
-        ${ST.root?`<div class="read">${C.ROOTS[ST.root].note}</div>`:""}
-        <div class="hand" style="font-size:16px;color:var(--muted);margin:12px 0 6px">Pot size used</div>
-        <div class="calc"><select class="nselect" data-inp="potUsed">${["Small","Medium","Large","Extra large"].map(s=>`<option ${ST.potUsed===s?'selected':''}>${s}</option>`).join("")}</select></div>
-        <div class="hand" style="font-size:16px;color:var(--muted);margin-bottom:6px">Anything to remember</div>
-        <textarea id="noteField" class="nfield" placeholder="e.g. split from the combo pot, deep terracotta, cinnamon top-dress...">${esc(ST.note)}</textarea>
+        ${ST.root?`<div class="read">${C.ROOTS[ST.root].note}</div>`:`<div class="fac">Pick one — it saves to the plant and shapes its ongoing care.</div>`}
       </div>
       <button class="btn ghost" data-act="rback">Back</button>
-      <button class="btn ${ST.root?'primary':'ghost dim'}" data-act="finish" data-id="${p.id}">Ink this page ✓</button><div style="height:16px"></div>`;
+      <button class="btn ${ST.root?'primary':'ghost dim'}" data-act="rnext">${ST.root?'Next: repot &amp; kill the gnats &rarr;':'Pick a root condition to continue'}</button><div style="height:16px"></div>`;
   }
-  const sc = screens[ST.repotStep];
-  const rows = sc.steps.map(st => { const on = ST.repotChecks.includes(st.t); return `<div class="checkrow ${on?'on':''}" data-act="check" data-k="${st.t}"><div class="box">${ICON.check}</div><div><div class="ct">${st.t}</div><div class="cs">${st.s}</div></div></div>`; }).join("");
-  const allChecked = sc.steps.every(st => ST.repotChecks.includes(st.t));
-  return head + `<div style="margin:8px 16px 0">${rows}</div>${sc.extra||""}
-    ${ST.repotStep>0?`<button class="btn ghost" data-act="rback">Back</button>`:""}
-    <button class="btn ${allChecked?'primary':'ghost dim'}" data-act="rnext">${allChecked?"Next step &rarr;":"Check the steps to continue"}</button><div style="height:16px"></div>`;
+  // Step 3 — repot & gnat kill
+  if (ST.repotStep === 3) {
+    const rows = REPOTKILL.map(st => { const on = ST.repotChecks.includes(st.t); return `<div class="checkrow ${on?'on':''}" data-act="check" data-k="${st.t}"><div class="box">${ICON.check}</div><div><div class="ct">${st.t}</div><div class="cs">${st.s}</div></div></div>`; }).join("");
+    const allChecked = REPOTKILL.every(st => ST.repotChecks.includes(st.t));
+    return head + `<div style="margin:8px 16px 0">${rows}</div>
+      <button class="btn ghost" data-act="rback">Back</button>
+      <button class="btn ${allChecked?'primary':'ghost dim'}" data-act="rnext">${allChecked?'Next: finish &rarr;':'Check each step as you go'}</button><div style="height:16px"></div>`;
+  }
+  // Step 4 — review & finish
+  const L = C.potVolL(effectivePot(p)), cups = C.lCup(L);
+  return head + `
+    <div class="pcardb"><h3><span class="ic"></span>Review &amp; ink the page</h3>
+      <div class="recipe"><span>Pot</span><span class="amt">${ST.repotNewPot?'New · ':'Same · '}${C.vol(L,u)} (${cups.toFixed(1)} cups)</span></div>
+      <div class="recipe"><span>Mix</span><span class="amt">${r.name}</span></div>
+      <div class="recipe"><span>Roots</span><span class="amt">${ST.root?C.ROOTS[ST.root].label:'not noted'}</span></div>
+      <div class="hand" style="font-size:16px;color:var(--muted);margin:12px 0 6px">Anything to remember</div>
+      <textarea id="noteField" class="nfield" placeholder="e.g. split from the combo pot, gave it the deep terracotta, cinnamon top-dress...">${esc(ST.note)}</textarea>
+    </div>
+    <button class="btn ghost" data-act="rback">Back</button>
+    <button class="btn ${ST.root?'primary':'ghost dim'}" data-act="finish" data-id="${p.id}">Ink this page ✓</button><div style="height:16px"></div>`;
 }
-function soilCalcMini(p) {
-  const r = C.RECIPES[p.med], total = { "Small":4,"Medium":8,"Large":16,"Extra large":32 }[ST.potUsed];
-  return `<div class="pcardb"><h3><span class="ic"></span>Your mix · ${ST.potUsed.toLowerCase()} pot</h3>
-    <div class="calc"><select class="nselect" data-inp="potUsed">${["Small","Medium","Large","Extra large"].map(s=>`<option ${ST.potUsed===s?'selected':''}>${s}</option>`).join("")}</select></div>
-    ${r.parts.map(x=>`<div class="recipe"><span>${x[0]}</span><span class="amt">${(x[1]/100*total).toFixed(1)} cups</span></div>`).join("")}${r.note?`<div class="tweak">${r.note}</div>`:""}</div>`;
+function repotPotRefresh() {
+  const rp = ST.repotPot, u = ST.units;
+  ["top","bot","ph"].forEach(k => {
+    const s = document.getElementById("rp_"+k), n = document.getElementById("rp_"+k+"n");
+    if (s && document.activeElement !== s) s.value = rp[k];
+    if (n && document.activeElement !== n) n.value = rp[k];
+  });
+  const L = C.potVolL(rp), cups = C.lCup(L);
+  const v = document.getElementById("rp_vol"); if (v) v.innerHTML = `New pot holds <b>${C.vol(L,u)}</b> of mix (${cups.toFixed(1)} cups).`;
 }
 function finishRepot() {
   const p = P(); const rootKey = ST.root || "snug";
+  if (ST.repotNewPot) { p.top = ST.repotPot.top; p.bot = ST.repotPot.bot; p.ph = ST.repotPot.ph; if (!p.intvMan) p.intv = C.suggestIntv(p); }
   p.rootcond = rootKey;
   p.repotDate = C.dstr(0);
   // side effects per Master Doc Section 11
   if (rootKey === "bound" && !(p.todo||[]).includes("Pot up one size next repot")) p.todo = [...(p.todo||[]), "Pot up one size next repot"];
-  if (rootKey === "rot") { p.intvMan = false; } // recompute; note surfaces via rootnote
-  const noteBits = [`Repotted, pot ${ST.potUsed.toLowerCase()}. Roots: ${C.ROOTS[rootKey].label}. Gnat protocol run.`];
+  if (rootKey === "rot") { p.intvMan = false; }
+  const L = C.potVolL(effectivePot(p));
+  const noteBits = [`Repotted into ${ST.repotNewPot?'a new':'the same'} pot (${C.vol(L, ST.units)}), ${C.RECIPES[p.med].name} mix. Roots: ${C.ROOTS[rootKey].label}. Gnat protocol run.`];
   if (ST.note.trim()) noteBits.push(ST.note.trim());
   pushLog(p, noteBits.join(" — "));
   save(p);
-  ST.view = "detail"; ST.repotStep = 0; ST.repotChecks = []; ST.root = ""; ST.note = "";
+  ST.view = "detail"; ST.repotStep = 0; ST.repotChecks = []; ST.root = ""; ST.note = ""; ST.repotNewPot = false;
   render();
-  toast("Page inked. Root condition saved to the plant.");
+  toast("Page inked. Pot, mix, and roots saved to the plant.");
 }
 
 /* ================= RENDER + OVERLAY ================= */
@@ -483,6 +536,17 @@ async function onCameraFile(file) {
     if (_captureMode === "add") {
       ST.addDraft = Object.assign({ name: "", latin: "", type: "aroid", room: "Unassigned", tox: true }, ST.addDraft || {}, { photo: dataUrl });
       ST.view = "addplant"; render(); ovScrollTop();
+      return;
+    }
+    if (_captureMode === "root") {
+      const rp = P(); if (!rp) return;
+      const rid = "ph_" + Date.now();
+      rp.photos = rp.photos || [];
+      rp.photos.push({ id: rid, date: C.dstr(0), dataUrl });
+      pushLog(rp, "Root photo at repot", rid);
+      save(rp);
+      render();  // stays in the repot flow
+      toast("Root photo saved.");
       return;
     }
     const p = P(); if (!p) return;
@@ -592,9 +656,15 @@ document.addEventListener("click", e => {
     case "lognote": { const inp = document.getElementById("noteinput"); if (inp && inp.value.trim()) { pushLog(P(), inp.value.trim()); save(P()); render(); } break; }
     case "capture": startCapture(); break;
     case "delphoto": { const p = P(); p.photos.splice(+el.dataset.i,1); save(p); render(); break; }
-    case "repot": ST.sel = el.dataset.id; ST.view = "repot"; ST.repotStep = 0; ST.repotChecks = []; ST.root = ""; ST.note = ""; ST.potUsed = C.potBracket(P().top)==="small"?"Small":C.potBracket(P().top)==="large"?"Large":"Medium"; render(); ovScrollTop(); break;
+    case "repot": ST.sel = el.dataset.id; ST.view = "repot"; ST.repotStep = 0; ST.repotChecks = []; ST.root = ""; ST.note = ""; ST.repotNewPot = false; ST.repotPot = { top: P().top, bot: P().bot, ph: P().ph }; render(); ovScrollTop(); break;
+    case "repotpot": ST.repotNewPot = (el.dataset.v === "new"); render(); break;
+    case "rootphoto": startCapture("root"); break;
     case "check": { const k = el.dataset.k; ST.repotChecks.includes(k) ? ST.repotChecks = ST.repotChecks.filter(x=>x!==k) : ST.repotChecks.push(k); render(); break; }
-    case "rnext": ST.repotStep = Math.min(4, ST.repotStep+1); render(); ovScrollTop(); break;
+    case "rnext": {
+      if (ST.repotStep === 2 && !ST.root) { toast("Pick what the roots looked like first."); break; }
+      if (ST.repotStep === 3 && !REPOTKILL.every(st => ST.repotChecks.includes(st.t))) { toast("Check each step to continue."); break; }
+      ST.repotStep = Math.min(4, ST.repotStep + 1); render(); ovScrollTop(); break;
+    }
     case "rback": readNote(); ST.repotStep = Math.max(0, ST.repotStep-1); render(); ovScrollTop(); break;
     case "rootchip": readNote(); ST.root = ST.root===el.dataset.v?"":el.dataset.v; render(); break;
     case "finish": readNote(); if (!ST.root) { toast("Pick what the roots looked like first."); break; } finishRepot(); break;
@@ -621,6 +691,14 @@ document.addEventListener("input", e => {
     if (el.id==="np_name") ST.addDraft.name = el.value;
     else if (el.id==="np_latin") ST.addDraft.latin = el.value;
     else ST.addDraft.room = el.value;
+    return;
+  }
+  // repot new-pot dimensions (slider + number synced, no re-render)
+  if (el.id && /^rp_(top|bot|ph)n?$/.test(el.id)) {
+    const base = el.id.replace(/^rp_/, "").replace(/n$/, "");
+    ST.repotPot = ST.repotPot || { top: 18, bot: 15, ph: 16 };
+    ST.repotPot[base] = C.clamp(Math.round(+el.value || 0), 4, 60);
+    repotPotRefresh();
     return;
   }
   const p = P();

@@ -12,14 +12,14 @@ Status key: ✅ done · 🔨 in progress · ⏭️ next · 📋 queued · 💡 i
 - ✅ Installable PWA, deployed to GitHub Pages
 - ✅ Renamed to Plant Daddy HQ
 - ✅ Fix: sheet close (×) button no longer overlaps the next-plant (›) button
-
-## In progress
-- 🔨 Rooms & location: per-plant Room field, group the Plants tab by room, filter by room
-- 🔨 Add-a-plant entry point: floating "+" button → menu (Identify by photo · Add manually)
+- ✅ Rooms & location: per-plant Room field, group Plants tab by room, "by room" filter
+- ✅ Add-a-plant: floating "+" button → menu (Identify by photo · Add manually); 9 archetypes; adds beyond the 24
+- ✅ Fix: sheets keep scroll position on chip/toggle/date edits (no more jump to top)
+- ✅ Repot flow redesign: pot (same/new + measure) → recommended mix (cups from real volume) → unpot & roots (photo + condition) → gnat-kill checklist → review & ink. Plain-language "Mosquito Bits (BTI)" copy. Writes pot size + soil + root condition back to the plant.
 
 ## Next
-- ⏭️ Photo auto-ID: use a vision model to identify species + read condition and pre-fill care
-      (keep tap-to-pick fallback so it works offline; opt-in internet call)
+- ⏭️ Photo-capture pre-fill UI: snap → review → accept/override screens (manual values for now), the scaffold auto-ID drops into
+- ⏭️ Photo auto-ID (the AI piece). Decision recorded: start with **Plant.id** (plant-specialist, health detection, free tier) behind a tiny serverless key-proxy so the key stays private; add a general vision model later for freeform recommendations. Keep tap-to-pick fallback so it works offline. Auto-measure height needs a reference object or native AR — treat as rough/optional, not core.
 - ⏭️ Alternate design directions: mock 2–3 visual looks to compare vs field-sketchbook, pick one
 - ⏭️ Interaction polish: swipe-to-close sheets, smoother transitions, spacing pass
 - ⏭️ On-phone acceptance test (camera / offline / reminder / backup round-trip)
