@@ -43,8 +43,16 @@ Status key: ✅ done · 🔨 in progress · ⏭️ next · 📋 queued · 💡 i
 - ⏭️ On-phone acceptance test (camera / offline / reminder / backup round-trip)
 
 ## Queued
+- 📋 **Plant Daddy dashboard** (centerpiece of the design pass): an interactive, living home view.
+      - Hand-drawn home / room tiles; each room shows its plants as little evolving sketches.
+      - The scene is alive: plant art already reflects health + growth, so the dashboard changes as
+        plants thrive/grow/wilt; season or time-of-day can tint the paper.
+      - Interactive: tap a plant to water/log or open it; glowing "due" cues; drag/move between rooms.
+      - A pulse band up top: # thriving, # need water, gnat status, supplies low.
+      - Builds directly on what exists (parametric art + rooms) → dovetails with the property layer below.
 - 📋 Home / property layer (landing page): pick a home, filter by room, add another house/location.
-      Rooms belong to a property; the app scales to multiple homes. North-star structure.
+      Rooms belong to a property; the app scales to multiple homes. Room-level sun/light context
+      (windows, orientation, morning vs evening sun) feeds the care math. Feeds the dashboard above.
 - 📋 Home-dashboard integration: rooms carry windows, orientation, sun hours (morning vs evening);
       feed that into the watering/light math. Bridge to the Townhouse app.
 - 📋 Delete / archive a plant; propagation ("pup") state per Master Doc
