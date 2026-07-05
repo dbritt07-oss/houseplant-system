@@ -40,44 +40,52 @@ AI portrait plate per plant for the Study hero). AI generates the drawing only; 
 stays in the real UI (AI handwriting is gibberish). Fonts: add an elegant serif (e.g. Cormorant)
 alongside Caveat (hand) + a clean label sans. Reskin is token-based → build screen by screen.
 
-## Next
-- ⏭️ Sort & filter the Plants tab: sort A→Z, by room, by due-soonest, by health, by recently added;
-      keep the existing search + medium/attention filters. A "sort" control next to the filter row.
-- ⏭️ Process: maintain `WHATS-NEW.md` every release (feature + where to see it + checkbox) so updates are verifiable.
-- ⏭️ Usability wins (remaining, from UX + competitive review):
-      - "apply to room" batch actions (water everything in a room at once)
-      - Today = command center: repot windows opening + gnat re-checks surfaced alongside due
-      - Health at a glance: status color dots + due badges on plant cards
-      - First-run onboarding: name/import → photo → in (instead of 24 pre-seeded strangers)
-      - Reminders that respect iOS: one morning "check-in" summary, don't over-notify
-      - Accessibility (with design pass): bigger tap targets, stronger contrast, consistent spacing
-      - Swipe gestures (with design pass): swipe a card to quick-log / delete
-- ⏭️ Photo auto-ID (the AI piece). Decision recorded: start with **Plant.id** (plant-specialist, health detection, free tier) behind a tiny serverless key-proxy so the key stays private; add a general vision model later for freeform recommendations. Keep tap-to-pick fallback so it works offline. Auto-measure height needs a reference object or native AR — treat as rough/optional, not core.
-- ⏭️ Alternate design directions: mock 2–3 visual looks to compare vs field-sketchbook, pick one
-- ⏭️ Interaction polish: swipe-to-close sheets, smoother transitions, spacing pass
-- ⏭️ On-phone acceptance test (camera / offline / reminder / backup round-trip)
+> **Aligned to Product Bible v2.0 (§0 Resolved Decisions + §14 Roadmap).** Buckets are now
+> MVP → V1 → V2 → Not Now, gated by phase, not dated. Decisions: local-first **cloud-backed**;
+> measurement = on-device insight + opt-in anonymous telemetry; it's a **product** (personal-first
+> as method); build target = the **Intentional Keeper** only, through V1.
 
-## Queued
-- 📋 **Plant Daddy dashboard** (centerpiece of the design pass): an interactive, living home view.
-      - Hand-drawn home / room tiles; each room shows its plants as little evolving sketches.
-      - The scene is alive: plant art already reflects health + growth, so the dashboard changes as
-        plants thrive/grow/wilt; season or time-of-day can tint the paper.
-      - Interactive: tap a plant to water/log or open it; glowing "due" cues; drag/move between rooms.
-      - A pulse band up top: # thriving, # need water, gnat status, supplies low.
-      - Builds directly on what exists (parametric art + rooms) → dovetails with the property layer below.
-- 📋 Home / property layer (landing page): pick a home, filter by room, add another house/location.
-      Rooms belong to a property; the app scales to multiple homes. Room-level sun/light context
-      (windows, orientation, morning vs evening sun) feeds the care math. Feeds the dashboard above.
-- 📋 Home-dashboard integration: rooms carry windows, orientation, sun hours (morning vs evening);
-      feed that into the watering/light math. Bridge to the Townhouse app.
-- 📋 Delete / archive a plant; propagation ("pup") state per Master Doc
-- 📋 Supplies: low-stock thresholds + restock reminders
+## V1 — "Beautiful, effortless, and safe" (next)
+Theme: a joy to open *and* data that can't be lost. Scoped to be solo-buildable.
+- ⏭️ **Automatic backup to the owner's Google Drive** + one-tap restore (silent periodic backup).
+      *V1's most important non-visual feature* — the fix for iOS storage eviction. Manual export/import stays.
+- ⏭️ Botanical-journal **design system** + **Light/Dark/Auto** (token-based), built screen by screen.
+- ⏭️ **Study page** as specimen plate; **Home** as calm command center (due + repot windows + gnat re-checks).
+- ⏭️ Sort & filter the Plants tab: A→Z, room, due-soonest, health, recently added; keep search + medium/attention.
+- ⏭️ **Opt-in AI photo ID + health read** — start with **Plant.id** behind a serverless key-proxy; tap-to-pick
+      fallback always present; fully skippable. (Auto-measure height stays rough/optional.)
+- ⏭️ **Minimal on-device "collection health" readout** (Analytics seed; Layer-1 metrics made visible).
+- ⏭️ **Opt-in anonymous telemetry** (OFF by default; event counts only, never plant data/photos/location).
+- ⏭️ Health-at-a-glance: status dots + due badges on plant cards.
+- ⏭️ **Accessibility pass** (release gate): AA-tuned palette, ≥44pt targets, contrast, spacing, reduced-motion.
+- ⏭️ Interaction polish: swipe-to-close sheets, swipe-to-quick-log/delete, transitions.
+- ⏭️ Process: maintain `WHATS-NEW.md` every release; on-phone acceptance test (camera / offline / reminder / backup round-trip).
+- ⏭️ **Exit gate:** a stranger says *"whoa,"* AND a phone can be reset with zero data loss.
 
-## Ideas (not scheduled)
-- 💡 Find local plant events near me
-- 💡 Find nearby nurseries/stores that stock what my Supplies view says I'm low on (maps/places API)
-- 💡 Optional community/social layer (decide if that's our lane vs "private, honest, beautiful")
-- 💡 Native wrapper for reliable iPhone notifications
+## V2 — "A plant world with a brain" (earned after V1's gate)
+- 📋 Living **Home/rooms dashboard**: hand-drawn room tiles, plants as evolving sketches, pulse band
+      (# thriving / need water / gnat status / supplies low), tap-to-care, drag between rooms.
+- 📋 **Weather intelligence** — local forecast/daylight/temp/humidity modulates care (first server-dependent pillar).
+- 📋 **Analytics** — fuller insights surface (health/growth trends, cadence, per-room/species patterns).
+- 📋 **Automation v1** — batch/room actions ("water this room"), smart reminders, restock triggers (no rule engine yet).
+- 📋 **Propagation** ("pup") tracking per Master Doc; **Supplies** low-stock thresholds + restock reminders.
+- 📋 **Automatic multi-device sync** — additive layer over the same Drive backend as V1 backup.
+- 📋 Room light context (windows, orientation, sun hours) feeding the care math.
+- 📋 **Exit gate:** stays calm and fast at 100+ plants across multiple rooms.
+
+## Not Now / Not Until Proven (frozen behind a trigger, not a date)
+- 🚫 **Multi-property / multi-home layer** — until a real user manages ≥2 homes and single-home strains.
+- 🚫 **Rule-based automation** ("when X do Y") — until Automation v1 is used enough that people ask by name.
+- 🚫 **On-demand AI assistant** — until photo ID is proven/trusted and weather+analytics exist to reason over.
+- 🚫 **Local discovery** (events / nurseries) — until the core loop is loved and retention is proven.
+- 🚫 **Community layer** — only if it stays optional, kind, non-gamified AND users ask. Default: probably not.
+- 🚫 **Content-creator mode** — until Collector/Aesthete demand is measured, not assumed.
+- 🚫 **Native wrapper** — until iOS notification unreliability is proven blocking and no lighter fix works.
+- 🚫 **Widening to the Anxious-Beginner audience** — until the Intentional Keeper wedge is won with real users.
+- 🚫 **Townhouse / broader home-system integration** — parked with multi-property.
+
+## Ideas (unsorted — triage into the buckets above)
+- 💡 (add yours here)
 
 ## Owner amendment notes (drop quick notes here; we triage into the lists above)
 - (add yours here)
