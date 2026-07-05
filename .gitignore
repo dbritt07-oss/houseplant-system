@@ -1,0 +1,11 @@
+# Plant data never belongs in the repo. Keep backups and exports local.
+houseplant-backup-*.json
+plant-daddy-backup-*.json
+*.backup.json
+/data/
+/photos/
+.DS_Store
+
+# scratch / test files
+_*.mjs
+_t.*

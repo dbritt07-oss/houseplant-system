@@ -7,15 +7,17 @@
 import * as C from "./care.js";
 import { ART } from "./art.js";
 import { DB, compressImage } from "./db.js";
+import { ARCHETYPES, newPlant } from "./seed.js";
 
 /* ---------- state ---------- */
 let ST = {
   tab: "today", plants: {}, order: [], units: "metric",
-  q: "", filter: "all",
-  view: null,          // null | "detail" | "repot" | "run" | "supplies" | "settings"
+  q: "", filter: "all", groupByRoom: false,
+  view: null,          // null | "detail" | "repot" | "run" | "supplies" | "settings" | "addmenu" | "addplant"
   sel: null,           // selected plant id
   repotStep: 0, repotChecks: [], root: "", note: "", potUsed: "Medium",
   calcBucket: "aroid", calcSize: "Medium",
+  addDraft: null,      // { photo, name, latin, type, room, tox } while adding a plant
   notify: false
 };
 const P = () => ST.plants[ST.sel];
@@ -43,6 +45,16 @@ function pushLog(p, t, photoId) { p.log.push({ date: C.dstr(0), t, photoId: phot
 function needMeasureCount() { return ST.order.filter(k => (ST.plants[k].todo || []).length).length; }
 function esc(s) { return (s || "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c])); }
 function save(p) { DB.savePlant(p); }
+function roomOf(p) { return (p.room && p.room.trim()) ? p.room.trim() : "Unassigned"; }
+function roomsList() {
+  const seen = new Set();
+  ST.order.forEach(k => seen.add(roomOf(ST.plants[k])));
+  ["Living room","Bedroom","Kitchen","Office","Bathroom","Hallway","Patio / Outside"].forEach(r => seen.add(r));
+  const arr = [...seen].filter(r => r !== "Unassigned").sort();
+  arr.push("Unassigned");
+  return arr;
+}
+function persistOrder() { DB.setSetting("order", ST.order.slice()); }
 function toast(msg) {
   const r = document.getElementById("toast-root");
   r.innerHTML = `<div class="toast">${esc(msg)}</div>`;
@@ -101,17 +113,26 @@ function renderPlants() {
     else if (["aroid","general","gritty"].includes(ST.filter)) fl = p.med === ST.filter;
     return m && fl;
   });
-  const cards = list.map(p => {
+  const cardHtml = p => {
     const idx = ST.order.indexOf(p.id) + 1;
     return `<div class="pcard" data-act="open" data-id="${p.id}">
-      <div class="panel"><span class="dot" style="background:${p.hi<=0?'var(--bad)':p.hi===1?'var(--warn)':'var(--ok)'}"></span>${(p.todo||[]).length?'':''}${thumb(p)}<span class="pageno">${String(idx).padStart(2,"0")}</span></div>
-      <div class="info"><div class="cn">${esc(p.name)}</div><div class="ln">${esc(p.latin)}</div><div class="loc">${esc(p.loc)}</div></div></div>`;
-  }).join("");
+      <div class="panel"><span class="dot" style="background:${p.hi<=0?'var(--bad)':p.hi===1?'var(--warn)':'var(--ok)'}"></span>${thumb(p)}<span class="pageno">${String(idx).padStart(2,"0")}</span></div>
+      <div class="info"><div class="cn">${esc(p.name)}</div><div class="ln">${esc(p.latin)}</div><div class="loc">${esc(roomOf(p))}</div></div></div>`;
+  };
+  let body;
+  if (ST.groupByRoom) {
+    const byRoom = {};
+    list.forEach(p => { const r = roomOf(p); (byRoom[r] = byRoom[r] || []).push(p); });
+    const rooms = roomsList().filter(r => byRoom[r]);
+    body = rooms.map(r => `<div class="roomhead"><span class="rl">${esc(r)}</span><span class="rc">${byRoom[r].length}</span><span class="line"></span></div>${byRoom[r].map(cardHtml).join("")}`).join("");
+  } else {
+    body = list.map(cardHtml).join("");
+  }
   return `<div class="pad"><p class="eyebrow">the key</p><h1 style="font-size:24px">Every plant, drawn</h1>
     <p class="hand" style="font-size:16px;color:var(--muted);margin:4px 0 14px">Tap for its full page: vitals, pot math, watering, feeding, repot window, photos, timeline.</p>
     <input class="search" placeholder="Search name, species, or spot" value="${esc(ST.q)}" data-inp="search">
-    <div class="filters">${filters.map(fb => `<button class="fbtn ${ST.filter===fb[0]?'on':''}" data-act="filter" data-f="${fb[0]}">${fb[1]}</button>`).join("")}</div>
-    <div class="grid">${cards || '<p class="hand" style="font-size:18px">Nothing matches.</p>'}</div><div style="height:8px"></div></div>`;
+    <div class="filters"><button class="fbtn ${ST.groupByRoom?'on':''}" data-act="grouproom">▦ by room</button>${filters.map(fb => `<button class="fbtn ${ST.filter===fb[0]?'on':''}" data-act="filter" data-f="${fb[0]}">${fb[1]}</button>`).join("")}</div>
+    <div class="grid">${body || '<p class="hand" style="font-size:18px">Nothing matches.</p>'}</div><div style="height:8px"></div></div>`;
 }
 function renderSoil() {
   const r = C.RECIPES[ST.calcBucket], total = { "Small":4,"Medium":8,"Large":16,"Extra large":32 }[ST.calcSize];
@@ -206,7 +227,7 @@ function renderDetail() {
   const sug = C.suggestIntv(p);
   const soilless = !C.MEDIA[p.med].soil;
   return `<div class="grab"></div><div class="close" data-act="back">×</div>
-  <div class="navrow"><button class="navb" data-act="prev">‹</button><div class="navname">${esc(p.name)}<small>${idx+1} of 24</small></div><button class="navb" data-act="next">›</button></div>
+  <div class="navrow" style="margin-top:46px"><button class="navb" data-act="prev">‹</button><div class="navname">${esc(p.name)}<small>${idx+1} of 24</small></div><button class="navb" data-act="next">›</button></div>
   <div class="badges"><span class="badge">${esc(p.latin)}</span>${p.tox?`<span class="badge tox">Toxic to pets</span>`:`<span class="badge">Pet-safe</span>`}</div>
   ${(p.todo||[]).length?`<div class="todo"><div class="th">Still to finish</div>${p.todo.map((t,i)=>`<span class="titem" data-act="todone" data-i="${i}">${esc(t)}</span>`).join("")}</div>`:""}
   <div class="phero" id="stage"></div>
@@ -224,7 +245,10 @@ function renderDetail() {
 
   <div class="pcardb"><h3><span class="ic"></span>Place &amp; light</h3>
     <div class="read" style="margin:0 0 8px">${esc(p.loc)}${p.tox?". Toxic, keep out of reach if staged low near pets or kids.":". Pet-safe."}</div>
-    <div class="row"><label>Light</label>${seg("light",[["low","Low"],["med","Medium"],["bright","Bright"]],p.light)}</div>
+    <div class="row"><label>Room</label><input class="nfld" style="margin:0" id="roomi" list="roomlist" placeholder="e.g. Living room" value="${esc(roomOf(p)==='Unassigned'?'':p.room||'')}"></div>
+    <datalist id="roomlist">${roomsList().map(r=>`<option value="${esc(r)}">`).join("")}</datalist>
+    <div class="pick" style="margin-top:6px">${roomsList().slice(0,5).map(r=>`<span class="pchip ${roomOf(p)===r?'on':''}" data-room="${esc(r)}">${esc(r)}</span>`).join("")}</div>
+    <div class="row" style="margin-top:8px"><label>Light</label>${seg("light",[["low","Low"],["med","Medium"],["bright","Bright"]],p.light)}</div>
     <div class="read" id="lightnote"></div>
   </div>
 
@@ -392,23 +416,76 @@ function render() {
   app().innerHTML = `<div class="topbar"><span class="t">Plant Daddy HQ<span style="font-family:'Spline Sans';font-weight:500;font-size:11px;color:var(--muted);display:block;line-height:1;margin-top:2px">${titles[ST.tab]}</span></span>
     <span style="display:flex;gap:8px;align-items:center"><span class="d">${today()}</span><button class="iconbtn" data-act="settings">${ICON.gear}</button></span></div>
     ${views[ST.tab]()}
+    <button class="fab" data-act="fab" aria-label="Add a plant">+</button>
     <div class="nav">${[["today","today"],["plants","key"],["soil","soil"],["build","plan"]].map(t=>`<button class="${ST.tab===t[0]?'on':''}" data-act="tab" data-v="${t[0]}">${ICON[t[0]]}<span>${t[1]}</span></button>`).join("")}</div>`;
   const ov = ovRoot();
+  // Preserve the open sheet's scroll position across in-place edits (chips, toggles,
+  // steppers, dates). Navigation actions call ovScrollTop() after render() to reset to 0.
+  const prevSheet = document.querySelector(".sheet");
+  const prevScroll = prevSheet ? prevSheet.scrollTop : 0;
+  const sameContext = ST._renderKey === (ST.view ? ST.view + ":" + (ST.sel || "") : "");
   if (ST.view) {
-    const inner = ST.view==="detail"?renderDetail():ST.view==="repot"?renderRepot():ST.view==="supplies"?renderSupplies():ST.view==="settings"?renderSettings():"";
+    const inner = ST.view==="detail"?renderDetail():ST.view==="repot"?renderRepot():ST.view==="supplies"?renderSupplies():ST.view==="settings"?renderSettings():ST.view==="addmenu"?renderAddMenu():ST.view==="addplant"?renderAddPlant():"";
     ov.innerHTML = `<div class="overlay"><div class="scrim" data-act="back"></div><div class="sheet">${inner}</div></div>`;
     if (ST.view === "detail") detailRefresh();
+    const newSheet = document.querySelector(".sheet");
+    if (newSheet && sameContext) newSheet.scrollTop = prevScroll;
   } else ov.innerHTML = "";
+  ST._renderKey = ST.view ? ST.view + ":" + (ST.sel || "") : "";
+}
+
+/* ================= ADD A PLANT ================= */
+function renderAddMenu() {
+  return `<div class="grab"></div><div class="close" data-act="back">×</div>
+    <div class="pad"><p class="eyebrow">grow your library</p><h1 style="font-size:23px">Add a plant</h1>
+    <p class="hand" style="font-size:16px;color:var(--muted);margin:4px 0 14px">Beyond the seeded 24 — however you like.</p></div>
+    <div class="addopt" data-act="addbyphoto"><span class="ai">📷</span><div><div class="ot">Identify by photo</div><div class="os">Snap it, attach the photo, then pick the type. Auto-ID is coming; tap-to-pick works now and offline.</div></div></div>
+    <div class="addopt" data-act="addmanual"><span class="ai">🌱</span><div><div class="ot">Add a plant manually</div><div class="os">Name it, pick a type, choose a room. Fill the rest on its page.</div></div></div>
+    <div style="height:14px"></div>`;
+}
+function renderAddPlant() {
+  const d = ST.addDraft || (ST.addDraft = { name: "", latin: "", type: "aroid", room: "Unassigned", tox: true, photo: null });
+  return `<div class="grab"></div><div class="close" data-act="back">×</div>
+    <div class="navrow" style="margin-top:46px"><div class="navname">New plant<small>added to your library</small></div></div>
+    ${d.photo ? `<div class="phero" style="margin-top:6px"><img src="${d.photo}" style="width:100%;height:100%;object-fit:cover" alt=""></div>` : ""}
+    <div class="pcardb"><h3><span class="ic"></span>Name</h3>
+      <input class="nfld" id="np_name" placeholder="Common name (e.g. ZZ plant)" value="${esc(d.name)}">
+      <input class="nfld" id="np_latin" placeholder="Latin name (optional)" value="${esc(d.latin)}"></div>
+    <div class="pcardb"><h3><span class="ic"></span>Type — sets the art &amp; starting care</h3>
+      <div class="pick">${Object.entries(ARCHETYPES).map(([k, a]) => `<span class="pchip ${k === d.type ? 'on' : ''}" data-atype="${k}">${a.label}</span>`).join("")}</div>
+      <div class="read">Starts as a ${ARCHETYPES[d.type].pace} ${ARCHETYPES[d.type].med} plant. You tune every field after.</div></div>
+    <div class="pcardb"><h3><span class="ic"></span>Room</h3>
+      <input class="nfld" id="np_room" list="np_roomlist" placeholder="e.g. Living room" value="${esc(d.room === 'Unassigned' ? '' : d.room)}">
+      <datalist id="np_roomlist">${roomsList().map(r => `<option value="${esc(r)}">`).join("")}</datalist></div>
+    <div class="pcardb"><h3><span class="ic"></span>Toxic to pets?</h3>
+      <div class="seg">${[["y","Toxic"],["n","Pet-safe"]].map(o => `<button data-atox="${o[0]}" class="${(d.tox ? 'y' : 'n') === o[0] ? 'on' : ''}">${o[1]}</button>`).join("")}</div></div>
+    <button class="btn primary" data-act="createplant">Add to my library</button><div style="height:16px"></div>`;
+}
+function createPlant() {
+  const d = ST.addDraft || {};
+  if (!d.name || !d.name.trim()) { toast("Give it a name first."); return; }
+  const rec = newPlant({ name: d.name.trim(), latin: (d.latin || "").trim(), type: d.type || "aroid", room: (d.room && d.room.trim()) || "Unassigned", tox: d.tox, photoDataUrl: d.photo || null });
+  ST.plants[rec.id] = rec;
+  ST.order.push(rec.id);
+  save(rec); persistOrder();
+  ST.addDraft = null; ST.sel = rec.id; ST.view = "detail";
+  render(); ovScrollTop();
+  toast(`${rec.name} added to your library.`);
 }
 
 /* ================= CAMERA ================= */
-let _capturing = false;
-function startCapture() { _capturing = true; document.getElementById("cameraInput").click(); }
+let _captureMode = "plant";   // "plant" = attach to current plant | "add" = new-plant draft
+function startCapture(mode) { _captureMode = mode || "plant"; document.getElementById("cameraInput").click(); }
 async function onCameraFile(file) {
-  if (!file || !P()) return;
+  if (!file) return;
   try {
     const dataUrl = await compressImage(file);
-    const p = P();
+    if (_captureMode === "add") {
+      ST.addDraft = Object.assign({ name: "", latin: "", type: "aroid", room: "Unassigned", tox: true }, ST.addDraft || {}, { photo: dataUrl });
+      ST.view = "addplant"; render(); ovScrollTop();
+      return;
+    }
+    const p = P(); if (!p) return;
     const id = "ph_" + Date.now();
     p.photos = p.photos || [];
     p.photos.push({ id, date: C.dstr(0), dataUrl });
@@ -478,8 +555,12 @@ async function onImportFile(file) {
 
 /* ================= EVENTS ================= */
 document.addEventListener("click", e => {
-  const el = e.target.closest("[data-act],[data-med],[data-mat],[data-fert],[data-root],[data-seg]");
+  const el = e.target.closest("[data-act],[data-med],[data-mat],[data-fert],[data-root],[data-seg],[data-atype],[data-atox],[data-room]");
   if (!el) return;
+  // add-plant draft chips
+  if (el.dataset.atype) { (ST.addDraft = ST.addDraft || {}).type = el.dataset.atype; render(); return; }
+  if (el.dataset.atox) { (ST.addDraft = ST.addDraft || {}).tox = (el.dataset.atox === "y"); render(); return; }
+  if (el.dataset.room) { const p = P(); if (p) { p.room = el.dataset.room; save(p); render(); } return; }
   // chip groups on the detail page
   if (el.dataset.med) { P().med = el.dataset.med; if (!C.MEDIA[P().med].soil) P().fert = P().fert==="bgl"?"hydro":P().fert; save(P()); render(); return; }
   if (el.dataset.mat) { P().mat = el.dataset.mat; save(P()); render(); return; }
@@ -495,6 +576,11 @@ document.addEventListener("click", e => {
     case "openrun": ST.tab = "plants"; ST.filter = "attention"; ST.view = null; render(); toast("Open a plant, then Run the repot protocol."); break;
     case "supplies": ST.view = "supplies"; render(); ovScrollTop(); break;
     case "settings": ST.view = "settings"; render(); ovScrollTop(); break;
+    case "fab": ST.addDraft = null; ST.view = "addmenu"; render(); ovScrollTop(); break;
+    case "addmanual": ST.addDraft = { name:"", latin:"", type:"aroid", room:"Unassigned", tox:true, photo:null }; ST.view = "addplant"; render(); ovScrollTop(); break;
+    case "addbyphoto": ST.addDraft = { name:"", latin:"", type:"aroid", room:"Unassigned", tox:true, photo:null }; startCapture("add"); break;
+    case "createplant": readAddFields(); createPlant(); break;
+    case "grouproom": ST.groupByRoom = !ST.groupByRoom; render(); break;
     case "prev": { const i = ST.order.indexOf(ST.sel); ST.sel = ST.order[(i-1+ST.order.length)%ST.order.length]; render(); ovScrollTop(); break; }
     case "next": { const i = ST.order.indexOf(ST.sel); ST.sel = ST.order[(i+1)%ST.order.length]; render(); ovScrollTop(); break; }
     case "watered": P().lastW = 0; pushLog(P(), "Watered"); save(P()); render(); break;
@@ -529,8 +615,17 @@ document.addEventListener("input", e => {
     if (k==="potUsed") { ST.potUsed = el.value; if (ST.view==="repot") { const mini = document.querySelector('.pcardb'); render(); } return; }
     return;
   }
+  // new-plant draft fields (no re-render, keep focus)
+  if (el.id==="np_name" || el.id==="np_latin" || el.id==="np_room") {
+    ST.addDraft = ST.addDraft || {};
+    if (el.id==="np_name") ST.addDraft.name = el.value;
+    else if (el.id==="np_latin") ST.addDraft.latin = el.value;
+    else ST.addDraft.room = el.value;
+    return;
+  }
   const p = P();
   if (!p) return;
+  if (el.id==="roomi") { p.room = el.value; saveDebounced(p); return; }
   if (el.id==="s_h") { p.hCm = +el.value; }
   else if (el.id==="s_iv") { p.intv = +el.value; p.intvMan = true; save(p); render(); return; }
   else if (el.id==="s_top") { p.top = +el.value; if (!p.intvMan) { save(p); render(); return; } }
@@ -544,6 +639,12 @@ document.addEventListener("input", e => {
   saveDebounced(p); detailRefresh();
 });
 function readNote() { const n = document.getElementById("noteField"); if (n) ST.note = n.value; }
+function readAddFields() {
+  ST.addDraft = ST.addDraft || {};
+  const n = document.getElementById("np_name"); if (n) ST.addDraft.name = n.value;
+  const l = document.getElementById("np_latin"); if (l) ST.addDraft.latin = l.value;
+  const r = document.getElementById("np_room"); if (r) ST.addDraft.room = r.value;
+}
 function ovScrollTop() { const s = document.querySelector(".sheet"); if (s) s.scrollTop = 0; }
 let _saveT; function saveDebounced(p) { clearTimeout(_saveT); _saveT = setTimeout(() => save(p), 250); }
 

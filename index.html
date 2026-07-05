@@ -198,6 +198,22 @@
   .nav button{background:none;border:none;color:var(--faint);font-family:"Caveat",cursive;font-size:14px;padding:9px 0 11px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
   .nav button.on{color:var(--pen)} .nav svg{width:22px;height:22px}
   .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--pen);color:var(--card);font-size:13px;padding:10px 16px;border-radius:999px;z-index:60;box-shadow:0 4px 14px rgba(40,30,10,.3);max-width:88%;text-align:center}
+  /* floating add button */
+  .fab{position:fixed;bottom:78px;left:calc(50% + 148px);width:56px;height:56px;border-radius:50%;background:var(--sage);border:1.5px solid var(--pen);color:#f4ecd6;font-size:30px;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:45;box-shadow:2px 4px 0 rgba(60,55,25,.34)}
+  .fab:active{transform:translateY(1px)}
+  @media(max-width:452px){.fab{left:auto;right:16px}}
+  /* add menu options */
+  .addopt{display:flex;gap:13px;align-items:center;background:var(--card);border:1.5px solid var(--line);border-radius:6px 14px 5px 13px;padding:14px;margin:0 16px 11px;cursor:pointer;box-shadow:2px 3px 0 rgba(120,100,60,.12)}
+  .addopt:active{transform:translate(1px,1px)}
+  .addopt .ai{width:44px;height:44px;border-radius:50%;background:var(--card2);border:1.5px solid var(--line);display:grid;place-items:center;font-size:22px;flex:0 0 auto}
+  .addopt .ot{font-size:15px;font-weight:500} .addopt .os{font-size:12.5px;color:var(--muted);margin-top:2px}
+  .nfld{width:100%;background:#f6efdb;border:1.5px solid var(--line);border-radius:8px;color:var(--ink);font:inherit;font-size:14px;padding:11px;outline:none;margin-bottom:8px}
+  .nfld:last-child{margin-bottom:0}
+  /* room grouping */
+  .roomhead{display:flex;align-items:center;gap:9px;margin:16px 2px 9px;grid-column:1 / -1}
+  .roomhead .rl{font-family:"Caveat",cursive;font-weight:700;font-size:19px;color:var(--pen)}
+  .roomhead .rc{font-size:11px;color:var(--muted);background:var(--card2);border:1.5px solid var(--line);border-radius:999px;padding:2px 8px}
+  .roomhead .line{flex:1;height:1px;background:var(--line)}
 </style>
 </head>
 <body>

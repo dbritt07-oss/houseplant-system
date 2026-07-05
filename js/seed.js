@@ -13,11 +13,13 @@ import { dstr } from "./care.js";
 
 /* Default field values applied to every plant. intv seeds from thirst then recomputes live. */
 function mk(o) {
+  // Infer a starting room from the descriptive location; owner can reassign in-app.
+  const room = o.room || (/(outside|gravel|patio|balcony)/i.test(o.loc || "") ? "Patio / Outside" : "Unassigned");
   return Object.assign({
     hi: 2, light: "med", water: "tap", wsens: 0, tox: true, drain: true,
     intv: o.thirst, intvMan: false, fert: "bgl", lastW: 4, lastF: 14,
     snug: 35, rootcond: null, trapN: 0, trapL: 0,
-    top: 22, bot: 17, ph: 20, mat: "plastic", loc: "TBD",
+    top: 22, bot: 17, ph: 20, mat: "plastic", loc: "TBD", room,
     photos: [], repotDate: null
   }, o);
 }
@@ -53,3 +55,44 @@ export function buildSeed() {
 }
 
 export const SEED_ORDER = ["inch","corn","corn2","pink","mon","taro","regal","yuc","banana","bird","florida","snake","vsnake","bella","dragon1","vdrac","dragon2","scarlet","palm","pine","golden","marble","rubber","ginseng"];
+
+/* ---- Archetypes for adding new plants beyond the seeded 24 ----
+   Each maps a friendly plant "type" to its art generator and sensible starting
+   constants. The owner tunes the exact fields on the plant page afterward. */
+export const ARCHETYPES = {
+  aroid:      { label: "Aroid / Monstera",   art: "pMonstera",  matureCm: 180, thirst: 7,  pace: "moderate", med: "aroid",   light: "med",    tox: true },
+  alocasia:   { label: "Alocasia / Shield",  art: "pShield",    matureCm: 150, thirst: 5,  pace: "fast",     med: "aroid",   light: "bright", tox: true },
+  snake:      { label: "Snake / Spear",      art: "pSnake",     matureCm: 90,  thirst: 13, pace: "slow",     med: "gritty",  light: "low",    tox: true },
+  dracaena:   { label: "Dracaena / Cane",    art: "pStrap",     matureCm: 150, thirst: 9,  pace: "slow",     med: "general", light: "med",    tox: true },
+  pothos:     { label: "Pothos / Vine",      art: "pVine",      matureCm: 200, thirst: 7,  pace: "fast",     med: "aroid",   light: "med",    tox: true },
+  strelitzia: { label: "Strelitzia / Paddle",art: "pPaddle",    matureCm: 180, thirst: 6,  pace: "slow",     med: "general", light: "bright", tox: true },
+  bromeliad:  { label: "Bromeliad",          art: "pBromeliad", matureCm: 45,  thirst: 8,  pace: "slow",     med: "bark",    light: "med",    tox: false },
+  palm:       { label: "Palm",               art: "pPalm",      matureCm: 200, thirst: 6,  pace: "slow",     med: "general", light: "med",    tox: true },
+  ficus:      { label: "Ficus / Tree",       art: "pTree",      matureCm: 200, thirst: 8,  pace: "moderate", med: "general", light: "med",    tox: true }
+};
+
+/* Build a fresh user-added plant record from a chosen archetype. */
+export function newPlant({ name, latin, type, room, tox, photoDataUrl }) {
+  const a = ARCHETYPES[type] || ARCHETYPES.ficus;
+  const id = "user_" + Date.now().toString(36) + Math.floor(Math.random() * 1000);
+  const photos = photoDataUrl ? [{ id: "ph_" + Date.now(), date: dstr(0), dataUrl: photoDataUrl }] : [];
+  const log = [{ date: dstr(0), t: "Added to your library" }];
+  if (photoDataUrl) log.push({ date: dstr(0), t: "Photo added", photoId: photos[0].id });
+  return {
+    id,
+    name: name || "New plant",
+    latin: latin || "",
+    art: a.art, pace: a.pace, thirst: a.thirst, matureCm: a.matureCm,
+    hCm: Math.max(8, Math.round(a.matureCm * 0.4)),
+    med: a.med, light: a.light,
+    tox: (typeof tox === "boolean") ? tox : a.tox,
+    room: room || "Unassigned", loc: room || "TBD",
+    hi: 2, water: "tap", wsens: 0, drain: true,
+    intv: a.thirst, intvMan: false, fert: a.tox ? "bgl" : "bgl", lastW: 0, lastF: 14,
+    snug: 35, rootcond: null, trapN: 0, trapL: 0,
+    top: 18, bot: 15, ph: 16, mat: "plastic",
+    photos, repotDate: null,
+    todo: ["Measure the real height", "Measure the pot, set material"],
+    log
+  };
+}
