@@ -245,3 +245,6 @@ A tiny script asserting known care-math outputs, protecting the moat during the 
 - I edit files in this connected repo → you Commit + Push in GitHub Desktop → live in ~1 min.
 - One commit per logical change, clear message. Revert from GitHub Desktop History if needed.
 - This file is the build source of truth; the Master Doc is the care-math brain; the Bible is the constitution.
+- **Every feature must pass the twelve-gate `docs/DEFINITION-OF-DONE.md` before it's "done."**
+- **Every sprint ends with the Sprint Review ritual** (demo → dogfood 2–3 days → record friction → remove one interaction → fix one annoyance) — see `docs/V1-Execution-Plan.md`.
+- Sequencing, effort, and risk for V1 live in `docs/V1-Execution-Plan.md`.

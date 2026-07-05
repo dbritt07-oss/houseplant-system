@@ -251,4 +251,20 @@ Backup is the long pole; it cannot be shortened by parallelism (solo dev) and de
 
 ---
 
+## Sprint Review ritual (hard gate at the end of every sprint)
+
+Every sprint closes with this ritual before the next one may begin. It is the per-sprint complement to
+the per-feature Definition of Done (`docs/DEFINITION-OF-DONE.md`), and it enforces the Bible's "calm,
+not clever" principle by continuously *subtracting*.
+
+1. **Demo the feature** — show the sprint's deliverables working on the real phone (not a description; a live run).
+2. **Dogfood it for 2–3 days** — actually live on the build against the real 24-plant collection before calling the sprint done. No dogfood, no sign-off.
+3. **Record friction** — keep a running note of every hesitation, misstep, or "ugh" during dogfooding (append to the sprint's notes).
+4. **Remove one unnecessary interaction** — each sprint must *delete* at least one tap/step/field that dogfooding proved redundant. Complexity only goes down.
+5. **Fix one annoyance before moving forward** — pick the single most-grating friction item and fix it now; do not carry it into the next sprint.
+
+**Gate:** a sprint is not "exited" until its demo is shown, 2–3 days of dogfooding are logged, one interaction is removed, and one annoyance is fixed. Steps 4–5 are scoped to what dogfooding revealed — they are *simplifications and fixes to existing behavior, not new features or redesign*, so they never expand V1 scope.
+
+---
+
 *V1 Execution Plan — derived only from the Bible v2, V1 Product Decisions, BACKLOG, and the UI Audit. No redesign, no scope change, no new features. This is the engineering roadmap of record for shipping V1.*
