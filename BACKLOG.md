@@ -88,9 +88,11 @@ AA is a Bible §18 release gate. Fix the audit's a11y failures across the existi
 
 ## P1 — ship-defining
 
-### Epic P1-1 · Tokenize the design system (light) ⬜  *(effort: M · risk: Low)*
+### Epic P1-1 · Tokenize the design system (light) 🔨 *(effort: M · risk: Low — in progress)*
 Formalize the ad-hoc `:root` CSS variables into a documented, single-source token set for light mode.
 Enables the AA fix now and dark mode later (V2). No visual redesign.
+
+**Status (T0.3):** ✅ stylesheet **colors, fonts, and shadows/scrims** tokenized in `index.html` (46 tokens; 0 orphan literals; proven pixel-identical by token back-substitution; `npm test` + `npm run check` green). ⬜ **Remaining:** radius/spacing tokens, and the ~6 inline SVG color literals in `js/app.js`. Epic stays open until those land.
 
 **Stories**
 - As a builder, every color/type/spacing/radius value is a named token in one place.

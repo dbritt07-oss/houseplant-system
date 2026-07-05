@@ -12,6 +12,9 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## internal — design tokens, phase 1 (no user-facing change; build stays v12)
+- [ ] *(developer only)* `index.html` stylesheet now uses named CSS tokens for all colors, fonts, and shadows (46 tokens in `:root`). Proven **pixel-identical** — nothing changes on your phone. Groundwork for the accessibility contrast pass (P0-2) and dark mode (V2). Remaining: radius/spacing tokens + a few `app.js` inline colors.
+
 ## internal — care-math test harness (no user-facing change; build stays v12)
 - [ ] *(developer only)* `npm test` runs `tests/care.test.js` — 30 golden assertions locking the care math (Monstera 7.67 L, intervals, LECA feed, pet-safe flags, repot windows, unit conversions). Nothing changes on your phone; this is a regression net for the V1 refactors.
 

@@ -9,3 +9,4 @@ plant-daddy-backup-*.json
 # scratch / test files
 _*.mjs
 _t.*
+*.preview.html
