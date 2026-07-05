@@ -18,8 +18,10 @@ export function qpt(p0, p1, p2, t) { return (1 - t) * (1 - t) * p0 + 2 * (1 - t)
 export const DAY = 86400000;
 export const MON = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 export const cmIn = cm => cm / 2.54;
+export const inCm = inch => inch * 2.54;
 export const lGal = l => l * 0.264172;
 export const lCup = l => l * 4.2268;
+export const lMl = l => l * 1000;
 
 /* Date helpers. dstr(daysAgo) -> "YYYY-MM-DD", daysAgo(str) -> integer days. */
 export function dstr(daysAgo) {
@@ -152,6 +154,11 @@ export function potBracket(topCm) {
   return topCm < 15 ? "small" : topCm < 25 ? "medium" : "large";
 }
 
-/* Unit-aware formatters. unit is "metric" | "imperial". */
-export function len(cm, unit) { return unit === "metric" ? cm.toFixed(0) + " cm" : cmIn(cm).toFixed(1) + " in"; }
-export function vol(l, unit)  { return unit === "metric" ? l.toFixed(1) + " L"  : lGal(l).toFixed(2) + " gal"; }
+/* Unit-aware formatters. Length unit: "cm" | "in". Volume unit: "L" | "mL" | "gal".
+   Soil mix is always expressed in cups elsewhere. */
+export function len(cm, u) { return u === "in" ? cmIn(cm).toFixed(1) + " in" : Math.round(cm) + " cm"; }
+export function vol(l, u) {
+  if (u === "gal") return lGal(l).toFixed(2) + " gal";
+  if (u === "mL")  return Math.round(lMl(l)) + " mL";
+  return l.toFixed(1) + " L";
+}

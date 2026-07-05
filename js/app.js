@@ -11,7 +11,7 @@ import { ARCHETYPES, newPlant } from "./seed.js";
 
 /* ---------- state ---------- */
 let ST = {
-  tab: "today", plants: {}, order: [], units: "metric",
+  tab: "today", plants: {}, order: [], lenUnit: "in", volUnit: "gal",
   q: "", filter: "all", groupByRoom: false,
   view: null,          // null | "detail" | "repot" | "run" | "supplies" | "settings" | "addmenu" | "addplant"
   sel: null,           // selected plant id
@@ -33,7 +33,7 @@ const ICON = {
   build:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20V8l8-4 8 4v12" stroke-linejoin="round"/><path d="M9 20v-6h6v6"/></svg>',
   bug:'<svg viewBox="0 0 24 24" fill="none" stroke="#5f7a4c" stroke-width="1.6"><circle cx="12" cy="13" r="5"/><path d="M12 8V5M8.5 9 6.5 7M15.5 9l2-2M7 13H4M20 13h-3M8.5 17l-2 2M15.5 17l2 2" stroke-linecap="round"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="#f4ecd6" stroke-width="3"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1"/></svg>',
+  gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 8h9M18 8h1M5 16h1M10 16h9"/><circle cx="16" cy="8" r="2.3"/><circle cx="8" cy="16" r="2.3"/></svg>',
   camera:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h3l2-2h6l2 2h3v11H4z" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5"/></svg>'
 };
 
@@ -56,6 +56,12 @@ function roomsList() {
   return arr;
 }
 function persistOrder() { DB.setSetting("order", ST.order.slice()); }
+function applyUnitSettings(s) {
+  if (s.lenUnit) ST.lenUnit = s.lenUnit;
+  else if (s.units) ST.lenUnit = s.units === "imperial" ? "in" : "cm";  // migrate old single toggle
+  if (s.volUnit) ST.volUnit = s.volUnit;
+  else if (s.units) ST.volUnit = s.units === "imperial" ? "gal" : "L";
+}
 function toast(msg) {
   const r = document.getElementById("toast-root");
   r.innerHTML = `<div class="toast">${esc(msg)}</div>`;
@@ -205,8 +211,11 @@ function renderSettings() {
   return `<div class="grab"></div><div class="close" data-act="back">×</div>
     <div class="pad"><p class="eyebrow">it's your data</p><h1 style="font-size:23px">Settings &amp; backup</h1></div>
     <div class="block"><h3><span class="k">Units</span></h3>
-      <div class="seg">${[["metric","cm · L"],["imperial","in · gal"]].map(o=>`<button data-act="units" data-v="${o[0]}" class="${ST.units===o[0]?'on':''}">${o[1]}</button>`).join("")}</div>
-      <div class="read" style="font-size:14px">Remembered across sessions and used everywhere.</div></div>
+      <div class="between" style="margin-bottom:9px"><span style="font-size:13px;color:var(--muted)">Length</span>
+        <div class="seg sm" style="max-width:180px">${[["cm","cm"],["in","inches"]].map(o=>`<button data-act="lenunit" data-v="${o[0]}" class="${ST.lenUnit===o[0]?'on':''}">${o[1]}</button>`).join("")}</div></div>
+      <div class="between"><span style="font-size:13px;color:var(--muted)">Volume</span>
+        <div class="seg sm" style="max-width:220px">${[["L","liters"],["mL","mL"],["gal","gallons"]].map(o=>`<button data-act="volunit" data-v="${o[0]}" class="${ST.volUnit===o[0]?'on':''}">${o[1]}</button>`).join("")}</div></div>
+      <div class="read" style="font-size:14px">Length and volume are set separately. Soil mix always shows in cups. Remembered across sessions.</div></div>
     <div class="block"><h3><span class="k">Backup — export &amp; import</span></h3>
       <p class="muted" style="font-size:13px;line-height:1.5">Your plants, logs and photos live only on this phone. Export bundles everything into one file to save on your Google Drive. Import restores it here or on another device.</p>
       <button class="btn primary" data-act="export" style="width:100%;margin:12px 0 8px">Export a backup file</button>
@@ -311,33 +320,33 @@ function seg(id, opts, cur, cls) { return `<div class="seg ${cls||''}">${opts.ma
 /* live refresh of the currently-rendered detail sheet (no full re-render, keeps slider focus) */
 function detailRefresh() {
   const p = P(); if (!p || ST.view !== "detail") return;
-  const u = ST.units;
+  const lu = ST.lenUnit, vu = ST.volUnit;
   const g = C.clamp(p.hCm/p.matureCm,0,1), h = C.HVAL[p.hi], soilless = !C.MEDIA[p.med].soil;
   const $ = id => document.getElementById(id);
   if ($("stage")) $("stage").innerHTML = plantArt(p);
   if ($("photos")) $("photos").innerHTML = (p.photos||[]).map((ph,i)=>`<div class="ph"><img src="${ph.dataUrl}" alt=""><button class="del" data-act="delphoto" data-i="${i}">×</button></div>`).join("") + `<div class="addphoto" data-act="capture">＋<br>photo</div>`;
   const stage = g<0.35?"a young start":g<0.7?"filling in":"near its mature form";
-  if ($("growcap")) $("growcap").innerHTML = `Drawn at <b>${Math.round(g*100)}% to its ${C.len(p.matureCm,u)} ceiling</b>, ${stage}, reading ${C.HEALTH[p.hi].toLowerCase()}.`;
-  if ($("v_h")) $("v_h").textContent = C.len(p.hCm,u);
+  if ($("growcap")) $("growcap").innerHTML = `Drawn at <b>${Math.round(g*100)}% to its ${C.len(p.matureCm,lu)} ceiling</b>, ${stage}, reading ${C.HEALTH[p.hi].toLowerCase()}.`;
+  if ($("v_h")) $("v_h").textContent = C.len(p.hCm,lu);
   if ($("lightnote")) $("lightnote").innerHTML = p.light==="bright"?"Bright. Dries faster, grows faster, water sooner.":p.light==="low"?"Low. Slower growth, dries slowly, ease off water.":"Medium. Steady pace.";
   const m = C.MEDIA[p.med];
   if ($("mednote")) $("mednote").innerHTML = m.soil?`<b>${m.label}.</b> Feeds through its amendments, normal dry-down watering.`:(p.med==="leca"?`<b>LECA, semi-hydro.</b> No food in the medium. Feed through the water, keep a shallow reservoir, flush every couple weeks, never bone dry.`:`<b>Pon, inorganic.</b> Drains and dries fast, feeds nothing. Top-water often with dilute nutrients.`);
   const L = C.potVolL(p), cups = C.lCup(L), sc = 52/Math.max(p.top,p.ph,10), tw = p.top*sc, bw = p.bot*sc, hh = p.ph*sc, cx = 60, topY = 110-hh, botY = 110;
   if ($("potdraw")) $("potdraw").innerHTML = `<svg viewBox="0 0 120 120"><g filter="url(#wob)" stroke="var(--pen)" stroke-width="1.2" fill="#e7dcbc"><path d="M${(cx-tw/2).toFixed(1)},${topY.toFixed(1)} L${(cx-bw/2).toFixed(1)},${botY} Q${cx},${botY+5} ${(cx+bw/2).toFixed(1)},${botY} L${(cx+tw/2).toFixed(1)},${topY.toFixed(1)} Z"/><ellipse cx="${cx}" cy="${topY.toFixed(1)}" rx="${(tw/2).toFixed(1)}" ry="3.2"/>${p.drain?`<circle cx="${cx}" cy="${botY-2}" r="1.6" fill="#f3ead2"/>`:""}</g></svg>`;
-  if ($("potnums")) $("potnums").innerHTML = `<div class="n"><span>Top circ.</span><b>${C.len(Math.PI*p.top,u)}</b></div><div class="n"><span>Base circ.</span><b>${C.len(Math.PI*p.bot,u)}</b></div><div class="n"><span>Soil volume</span><b>${C.vol(L,u)}</b></div><div class="n"><span>Mix needed</span><b style="color:var(--sage)">${cups.toFixed(1)} cups</b></div>`;
-  if ($("v_top")) $("v_top").textContent = C.len(p.top,u);
-  if ($("v_bot")) $("v_bot").textContent = C.len(p.bot,u);
-  if ($("v_ph")) $("v_ph").textContent = C.len(p.ph,u);
+  if ($("potnums")) $("potnums").innerHTML = `<div class="n"><span>Top circ.</span><b>${C.len(Math.PI*p.top,lu)}</b></div><div class="n"><span>Base circ.</span><b>${C.len(Math.PI*p.bot,lu)}</b></div><div class="n"><span>Soil volume</span><b>${C.vol(L,vu)}</b></div><div class="n"><span>Mix needed</span><b style="color:var(--sage)">${cups.toFixed(1)} cups</b></div>`;
+  if ($("v_top")) $("v_top").textContent = C.len(p.top,lu);
+  if ($("v_bot")) $("v_bot").textContent = C.len(p.bot,lu);
+  if ($("v_ph")) $("v_ph").textContent = C.len(p.ph,lu);
   if ($("matnote")) $("matnote").innerHTML = p.drain?`<b>${C.MATS[p.mat].label}, draining.</b> ${C.MATS[p.mat].note}`:`<b>${C.MATS[p.mat].label}, no drainage.</b> Water sparingly, tip out any that pools, never let the roots sit wet. This is where rot and gnats start.`;
   const bracket = C.potBracket(p.top);
-  if ($("potsize")) $("potsize").innerHTML = `Top is ${C.len(p.top,u)}, a <b>${bracket}</b> pot. Small 10-15 cm / 4-6 in, medium 15-25 cm / 6-10 in, large 25 cm+ / 10 in+. Pot up one size at a time, about 5 cm / 2 in wider, never two.`;
+  if ($("potsize")) $("potsize").innerHTML = `Top is ${C.len(p.top,lu)}, a <b>${bracket}</b> pot. Small 10-15 cm / 4-6 in, medium 15-25 cm / 6-10 in, large 25 cm+ / 10 in+. Pot up one size at a time, about 5 cm / 2 in wider, never two.`;
   const due = p.intv - p.lastW;
   if ($("waternext")) $("waternext").innerHTML = due<=0?`<b>Water due now.</b> Last watered ${p.lastW===0?'today':p.lastW+' days ago'}.`:`Next water <b>in ${due} day${due===1?'':'s'}</b>. Last ${p.lastW===0?'today':p.lastW+'d ago'}.`;
   if ($("v_iv")) $("v_iv").textContent = "every "+p.intv+"d";
   const sug = C.suggestIntv(p);
   if ($("sugline")) $("sugline").textContent = p.intvMan?`Suggested ${sug} days. You set ${p.intv}.`:`Suggested ${sug} days from the factors below.`;
   if ($("wqnote")) $("wqnote").innerHTML = (p.water==="tap")?C.WSENS[p.wsens]:(p.wsens>=1?`${p.water.charAt(0).toUpperCase()+p.water.slice(1)} water. Good call for a sensitive one.`:`${p.water.charAt(0).toUpperCase()+p.water.slice(1)} water is fine.`);
-  if ($("waterfac")) $("waterfac").textContent = `Built from: ${p.pace} pace, ${C.MEDIA[p.med].label.toLowerCase()}, ${C.MATS[p.mat].label.toLowerCase()} pot ${p.drain?"with drainage":"with no drainage"}, ${C.vol(C.potVolL(p),u)} of it, ${p.light} light, ${Math.round(g*100)}% grown, ${C.season()?"growing season":"dormant"}. Finger-check the top two inches first.`;
+  if ($("waterfac")) $("waterfac").textContent = `Built from: ${p.pace} pace, ${C.MEDIA[p.med].label.toLowerCase()}, ${C.MATS[p.mat].label.toLowerCase()} pot ${p.drain?"with drainage":"with no drainage"}, ${C.vol(C.potVolL(p),vu)} of it, ${p.light} light, ${Math.round(g*100)}% grown, ${C.season()?"growing season":"dormant"}. Finger-check the top two inches first.`;
   const f = C.FERTS[p.fert];
   if ($("feednote")) { if (soilless) $("feednote").innerHTML = `Soilless, so the water is the only food. Add ${f.label} at every watering, ${f.str}. Ease back in winter, don't stop, there's no soil reserve.`; else if (!C.season()) $("feednote").innerHTML = `Dormant. Hold ${f.label} until spring. Last fed ${p.lastF}d ago.`; else { const fdue = 14-p.lastF; $("feednote").innerHTML = `Growing season. ${f.label} at ${f.str} every 2 weeks. ${fdue<=0?"<b>Feed due now.</b>":"Next feed <b>in "+fdue+"d</b>."} Last fed ${p.lastF===0?'today':p.lastF+'d ago'}.`; } }
   const snug = p.snug/100;
@@ -363,7 +372,7 @@ function effectivePot(p) { return ST.repotNewPot ? ST.repotPot : { top: p.top, b
 
 function renderRepot() {
   const p = P(); if (!p) return "";
-  const r = C.RECIPES[p.med], u = ST.units, rootKeys = Object.keys(C.ROOTS), STEPS = 5;
+  const r = C.RECIPES[p.med], lu = ST.lenUnit, vu = ST.volUnit, rootKeys = Object.keys(C.ROOTS), STEPS = 5;
   const bar = Array.from({ length: STEPS }, (_, i) => `<div class="s ${i<=ST.repotStep?'on':''}"></div>`).join("");
   const head = `<div class="grab"></div><div class="close" data-act="back">×</div>
     <div class="navrow" style="margin-top:16px"><div class="navname">Repotting ${esc(p.name)}<small>${esc(p.latin)} · ${r.name}</small></div></div>
@@ -372,18 +381,21 @@ function renderRepot() {
   // Step 0 — the pot
   if (ST.repotStep === 0) {
     const rp = ST.repotPot, L = C.potVolL(effectivePot(p)), cups = C.lCup(L);
+    const disp = cm => lu === "in" ? +C.cmIn(cm).toFixed(1) : Math.round(cm);
+    const rng = lu === "in" ? { min: 2, max: 20, step: 0.5 } : { min: 6, max: 50, step: 1 };
+    const mrow = (k, label) => `<div class="row"><label>${label} (${lu})</label><input type="range" id="rp_${k}" min="${rng.min}" max="${rng.max}" step="${rng.step}" value="${disp(rp[k])}"><input type="number" id="rp_${k}n" class="cnum" step="${rng.step}" value="${disp(rp[k])}"></div>`;
     return head + `
-      <div class="pcardb"><h3><span class="ic"></span>The pot</h3>
+      <div class="pcardb"><h3><span class="ic"></span>The pot &mdash; measuring in ${lu === "in" ? "inches" : "centimeters"}</h3>
         <div class="between" style="margin-bottom:10px"><span style="font-size:12px;color:var(--muted)">Same pot, or moving up?</span>
           <div class="seg sm"><button data-act="repotpot" data-v="same" class="${!ST.repotNewPot?'on':''}">Same pot</button><button data-act="repotpot" data-v="new" class="${ST.repotNewPot?'on':''}">New pot</button></div></div>
         ${ST.repotNewPot ? `
-          <div class="fac" style="margin-bottom:6px">Enter the new pot — drag the slider or type the number. Pot up one size (about 5 cm / 2 in wider), never two.</div>
-          <div class="row"><label>Top</label><input type="range" id="rp_top" min="6" max="50" value="${rp.top}"><input type="number" id="rp_topn" class="cnum" value="${rp.top}"></div>
-          <div class="row"><label>Base</label><input type="range" id="rp_bot" min="5" max="45" value="${rp.bot}"><input type="number" id="rp_botn" class="cnum" value="${rp.bot}"></div>
-          <div class="row"><label>Height</label><input type="range" id="rp_ph" min="6" max="50" value="${rp.ph}"><input type="number" id="rp_phn" class="cnum" value="${rp.ph}"></div>
-          <div class="read" id="rp_vol">New pot holds <b>${C.vol(L,u)}</b> of mix (${cups.toFixed(1)} cups).</div>`
+          <div class="fac" style="margin-bottom:6px">Enter the new pot in ${lu === "in" ? "inches" : "cm"} — drag or type. Pot up one size (about 5 cm / 2 in wider), never two.</div>
+          ${mrow("top", "Top width")}${mrow("bot", "Base width")}${mrow("ph", "Height")}
+          <div class="read" id="rp_vol">This pot holds <b>${C.vol(L,vu)}</b> of mix (about ${cups.toFixed(0)} cups).</div>
+          <div class="pnote">Leave 2&ndash;3 cm / ~1 in of headroom below the rim — don't fill to the top. It stops water spilling and lets the roots breathe, so you'll use a little less than the full cup count.</div>`
         : `
-          <div class="read">Reusing the current pot — <b>${C.vol(L,u)}</b> of mix (${cups.toFixed(1)} cups). Fresh mix in the same size is fine while the roots aren't circling yet.</div>`}
+          <div class="read">Reusing the current pot — <b>${C.vol(L,vu)}</b> of mix (about ${cups.toFixed(0)} cups). Fresh mix in the same size is fine while the roots aren't circling yet.</div>
+          <div class="pnote">Leave a little headroom below the rim — fresh mix settles, and roots need air at the top.</div>`}
       </div>
       <button class="btn primary" data-act="rnext">Next: your mix &rarr;</button><div style="height:16px"></div>`;
   }
@@ -425,7 +437,7 @@ function renderRepot() {
   const L = C.potVolL(effectivePot(p)), cups = C.lCup(L);
   return head + `
     <div class="pcardb"><h3><span class="ic"></span>Review &amp; ink the page</h3>
-      <div class="recipe"><span>Pot</span><span class="amt">${ST.repotNewPot?'New · ':'Same · '}${C.vol(L,u)} (${cups.toFixed(1)} cups)</span></div>
+      <div class="recipe"><span>Pot</span><span class="amt">${ST.repotNewPot?'New · ':'Same · '}${C.vol(L,vu)} (about ${cups.toFixed(0)} cups)</span></div>
       <div class="recipe"><span>Mix</span><span class="amt">${r.name}</span></div>
       <div class="recipe"><span>Roots</span><span class="amt">${ST.root?C.ROOTS[ST.root].label:'not noted'}</span></div>
       <div class="hand" style="font-size:16px;color:var(--muted);margin:12px 0 6px">Anything to remember</div>
@@ -435,14 +447,15 @@ function renderRepot() {
     <button class="btn ${ST.root?'primary':'ghost dim'}" data-act="finish" data-id="${p.id}">Ink this page ✓</button><div style="height:16px"></div>`;
 }
 function repotPotRefresh() {
-  const rp = ST.repotPot, u = ST.units;
+  const rp = ST.repotPot, lu = ST.lenUnit, vu = ST.volUnit;
+  const disp = cm => lu === "in" ? +C.cmIn(cm).toFixed(1) : Math.round(cm);
   ["top","bot","ph"].forEach(k => {
     const s = document.getElementById("rp_"+k), n = document.getElementById("rp_"+k+"n");
-    if (s && document.activeElement !== s) s.value = rp[k];
-    if (n && document.activeElement !== n) n.value = rp[k];
+    if (s && document.activeElement !== s) s.value = disp(rp[k]);
+    if (n && document.activeElement !== n) n.value = disp(rp[k]);
   });
   const L = C.potVolL(rp), cups = C.lCup(L);
-  const v = document.getElementById("rp_vol"); if (v) v.innerHTML = `New pot holds <b>${C.vol(L,u)}</b> of mix (${cups.toFixed(1)} cups).`;
+  const v = document.getElementById("rp_vol"); if (v) v.innerHTML = `This pot holds <b>${C.vol(L,vu)}</b> of mix (about ${cups.toFixed(0)} cups).`;
 }
 function finishRepot() {
   const p = P(); const rootKey = ST.root || "snug";
@@ -453,7 +466,7 @@ function finishRepot() {
   if (rootKey === "bound" && !(p.todo||[]).includes("Pot up one size next repot")) p.todo = [...(p.todo||[]), "Pot up one size next repot"];
   if (rootKey === "rot") { p.intvMan = false; }
   const L = C.potVolL(effectivePot(p));
-  const noteBits = [`Repotted into ${ST.repotNewPot?'a new':'the same'} pot (${C.vol(L, ST.units)}), ${C.RECIPES[p.med].name} mix. Roots: ${C.ROOTS[rootKey].label}. Gnat protocol run.`];
+  const noteBits = [`Repotted into ${ST.repotNewPot?'a new':'the same'} pot (${C.vol(L, ST.volUnit)}), ${C.RECIPES[p.med].name} mix. Roots: ${C.ROOTS[rootKey].label}. Gnat protocol run.`];
   if (ST.note.trim()) noteBits.push(ST.note.trim());
   pushLog(p, noteBits.join(" — "));
   save(p);
@@ -610,7 +623,7 @@ async function onImportFile(file) {
     await DB.importAll(obj);
     const loaded = await DB.init();
     ST.plants = loaded.plants; ST.order = loaded.order;
-    if (loaded.settings && loaded.settings.units) ST.units = loaded.settings.units;
+    if (loaded.settings) applyUnitSettings(loaded.settings);
     ST.view = null;
     render();
     toast("Backup restored.");
@@ -668,7 +681,8 @@ document.addEventListener("click", e => {
     case "rback": readNote(); ST.repotStep = Math.max(0, ST.repotStep-1); render(); ovScrollTop(); break;
     case "rootchip": readNote(); ST.root = ST.root===el.dataset.v?"":el.dataset.v; render(); break;
     case "finish": readNote(); if (!ST.root) { toast("Pick what the roots looked like first."); break; } finishRepot(); break;
-    case "units": ST.units = el.dataset.v; DB.setSetting("units", ST.units); render(); break;
+    case "lenunit": ST.lenUnit = el.dataset.v; DB.setSetting("lenUnit", ST.lenUnit); render(); break;
+    case "volunit": ST.volUnit = el.dataset.v; DB.setSetting("volUnit", ST.volUnit); render(); break;
     case "export": doExport(); break;
     case "import": doImportPick(); break;
     case "notifask": askNotify(); break;
@@ -693,11 +707,13 @@ document.addEventListener("input", e => {
     else ST.addDraft.room = el.value;
     return;
   }
-  // repot new-pot dimensions (slider + number synced, no re-render)
+  // repot new-pot dimensions (slider + number synced; typed in the chosen length unit, stored in cm)
   if (el.id && /^rp_(top|bot|ph)n?$/.test(el.id)) {
     const base = el.id.replace(/^rp_/, "").replace(/n$/, "");
+    const raw = +el.value || 0;
+    const cm = ST.lenUnit === "in" ? C.inCm(raw) : raw;
     ST.repotPot = ST.repotPot || { top: 18, bot: 15, ph: 16 };
-    ST.repotPot[base] = C.clamp(Math.round(+el.value || 0), 4, 60);
+    ST.repotPot[base] = C.clamp(cm, 4, 130);
     repotPotRefresh();
     return;
   }
@@ -741,7 +757,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden) mayb
 (async function boot() {
   const loaded = await DB.init();
   ST.plants = loaded.plants; ST.order = loaded.order;
-  if (loaded.settings) { if (loaded.settings.units) ST.units = loaded.settings.units; if (loaded.settings.notify) ST.notify = loaded.settings.notify; }
+  if (loaded.settings) { applyUnitSettings(loaded.settings); if (loaded.settings.notify) ST.notify = loaded.settings.notify; }
   render();
   maybeNotifyOnOpen();
   if ("serviceWorker" in navigator) {

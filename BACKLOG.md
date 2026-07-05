@@ -16,6 +16,7 @@ Status key: ✅ done · 🔨 in progress · ⏭️ next · 📋 queued · 💡 i
 - ✅ Add-a-plant: floating "+" button → menu (Identify by photo · Add manually); 9 archetypes; adds beyond the 24
 - ✅ Fix: sheets keep scroll position on chip/toggle/date edits (no more jump to top)
 - ✅ Repot flow redesign: pot (same/new + measure) → recommended mix (cups from real volume) → unpot & roots (photo + condition) → gnat-kill checklist → review & ink. Plain-language "Mosquito Bits (BTI)" copy. Writes pot size + soil + root condition back to the plant.
+- ✅ Measurements & units: independent Length (cm/in) and Volume (L/mL/gal) pickers, cups always for mix. Default inches + gallons. Repot pot page labels its unit, shows the volume→cups readout, and a "leave headroom" note. Cleaner settings icon.
 
 ## Next
 - ⏭️ Photo-capture pre-fill UI: snap → review → accept/override screens (manual values for now), the scaffold auto-ID drops into
@@ -25,6 +26,8 @@ Status key: ✅ done · 🔨 in progress · ⏭️ next · 📋 queued · 💡 i
 - ⏭️ On-phone acceptance test (camera / offline / reminder / backup round-trip)
 
 ## Queued
+- 📋 Home / property layer (landing page): pick a home, filter by room, add another house/location.
+      Rooms belong to a property; the app scales to multiple homes. North-star structure.
 - 📋 Home-dashboard integration: rooms carry windows, orientation, sun hours (morning vs evening);
       feed that into the watering/light math. Bridge to the Townhouse app.
 - 📋 Delete / archive a plant; propagation ("pup") state per Master Doc
