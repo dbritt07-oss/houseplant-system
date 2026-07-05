@@ -21,9 +21,18 @@ Status key: ✅ done · 🔨 in progress · ⏭️ next · 📋 queued · 💡 i
 - ✅ Soil tab: "Your plants on this mix" — selecting a bucket in the calculator lists your matching plants (tap to open), with LECA/Pon liquid-nutrient + watering guidance.
 - ✅ Pot accuracy: Round/Square shape toggle (cone vs pyramid volume), diameter/side labels (measure across, not around), and a realistic "fresh mix to prepare" figure (full capacity minus headroom + root ball) so repot amounts aren't overstated.
 - ✅ Update reliability: service worker switched to network-first (updates appear as soon as you're online), precache bypasses HTTP cache, and a visible "build vN" stamp in Settings to confirm the running version. Slider drags frame-throttled for smoothness.
+- ✅ Photo check-in (existing plant): "📷 Photo check-in" on the plant page → snap → confirm health + note → attaches photo, updates status, logs a timeline entry. This is the scaffold the AI health-read drops into. (New-plant photo-add already pre-fills via the add form.)
 
 ## Next
 - ⏭️ Photo-capture pre-fill UI: snap → review → accept/override screens (manual values for now), the scaffold auto-ID drops into
+- ⏭️ Usability wins (from UX + competitive review):
+      1. Kill data-entry friction: quick-log Watered/Fed from Today, "apply to room" batch actions
+      2. Today = command center: due-to-water, overdue (red), repot windows opening, gnat re-checks at a glance
+      3. Undo everywhere: toast-undo after any log; swipe-to-delete timeline entries (fixes the #1 Planta complaint)
+      4. Health at a glance: status color dots + due badges on plant cards
+      5. First-run onboarding: name/import → photo → in (instead of 24 pre-seeded strangers)
+      6. Reminders that respect iOS: one morning "check-in" summary, don't over-notify
+      7. Accessibility (with design pass): bigger tap targets, stronger contrast, consistent spacing
 - ⏭️ Photo auto-ID (the AI piece). Decision recorded: start with **Plant.id** (plant-specialist, health detection, free tier) behind a tiny serverless key-proxy so the key stays private; add a general vision model later for freeform recommendations. Keep tap-to-pick fallback so it works offline. Auto-measure height needs a reference object or native AR — treat as rough/optional, not core.
 - ⏭️ Alternate design directions: mock 2–3 visual looks to compare vs field-sketchbook, pick one
 - ⏭️ Interaction polish: swipe-to-close sheets, smoother transitions, spacing pass

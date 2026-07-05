@@ -19,12 +19,13 @@ let ST = {
   repotNewPot: false, repotPot: { top: 18, bot: 15, ph: 16 },
   calcBucket: "aroid", calcSize: "Medium",
   addDraft: null,      // { photo, name, latin, type, room, tox } while adding a plant
+  checkinDraft: null,  // { photo, hi, note } while doing a photo check-in on an existing plant
   notify: false
 };
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v9";
+const BUILD = "v10";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -261,7 +262,8 @@ function renderDetail() {
 
   <div class="pcardb"><h3><span class="ic"></span>Photos</h3>
     <div class="photos" id="photos"></div>
-    <div class="fac">Camera shots attach to this plant and its timeline, and travel in your backup.</div>
+    <button class="mini go" data-act="photochk" style="margin-top:10px">📷 Photo check-in</button>
+    <div class="fac" style="margin-top:8px">A check-in snaps a photo and lets you confirm the plant's health in one step (the spot the AI read will drop into). The ＋ tile just attaches a photo.</div>
   </div>
 
   <div class="pcardb"><h3><span class="ic"></span>Vitals</h3>
@@ -521,13 +523,43 @@ function render() {
   const prevScroll = prevSheet ? prevSheet.scrollTop : 0;
   const sameContext = ST._renderKey === (ST.view ? ST.view + ":" + (ST.sel || "") : "");
   if (ST.view) {
-    const inner = ST.view==="detail"?renderDetail():ST.view==="repot"?renderRepot():ST.view==="supplies"?renderSupplies():ST.view==="settings"?renderSettings():ST.view==="addmenu"?renderAddMenu():ST.view==="addplant"?renderAddPlant():"";
+    const inner = ST.view==="detail"?renderDetail():ST.view==="repot"?renderRepot():ST.view==="supplies"?renderSupplies():ST.view==="settings"?renderSettings():ST.view==="addmenu"?renderAddMenu():ST.view==="addplant"?renderAddPlant():ST.view==="checkin"?renderCheckin():"";
     ov.innerHTML = `<div class="overlay"><div class="scrim" data-act="back"></div><div class="sheet">${inner}</div></div>`;
     if (ST.view === "detail") detailRefresh();
     const newSheet = document.querySelector(".sheet");
     if (newSheet && sameContext) newSheet.scrollTop = prevScroll;
   } else ov.innerHTML = "";
   ST._renderKey = ST.view ? ST.view + ":" + (ST.sel || "") : "";
+}
+
+/* ================= PHOTO CHECK-IN (existing plant) ================= */
+function renderCheckin() {
+  const p = P(); const d = ST.checkinDraft; if (!p || !d) return "";
+  return `<div class="grab"></div><div class="close" data-act="back">×</div>
+    <div class="navrow" style="margin-top:46px"><div class="navname">Check-in · ${esc(p.name)}<small>confirm what you see</small></div></div>
+    <div class="phero" style="margin-top:6px"><img src="${d.photo}" style="width:100%;height:100%;object-fit:cover" alt=""></div>
+    <div class="pcardb"><h3><span class="ic"></span>AI health read</h3>
+      <div class="read" style="margin-top:0">Coming soon — this photo will be read automatically for health, species, and visible issues. For now, set it yourself; you'll always get the final say.</div></div>
+    <div class="pcardb"><h3><span class="ic"></span>How's it looking?</h3>
+      <div class="seg">${C.HEALTH.map((n,i)=>`<button data-act="chkhealth" data-v="${i}" class="${d.hi===i?'on':''}">${n}</button>`).join("")}</div>
+      <div class="read" style="font-size:14px">${d.hi<=0?"Critical — needs help now.":d.hi===1?"Stressed — watch it closely.":d.hi===2?"Healthy — steady as it goes.":"Thriving — whatever you're doing, keep it up."}</div></div>
+    <div class="pcardb"><h3><span class="ic"></span>Anything to note?</h3>
+      <textarea id="chkNote" class="nfield" placeholder="e.g. new leaf unfurling, yellow tip on the oldest leaf, a couple gnats...">${esc(d.note)}</textarea></div>
+    <button class="btn primary" data-act="chksave" data-id="${p.id}">Save check-in</button><div style="height:16px"></div>`;
+}
+function saveCheckin() {
+  const p = P(), d = ST.checkinDraft; if (!p || !d) return;
+  const n = document.getElementById("chkNote"); if (n) d.note = n.value;
+  const id = "ph_" + Date.now();
+  p.photos = p.photos || [];
+  p.photos.push({ id, date: C.dstr(0), dataUrl: d.photo });
+  p.hi = d.hi;
+  const bits = ["Photo check-in · " + C.HEALTH[d.hi]];
+  if (d.note.trim()) bits.push(d.note.trim());
+  pushLog(p, bits.join(" — "), id);
+  save(p);
+  ST.checkinDraft = null; ST.view = "detail"; render(); ovScrollTop();
+  toast("Check-in saved to the timeline.");
 }
 
 /* ================= ADD A PLANT ================= */
@@ -590,6 +622,12 @@ async function onCameraFile(file) {
       save(rp);
       render();  // stays in the repot flow
       toast("Root photo saved.");
+      return;
+    }
+    if (_captureMode === "checkin") {
+      const cp = P(); if (!cp) return;
+      ST.checkinDraft = { photo: dataUrl, hi: cp.hi, note: "" };
+      ST.view = "checkin"; render(); ovScrollTop();
       return;
     }
     const p = P(); if (!p) return;
@@ -698,6 +736,9 @@ document.addEventListener("click", e => {
     case "todone": P().todo.splice(+el.dataset.i,1); save(P()); render(); break;
     case "lognote": { const inp = document.getElementById("noteinput"); if (inp && inp.value.trim()) { pushLog(P(), inp.value.trim()); save(P()); render(); } break; }
     case "capture": startCapture(); break;
+    case "photochk": startCapture("checkin"); break;
+    case "chkhealth": if (ST.checkinDraft) { const cn = document.getElementById("chkNote"); if (cn) ST.checkinDraft.note = cn.value; ST.checkinDraft.hi = +el.dataset.v; render(); } break;
+    case "chksave": saveCheckin(); break;
     case "delphoto": { const p = P(); p.photos.splice(+el.dataset.i,1); save(p); render(); break; }
     case "repot": ST.sel = el.dataset.id; ST.view = "repot"; ST.repotStep = 0; ST.repotChecks = []; ST.root = ""; ST.note = ""; ST.repotNewPot = false; ST.repotPot = { top: P().top, bot: P().bot, ph: P().ph, shape: P().shape || "round" }; render(); ovScrollTop(); break;
     case "repotpot": ST.repotNewPot = (el.dataset.v === "new"); render(); break;
