@@ -250,3 +250,5 @@ A tiny script asserting known care-math outputs, protecting the moat during the 
 - **Every feature must pass the twelve-gate `docs/DEFINITION-OF-DONE.md` before it's "done."**
 - **Every sprint ends with the Sprint Review ritual** (demo → dogfood 2–3 days → record friction → remove one interaction → fix one annoyance) — see `docs/V1-Execution-Plan.md`.
 - Sequencing, effort, and risk for V1 live in `docs/V1-Execution-Plan.md`.
+- **Dev checks:** `npm test` (care-math golden assertions) and `npm run check` (syntax-check all JS) should be green before any commit.
+- **Cutting a release (cache-bust):** bump the version in BOTH `sw.js` (`CACHE = "hps-vN"`) and `js/app.js` (`BUILD = "vN"`) to the *same* number, and add a `WHATS-NEW.md` entry. The network-first service worker serves fresh files when online; the "build vN" stamp in Settings confirms the running version. *(Scratch files match `.gitignore` patterns `_*.mjs` / `*.preview.html` and never get committed.)*
