@@ -57,6 +57,11 @@ export const DB = {
     st.put(record);
     return done(st);
   },
+  async deletePlant(id) {
+    const st = tx("plants", "readwrite");
+    st.delete(id);
+    return done(st);
+  },
 
   async getSetting(k) { const r = await getOne("settings", k); return r ? r.v : undefined; },
   async setSetting(k, v) { const st = tx("settings", "readwrite"); st.put({ k, v }); return done(st); },

@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v11";
+const BUILD = "v12";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -72,6 +72,19 @@ function toast(msg) {
   r.innerHTML = `<div class="toast">${esc(msg)}</div>`;
   clearTimeout(r._t); r._t = setTimeout(() => { r.innerHTML = ""; }, 2600);
 }
+/* Toast with an Undo action; the undo fn runs if tapped within a few seconds. */
+let _undo = null;
+function toastUndo(msg, undoFn) {
+  const r = document.getElementById("toast-root");
+  r.innerHTML = `<div class="toast">${esc(msg)} <span class="undo" data-act="undo">Undo</span></div>`;
+  _undo = undoFn;
+  clearTimeout(r._t); r._t = setTimeout(() => { r.innerHTML = ""; _undo = null; }, 5000);
+}
+function runUndo() {
+  const r = document.getElementById("toast-root");
+  const fn = _undo; _undo = null; r.innerHTML = ""; clearTimeout(r._t);
+  if (fn) fn();
+}
 
 /* Due-state computation (drives in-app badges and notifications). */
 function waterDue(p) { return (p.intvMan ? p.intv : C.suggestIntv(p)) - p.lastW <= 0; }
@@ -96,23 +109,26 @@ function renderToday() {
     <p class="eyebrow">reference · ritual · record</p>
     <h1 style="font-size:26px">${w.length + f.length === 0 ? "Nothing thirsty today." : "A few need you today."}</h1>
     <div class="stats">
-      <div class="stat"><div class="n">24</div><div class="l">plants</div></div>
+      <div class="stat"><div class="n">${ST.order.length}</div><div class="l">plants</div></div>
       <div class="stat"><div class="n" style="color:var(--rust)">${w.length}</div><div class="l">water due</div></div>
       <div class="stat"><div class="n" style="color:var(--warn)">${f.length}</div><div class="l">feed due</div></div>
     </div>
     <div class="cta" data-act="openrun">Start a repot run <span class="arw">&rarr;</span></div>
     <div class="banner" style="margin-top:14px" data-act="supplies"><div class="ic">${ICON.bug}</div><div><div class="bt">Supplies &amp; gnat war</div><div class="bs">Totals for fertilizer, mix, BTI and nematodes from your logs.</div></div></div>
-    ${needM ? `<div class="banner" style="margin-top:10px"><div class="ic">✎</div><div><div class="bt">${needM} of 24 still need measurements</div><div class="bs">Open a plant and fill height, pot, medium, dates.</div></div></div>` : ""}
+    ${needM ? `<div class="banner" style="margin-top:10px"><div class="ic">✎</div><div><div class="bt">${needM} of ${ST.order.length} still need measurements</div><div class="bs">Open a plant and fill height, pot, medium, dates.</div></div></div>` : ""}
     <div class="section-h"><h2>Due now</h2></div>
-    ${dueCards.length ? dueCards.map(p => queueCard(p, [waterDue(p) ? "water" : "", feedDue(p) ? "feed" : ""].filter(Boolean).join(" + ") + " due")).join("")
+    ${dueCards.length ? dueCards.map(p => queueCard(p, [waterDue(p) ? "water" : "", feedDue(p) ? "feed" : ""].filter(Boolean).join(" + ") + " due", true)).join("")
       : `<p class="hand" style="font-size:18px;color:var(--sage)">All watered and fed. Nice.</p>`}
     ${attention.length ? `<div class="section-h"><h2>Watching</h2></div>${attention.map(p => queueCard(p, p.rootcond === "rot" ? "Soft roots · protocol on" : C.HEALTH[p.hi].toLowerCase())).join("")}` : ""}
   </div>`;
 }
-function queueCard(p, sub) {
+function queueCard(p, sub, quick) {
+  const right = quick
+    ? `<div class="qact"><button class="qbtn" data-act="qwater" data-id="${p.id}" title="Watered today">💧</button><button class="qbtn" data-act="qfeed" data-id="${p.id}" title="Fed today">🍽️</button></div>`
+    : (p.tox ? '<span class="chip warn">toxic</span>' : '<span class="chip ok">pet-safe</span>');
   return `<div class="qcard" data-act="open" data-id="${p.id}"><div class="qthumb">${thumb(p)}</div>
     <div class="qbody"><div class="qname">${esc(p.name)}</div><div class="qlatin">${esc(p.latin)}</div>
-    <div class="qaction">${esc(sub)}</div></div>${p.tox ? '<span class="chip warn">toxic</span>' : '<span class="chip ok">pet-safe</span>'}</div>`;
+    <div class="qaction">${esc(sub)}</div></div>${right}</div>`;
 }
 function renderPlants() {
   const query = ST.q.toLowerCase();
@@ -282,7 +298,7 @@ function renderDetail() {
   const soilless = !C.MEDIA[p.med].soil;
   const lu = ST.lenUnit, dL = cm => lu === "in" ? +C.cmIn(cm).toFixed(1) : Math.round(cm), stepL = lu === "in" ? 0.5 : 1;
   return `<div class="grab"></div><div class="close" data-act="back">×</div>
-  <div class="navrow" style="margin-top:46px"><button class="navb" data-act="prev">‹</button><div class="navname">${esc(p.name)}<small>${idx+1} of 24</small></div><button class="navb" data-act="next">›</button></div>
+  <div class="navrow" style="margin-top:46px"><button class="navb" data-act="prev">‹</button><div class="navname">${esc(p.name)}<small>${idx+1} of ${ST.order.length}</small></div><button class="navb" data-act="next">›</button></div>
   <div class="badges"><span class="badge">${esc(p.latin)}</span>${p.tox?`<span class="badge tox">Toxic to pets</span>`:`<span class="badge">Pet-safe</span>`}</div>
   ${(p.todo||[]).length?`<div class="todo"><div class="th">Still to finish</div>${p.todo.map((t,i)=>`<span class="titem" data-act="todone" data-i="${i}">${esc(t)}</span>`).join("")}</div>`:""}
   <div class="phero" id="stage"></div>
@@ -358,6 +374,10 @@ function renderDetail() {
   <div class="pcardb"><h3><span class="ic"></span>Care timeline</h3>
     <ul class="tl" id="timeline"></ul>
     <div class="addnote"><input id="noteinput" placeholder="Log a note..."><button class="mini" data-act="lognote">Add</button></div>
+  </div>
+  <div class="pcardb"><h3><span class="ic"></span>No longer have it?</h3>
+    <div class="read" style="font-size:14px;margin-top:0">Remove ${esc(p.name)} from your collection. You'll get a few seconds to undo, and it's still in any backup you've exported.</div>
+    <button class="btn ghost" data-act="delplant" data-id="${p.id}" style="width:100%;margin:12px 0 0;color:var(--rust);border-color:#cf9d8b">Remove from collection</button>
   </div>
   <div style="height:14px"></div>`;
 }
@@ -756,8 +776,12 @@ document.addEventListener("click", e => {
     case "grouproom": ST.groupByRoom = !ST.groupByRoom; render(); break;
     case "prev": { const i = ST.order.indexOf(ST.sel); ST.sel = ST.order[(i-1+ST.order.length)%ST.order.length]; render(); ovScrollTop(); break; }
     case "next": { const i = ST.order.indexOf(ST.sel); ST.sel = ST.order[(i+1)%ST.order.length]; render(); ovScrollTop(); break; }
-    case "watered": P().lastW = 0; pushLog(P(), "Watered"); save(P()); render(); break;
-    case "fed": P().lastF = 0; pushLog(P(), "Fed " + C.FERTS[P().fert].label); save(P()); render(); break;
+    case "watered": { const q = P(); const oW = q.lastW, oLen = q.log.length; q.lastW = 0; pushLog(q, "Watered"); save(q); render(); toastUndo("Watered " + q.name, () => { q.lastW = oW; q.log.length = oLen; save(q); render(); }); break; }
+    case "fed": { const q = P(); const oF = q.lastF, oLen = q.log.length; q.lastF = 0; pushLog(q, "Fed " + C.FERTS[q.fert].label); save(q); render(); toastUndo("Fed " + q.name, () => { q.lastF = oF; q.log.length = oLen; save(q); render(); }); break; }
+    case "qwater": { const q = ST.plants[el.dataset.id]; if (q) { const oW = q.lastW, oLen = q.log.length; q.lastW = 0; pushLog(q, "Watered"); save(q); render(); toastUndo("Watered " + q.name, () => { q.lastW = oW; q.log.length = oLen; save(q); render(); }); } break; }
+    case "qfeed": { const q = ST.plants[el.dataset.id]; if (q) { const oF = q.lastF, oLen = q.log.length; q.lastF = 0; pushLog(q, "Fed " + C.FERTS[q.fert].label); save(q); render(); toastUndo("Fed " + q.name, () => { q.lastF = oF; q.log.length = oLen; save(q); render(); }); } break; }
+    case "delplant": { const id = el.dataset.id, rec = ST.plants[id], idx = ST.order.indexOf(id); if (!rec) break; delete ST.plants[id]; ST.order.splice(idx, 1); DB.deletePlant(id); persistOrder(); ST.view = null; ST.sel = null; render(); toastUndo("Removed " + rec.name, () => { ST.plants[id] = rec; ST.order.splice(Math.min(idx, ST.order.length), 0, id); DB.savePlant(rec); persistOrder(); render(); }); break; }
+    case "undo": runUndo(); break;
     case "matchsug": P().intvMan = false; save(P()); render(); break;
     case "tplus": P().trapN++; save(P()); render(); break;
     case "tminus": P().trapN = Math.max(0, P().trapN-1); save(P()); render(); break;

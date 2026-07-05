@@ -198,6 +198,11 @@
   .nav button{background:none;border:none;color:var(--faint);font-family:"Caveat",cursive;font-size:14px;padding:9px 0 11px;display:flex;flex-direction:column;align-items:center;gap:3px;cursor:pointer}
   .nav button.on{color:var(--pen)} .nav svg{width:22px;height:22px}
   .toast{position:fixed;bottom:96px;left:50%;transform:translateX(-50%);background:var(--pen);color:var(--card);font-size:13px;padding:10px 16px;border-radius:999px;z-index:60;box-shadow:0 4px 14px rgba(40,30,10,.3);max-width:88%;text-align:center}
+  .toast .undo{color:#e9d9a8;font-weight:600;text-decoration:underline;margin-left:8px;cursor:pointer;padding:2px 4px}
+  /* quick-log buttons on Today cards */
+  .qact{display:flex;gap:6px;flex:0 0 auto}
+  .qbtn{width:38px;height:38px;border-radius:10px;border:1.5px solid var(--line);background:var(--card2);font-size:17px;line-height:1;cursor:pointer;display:grid;place-items:center}
+  .qbtn:active{transform:translateY(1px);background:var(--sage)}
   /* floating add button */
   .fab{position:fixed;bottom:78px;left:calc(50% + 148px);width:56px;height:56px;border-radius:50%;background:var(--sage);border:1.5px solid var(--pen);color:#f4ecd6;font-size:30px;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:45;box-shadow:2px 4px 0 rgba(60,55,25,.34)}
   .fab:active{transform:translateY(1px)}

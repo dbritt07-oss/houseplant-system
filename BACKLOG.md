@@ -23,17 +23,20 @@ Status key: ✅ done · 🔨 in progress · ⏭️ next · 📋 queued · 💡 i
 - ✅ Update reliability: service worker switched to network-first (updates appear as soon as you're online), precache bypasses HTTP cache, and a visible "build vN" stamp in Settings to confirm the running version. Slider drags frame-throttled for smoothness.
 - ✅ Photo check-in (existing plant): "📷 Photo check-in" on the plant page → snap → confirm health + note → attaches photo, updates status, logs a timeline entry. This is the scaffold the AI health-read drops into. (New-plant photo-add already pre-fills via the add form.) Button made full-width/prominent on the Photos card.
 - ✅ Soil tab recommendations: for the selected mix, "Would also thrive here" cross-references each plant's family-fit against what it's currently on (e.g., Pineapple → bark), with a plain "why this medium" note. Tap to open and switch. Learning + optimization.
+- ✅ Quick-log from Today: 💧/🍽️ buttons on each Due-now card log Watered/Fed without opening the plant.
+- ✅ Undo everywhere: tap-Undo toast after water/feed (from Today or the plant page) and after removing a plant — fixes the #1 competitor complaint.
+- ✅ Delete a plant: "Remove from collection" on the plant page, with a 5-second Undo (no scary confirm; data also survives in exported backups). Plant counts now reflect adds/removes.
+- ✅ Move rooms: already supported via a plant's Room field + quick chips (tap a room to move it).
 
 ## Next
-- ⏭️ Photo-capture pre-fill UI: snap → review → accept/override screens (manual values for now), the scaffold auto-ID drops into
-- ⏭️ Usability wins (from UX + competitive review):
-      1. Kill data-entry friction: quick-log Watered/Fed from Today, "apply to room" batch actions
-      2. Today = command center: due-to-water, overdue (red), repot windows opening, gnat re-checks at a glance
-      3. Undo everywhere: toast-undo after any log; swipe-to-delete timeline entries (fixes the #1 Planta complaint)
-      4. Health at a glance: status color dots + due badges on plant cards
-      5. First-run onboarding: name/import → photo → in (instead of 24 pre-seeded strangers)
-      6. Reminders that respect iOS: one morning "check-in" summary, don't over-notify
-      7. Accessibility (with design pass): bigger tap targets, stronger contrast, consistent spacing
+- ⏭️ Usability wins (remaining, from UX + competitive review):
+      - "apply to room" batch actions (water everything in a room at once)
+      - Today = command center: repot windows opening + gnat re-checks surfaced alongside due
+      - Health at a glance: status color dots + due badges on plant cards
+      - First-run onboarding: name/import → photo → in (instead of 24 pre-seeded strangers)
+      - Reminders that respect iOS: one morning "check-in" summary, don't over-notify
+      - Accessibility (with design pass): bigger tap targets, stronger contrast, consistent spacing
+      - Swipe gestures (with design pass): swipe a card to quick-log / delete
 - ⏭️ Photo auto-ID (the AI piece). Decision recorded: start with **Plant.id** (plant-specialist, health detection, free tier) behind a tiny serverless key-proxy so the key stays private; add a general vision model later for freeform recommendations. Keep tap-to-pick fallback so it works offline. Auto-measure height needs a reference object or native AR — treat as rough/optional, not core.
 - ⏭️ Alternate design directions: mock 2–3 visual looks to compare vs field-sketchbook, pick one
 - ⏭️ Interaction polish: swipe-to-close sheets, smoother transitions, spacing pass
