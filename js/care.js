@@ -104,9 +104,22 @@ export const PROTOCOL = [
 
 /* ---- the live math ---- */
 
-/* Pot soil volume in litres, frustum (truncated-cone) formula from top/base/height in cm. */
+/* Pot soil volume in litres from top/base/height in cm.
+   Round (default): frustum of a cone, top/base are DIAMETERS.
+   Square: frustum of a pyramid, top/base are SIDE lengths. */
 export function potVolL(p) {
-  return Math.PI * p.ph / 3 * ((p.top / 2) ** 2 + (p.top / 2) * (p.bot / 2) + (p.bot / 2) ** 2) / 1000;
+  const t = p.top, b = p.bot, h = p.ph;
+  if (p.shape === "square") {
+    return h / 3 * (t * t + t * b + b * b) / 1000;
+  }
+  return Math.PI * h / 3 * ((t / 2) ** 2 + (t / 2) * (b / 2) + (b / 2) ** 2) / 1000;
+}
+
+/* Fresh mix to actually prepare, as a fraction of full capacity.
+   A repot leaves headroom and the existing root ball fills part of the pot,
+   so you scoop less than the geometric volume. New (bigger) pot ~0.7; same pot ~0.5. */
+export function freshMixL(p, newPot) {
+  return potVolL(p) * (newPot ? 0.7 : 0.5);
 }
 
 /* Growing season = Apr..Sep (month index 3..8). */

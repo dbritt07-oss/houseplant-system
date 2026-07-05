@@ -281,6 +281,7 @@ function renderDetail() {
   <div class="pcardb"><h3><span class="ic"></span>The pot</h3>
     <div class="pick" style="margin-bottom:8px">${Object.entries(C.MATS).map(([k,m])=>`<span class="pchip ${k===p.mat?'on':''}" data-mat="${k}">${m.label}</span>`).join("")}</div>
     <div class="between" style="margin-bottom:8px"><span style="font-size:12px;color:var(--muted)">Drainage holes</span>${seg("drain",[["y","Yes"],["n","No (cachepot)"]],p.drain?"y":"n","sm")}</div>
+    <div class="between" style="margin-bottom:8px"><span style="font-size:12px;color:var(--muted)">Pot shape</span><div class="seg sm"><button data-act="potshape" data-v="round" class="${p.shape!=='square'?'on':''}">Round</button><button data-act="potshape" data-v="square" class="${p.shape==='square'?'on':''}">Square</button></div></div>
     <div class="potwrap"><div class="potdraw" id="potdraw"></div><div class="potnums" id="potnums"></div></div>
     <div class="row"><label>Top (${lu})</label><input type="range" id="s_top" min="8" max="45" step="0.5" value="${p.top}"><input type="number" class="cnum" id="s_topn" step="${stepL}" value="${dL(p.top)}"></div>
     <div class="row"><label>Base (${lu})</label><input type="range" id="s_bot" min="6" max="40" step="0.5" value="${p.bot}"><input type="number" class="cnum" id="s_botn" step="${stepL}" value="${dL(p.bot)}"></div>
@@ -350,7 +351,8 @@ function detailRefresh() {
   if ($("mednote")) $("mednote").innerHTML = m.soil?`<b>${m.label}.</b> Feeds through its amendments, normal dry-down watering.`:(p.med==="leca"?`<b>LECA, semi-hydro.</b> No food in the medium. Feed through the water, keep a shallow reservoir, flush every couple weeks, never bone dry.`:`<b>Pon, inorganic.</b> Drains and dries fast, feeds nothing. Top-water often with dilute nutrients.`);
   const L = C.potVolL(p), cups = C.lCup(L), sc = 52/Math.max(p.top,p.ph,10), tw = p.top*sc, bw = p.bot*sc, hh = p.ph*sc, cx = 60, topY = 110-hh, botY = 110;
   if ($("potdraw")) $("potdraw").innerHTML = `<svg viewBox="0 0 120 120"><g filter="url(#wob)" stroke="var(--pen)" stroke-width="1.2" fill="#e7dcbc"><path d="M${(cx-tw/2).toFixed(1)},${topY.toFixed(1)} L${(cx-bw/2).toFixed(1)},${botY} Q${cx},${botY+5} ${(cx+bw/2).toFixed(1)},${botY} L${(cx+tw/2).toFixed(1)},${topY.toFixed(1)} Z"/><ellipse cx="${cx}" cy="${topY.toFixed(1)}" rx="${(tw/2).toFixed(1)}" ry="3.2"/>${p.drain?`<circle cx="${cx}" cy="${botY-2}" r="1.6" fill="#f3ead2"/>`:""}</g></svg>`;
-  if ($("potnums")) $("potnums").innerHTML = `<div class="n"><span>Top circ.</span><b>${C.len(Math.PI*p.top,lu)}</b></div><div class="n"><span>Base circ.</span><b>${C.len(Math.PI*p.bot,lu)}</b></div><div class="n"><span>Soil volume</span><b>${C.vol(L,vu)}</b></div><div class="n"><span>Mix needed</span><b style="color:var(--sage)">${cups.toFixed(1)} cups</b></div>`;
+  const dimName = p.shape === "square" ? ["Top side","Base side"] : ["Top &#8960;","Base &#8960;"];
+  if ($("potnums")) $("potnums").innerHTML = `<div class="n"><span>${dimName[0]}</span><b>${C.len(p.top,lu)}</b></div><div class="n"><span>${dimName[1]}</span><b>${C.len(p.bot,lu)}</b></div><div class="n"><span>Full volume</span><b>${C.vol(L,vu)}</b></div><div class="n"><span>Holds</span><b style="color:var(--sage)">${cups.toFixed(1)} cups</b></div>`;
   setNum("s_topn", "s_top", p.top, true);
   setNum("s_botn", "s_bot", p.bot, true);
   setNum("s_phn", "s_ph", p.ph, true);
@@ -385,7 +387,11 @@ const REPOTKILL = [
   { t: "Bottom-water with the Bits drench, add nematodes", s: "Soak from below using the watering can where your Mosquito Bits have been steeping, then sprinkle NemaKnights nematodes on top. Kill layer two." },
   { t: "Top-dress dry", s: "A thin layer of perlite or grit plus a dusting of cinnamon, so the surface stays dry and gnats can't breed in it." }
 ];
-function effectivePot(p) { return ST.repotNewPot ? ST.repotPot : { top: p.top, bot: p.bot, ph: p.ph }; }
+function effectivePot(p) {
+  return ST.repotNewPot
+    ? { top: ST.repotPot.top, bot: ST.repotPot.bot, ph: ST.repotPot.ph, shape: ST.repotPot.shape || p.shape || "round" }
+    : { top: p.top, bot: p.bot, ph: p.ph, shape: p.shape || "round" };
+}
 
 function renderRepot() {
   const p = P(); if (!p) return "";
@@ -397,31 +403,32 @@ function renderRepot() {
 
   // Step 0 — the pot
   if (ST.repotStep === 0) {
-    const rp = ST.repotPot, L = C.potVolL(effectivePot(p)), cups = C.lCup(L);
+    const rp = ST.repotPot, ep = effectivePot(p), L = C.potVolL(ep), cups = C.lCup(L), freshCups = C.lCup(C.freshMixL(ep, ST.repotNewPot)), shape = ep.shape;
     const disp = cm => lu === "in" ? +C.cmIn(cm).toFixed(1) : Math.round(cm);
     const rng = lu === "in" ? { min: 2, max: 20, step: 0.5 } : { min: 6, max: 50, step: 1 };
+    const dl = shape === "square" ? ["Top side", "Base side"] : ["Top &#8960;", "Base &#8960;"];
     const mrow = (k, label) => `<div class="row"><label>${label} (${lu})</label><input type="range" id="rp_${k}" min="${rng.min}" max="${rng.max}" step="${rng.step}" value="${disp(rp[k])}"><input type="number" id="rp_${k}n" class="cnum" step="${rng.step}" value="${disp(rp[k])}"></div>`;
     return head + `
       <div class="pcardb"><h3><span class="ic"></span>The pot &mdash; measuring in ${lu === "in" ? "inches" : "centimeters"}</h3>
-        <div class="between" style="margin-bottom:10px"><span style="font-size:12px;color:var(--muted)">Same pot, or moving up?</span>
+        <div class="between" style="margin-bottom:8px"><span style="font-size:12px;color:var(--muted)">Same pot, or moving up?</span>
           <div class="seg sm"><button data-act="repotpot" data-v="same" class="${!ST.repotNewPot?'on':''}">Same pot</button><button data-act="repotpot" data-v="new" class="${ST.repotNewPot?'on':''}">New pot</button></div></div>
+        <div class="between" style="margin-bottom:10px"><span style="font-size:12px;color:var(--muted)">Pot shape</span>
+          <div class="seg sm"><button data-act="repotshape" data-v="round" class="${shape!=='square'?'on':''}">Round</button><button data-act="repotshape" data-v="square" class="${shape==='square'?'on':''}">Square</button></div></div>
         ${ST.repotNewPot ? `
-          <div class="fac" style="margin-bottom:6px">Enter the new pot in ${lu === "in" ? "inches" : "cm"} — drag or type. Pot up one size (about 5 cm / 2 in wider), never two.</div>
-          ${mrow("top", "Top width")}${mrow("bot", "Base width")}${mrow("ph", "Height")}
-          <div class="read" id="rp_vol">This pot holds <b>${C.vol(L,vu)}</b> of mix (about ${cups.toFixed(0)} cups).</div>
-          <div class="pnote">Leave 2&ndash;3 cm / ~1 in of headroom below the rim — don't fill to the top. It stops water spilling and lets the roots breathe, so you'll use a little less than the full cup count.</div>`
-        : `
-          <div class="read">Reusing the current pot — <b>${C.vol(L,vu)}</b> of mix (about ${cups.toFixed(0)} cups). Fresh mix in the same size is fine while the roots aren't circling yet.</div>
-          <div class="pnote">Leave a little headroom below the rim — fresh mix settles, and roots need air at the top.</div>`}
+          <div class="fac" style="margin-bottom:6px">Measure ${shape==='square'?'the side length':'straight across the opening — the diameter, not around'}. Pot up one size (~5 cm / 2 in wider), never two.</div>
+          ${mrow("top", dl[0])}${mrow("bot", dl[1])}${mrow("ph", "Height")}`
+        : `<div class="fac" style="margin-bottom:6px">Reusing the current pot. Set the shape above so the volume is right.</div>`}
+        <div class="read" id="rp_vol">Full pot &#8776; <b>${cups.toFixed(0)} cups</b> (${C.vol(L,vu)}). Prepare about <b>${freshCups.toFixed(0)} cups</b> of fresh mix.</div>
+        <div class="pnote">You add less than the whole pot: leave headroom below the rim, and your plant's root ball already fills part of the space. Scoop a bit extra and stop when it's firm and level.</div>
       </div>
       <button class="btn primary" data-act="rnext">Next: your mix &rarr;</button><div style="height:16px"></div>`;
   }
   // Step 1 — the recommended mix
   if (ST.repotStep === 1) {
-    const cups = C.lCup(C.potVolL(effectivePot(p)));
+    const cups = C.lCup(C.freshMixL(effectivePot(p), ST.repotNewPot));
     return head + `
       <div class="pcardb"><h3><span class="ic"></span>Your mix — recommended for ${esc(p.name)}</h3>
-        <div class="fac" style="margin-bottom:6px">${r.name}, measured to this pot's ${cups.toFixed(1)} cups. Mix it up before you unpot.</div>
+        <div class="fac" style="margin-bottom:6px">${r.name}, about <b>${cups.toFixed(1)} cups</b> of fresh mix for this pot (headroom + root ball leave out the rest). Mix it up before you unpot.</div>
         ${r.parts.map(x=>`<div class="recipe"><span>${x[0]}</span><span class="amt">${(x[1]/100*cups).toFixed(1)} cups · ${x[1]}%</span></div>`).join("")}
         ${r.note?`<div class="tweak">${r.note}</div>`:""}</div>
       <button class="btn ghost" data-act="rback">Back</button>
@@ -471,11 +478,12 @@ function repotPotRefresh() {
     if (s && document.activeElement !== s) s.value = disp(rp[k]);
     if (n && document.activeElement !== n) n.value = disp(rp[k]);
   });
-  const L = C.potVolL(rp), cups = C.lCup(L);
-  const v = document.getElementById("rp_vol"); if (v) v.innerHTML = `This pot holds <b>${C.vol(L,vu)}</b> of mix (about ${cups.toFixed(0)} cups).`;
+  const L = C.potVolL(rp), cups = C.lCup(L), fresh = C.lCup(C.freshMixL(rp, ST.repotNewPot));
+  const v = document.getElementById("rp_vol"); if (v) v.innerHTML = `Full pot &#8776; <b>${cups.toFixed(0)} cups</b> (${C.vol(L,vu)}). Prepare about <b>${fresh.toFixed(0)} cups</b> of fresh mix.`;
 }
 function finishRepot() {
   const p = P(); const rootKey = ST.root || "snug";
+  p.shape = effectivePot(p).shape;
   if (ST.repotNewPot) { p.top = ST.repotPot.top; p.bot = ST.repotPot.bot; p.ph = ST.repotPot.ph; if (!p.intvMan) p.intv = C.suggestIntv(p); }
   p.rootcond = rootKey;
   p.repotDate = C.dstr(0);
@@ -686,8 +694,10 @@ document.addEventListener("click", e => {
     case "lognote": { const inp = document.getElementById("noteinput"); if (inp && inp.value.trim()) { pushLog(P(), inp.value.trim()); save(P()); render(); } break; }
     case "capture": startCapture(); break;
     case "delphoto": { const p = P(); p.photos.splice(+el.dataset.i,1); save(p); render(); break; }
-    case "repot": ST.sel = el.dataset.id; ST.view = "repot"; ST.repotStep = 0; ST.repotChecks = []; ST.root = ""; ST.note = ""; ST.repotNewPot = false; ST.repotPot = { top: P().top, bot: P().bot, ph: P().ph }; render(); ovScrollTop(); break;
+    case "repot": ST.sel = el.dataset.id; ST.view = "repot"; ST.repotStep = 0; ST.repotChecks = []; ST.root = ""; ST.note = ""; ST.repotNewPot = false; ST.repotPot = { top: P().top, bot: P().bot, ph: P().ph, shape: P().shape || "round" }; render(); ovScrollTop(); break;
     case "repotpot": ST.repotNewPot = (el.dataset.v === "new"); render(); break;
+    case "repotshape": ST.repotPot.shape = el.dataset.v; if (!ST.repotNewPot) { const pp = P(); if (pp) { pp.shape = el.dataset.v; save(pp); } } render(); break;
+    case "potshape": { const pp = P(); if (pp) { pp.shape = el.dataset.v; save(pp); render(); } break; }
     case "rootphoto": startCapture("root"); break;
     case "check": { const k = el.dataset.k; ST.repotChecks.includes(k) ? ST.repotChecks = ST.repotChecks.filter(x=>x!==k) : ST.repotChecks.push(k); render(); break; }
     case "rnext": {

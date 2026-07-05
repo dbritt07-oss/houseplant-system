@@ -4,7 +4,7 @@
    the first load. Runtime-caches fonts. Plant DATA never lives
    here; it stays in IndexedDB on the device.
    ============================================================ */
-const CACHE = "hps-v7";
+const CACHE = "hps-v8";
 const SHELL = [
   "./",
   "./index.html",

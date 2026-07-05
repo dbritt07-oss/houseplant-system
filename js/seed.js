@@ -19,7 +19,7 @@ function mk(o) {
     hi: 2, light: "med", water: "tap", wsens: 0, tox: true, drain: true,
     intv: o.thirst, intvMan: false, fert: "bgl", lastW: 4, lastF: 14,
     snug: 35, rootcond: null, trapN: 0, trapL: 0,
-    top: 22, bot: 17, ph: 20, mat: "plastic", loc: "TBD", room,
+    top: 22, bot: 17, ph: 20, mat: "plastic", shape: "round", loc: "TBD", room,
     photos: [], repotDate: null
   }, o);
 }
@@ -90,7 +90,7 @@ export function newPlant({ name, latin, type, room, tox, photoDataUrl }) {
     hi: 2, water: "tap", wsens: 0, drain: true,
     intv: a.thirst, intvMan: false, fert: a.tox ? "bgl" : "bgl", lastW: 0, lastF: 14,
     snug: 35, rootcond: null, trapN: 0, trapL: 0,
-    top: 18, bot: 15, ph: 16, mat: "plastic",
+    top: 18, bot: 15, ph: 16, mat: "plastic", shape: "round",
     photos, repotDate: null,
     todo: ["Measure the real height", "Measure the pot, set material"],
     log
