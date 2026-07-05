@@ -28,6 +28,18 @@ Status key: ✅ done · 🔨 in progress · ⏭️ next · 📋 queued · 💡 i
 - ✅ Delete a plant: "Remove from collection" on the plant page, with a 5-second Undo (no scary confirm; data also survives in exported backups). Plant counts now reflect adds/removes.
 - ✅ Move rooms: already supported via a plant's Room field + quick chips (tap a room to move it).
 
+## Design direction — LOCKED (botanist's field journal)
+The whole app reskins to a naturalist's botanical journal: aged toned paper, elegant italic serif
+titles (Latin names), handwritten cursive margin notes, fine graphite/ink line + SELECTIVE
+watercolor washes, watercolor swatch strips, specimen stamps, earthy muted palette (sage, olive,
+ochre, terracotta, flower blues), light + dark. Flow: Index (landing = specimen collection) →
+Study (plant detail as a specimen plate) → Care (soil mix as a recipe + gnat protocol as field
+steps) → Field Guide (learn/roadmap). Art approach: TBD between parametric line-wash (evolves,
+offline), AI watercolor plates (static, gorgeous), or hybrid (recommended: parametric for daily,
+AI portrait plate per plant for the Study hero). AI generates the drawing only; all text/data
+stays in the real UI (AI handwriting is gibberish). Fonts: add an elegant serif (e.g. Cormorant)
+alongside Caveat (hand) + a clean label sans. Reskin is token-based → build screen by screen.
+
 ## Next
 - ⏭️ Sort & filter the Plants tab: sort A→Z, by room, by due-soonest, by health, by recently added;
       keep the existing search + medium/attention filters. A "sort" control next to the filter row.
