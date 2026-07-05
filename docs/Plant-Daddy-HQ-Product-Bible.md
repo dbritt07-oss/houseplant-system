@@ -68,9 +68,13 @@ Everything downstream in this Bible — IA, design system, AI strategy, roadmap 
 
 ## 2. Vision Statement
 
-**To be the operating system for plant ownership — a world where keeping plants alive is calm, personal, and quietly joyful, and where your collection feels like a living journal you tend, not a chore list that nags you.**
+**The calm home for everything you grow.**
 
-We envision Plant Daddy HQ growing from a single windowsill into the connective tissue of a plant-filled life: plants that know their own science, rooms that understand their own light and weather, a home that understands its rooms, analytics that reveal how your collection is really doing, automation that quietly handles the busywork, and — eventually — a life that knows where to find the next plant, the right supplies, and the community around them. All while the data stays yours.
+Plant care that's **computed, yours, and alive** — the science does the thinking, you keep the judgment, and every plant becomes a living page in a journal you love to tend.
+
+> **Care, computed. Judgment, yours. Beauty, alive.**
+
+*Three words to remember: **computed · yours · alive.** (The full seven-pillar ambition lives in "The Ambition"; this is the line we all memorize.)*
 
 ---
 
