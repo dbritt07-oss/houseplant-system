@@ -12,6 +12,9 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## internal — care-math test harness (no user-facing change; build stays v12)
+- [ ] *(developer only)* `npm test` runs `tests/care.test.js` — 30 golden assertions locking the care math (Monstera 7.67 L, intervals, LECA feed, pet-safe flags, repot windows, unit conversions). Nothing changes on your phone; this is a regression net for the V1 refactors.
+
 ## build v12 — quick-log, undo, delete a plant
 - [ ] **💧 / 🍽️ quick-log buttons** — on the **Today** tab, right side of each "Due now" card.
 - [ ] **Undo** — after tapping water/feed (or removing a plant), a toast shows an **Undo** link for ~5s.

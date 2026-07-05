@@ -204,10 +204,10 @@ One computed line summarizing collection health from existing health values (the
 **Acceptance Criteria** — Home shows a single line (e.g., "N thriving · M watching") derived from current `hi` values; no new screen, no stored analytics.
 **Dependencies** — None.
 
-### Epic P2-4 · Care-math assertion script ⬜  *(effort: S · risk: Low)*
+### Epic P2-4 · Care-math assertion script ✅ *(effort: S · risk: Low — DONE)*
 A tiny script asserting known care-math outputs, protecting the moat during the V1 refactors.
 
-**Acceptance Criteria** — A runnable node script checks a handful of known values (e.g., Monstera pot volume ≈ 7.67 L, interval, LECA fixed feed, pet-safe flags) and fails loudly on regression.
+**Acceptance Criteria** — A runnable node script checks a handful of known values (e.g., Monstera pot volume ≈ 7.67 L, interval, LECA fixed feed, pet-safe flags) and fails loudly on regression. ✅ **Shipped:** `tests/care.test.js` + `package.json` (`npm test`), **30 assertions, all passing**; also `npm run check` syntax-checks all JS.
 **Dependencies** — None; recommended **before** P0-1, P1-2, and P1-4.
 
 ---
