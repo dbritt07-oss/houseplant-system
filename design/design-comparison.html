@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plant Daddy HQ — Design Direction Review</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400&family=Caveat:wght@600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{--paper:#f3ede1;--card:#fbf7ee;--ink:#2c2a24;--green:#2f3d2c;--sage:#5f7a4c;--ochre:#b79b4e;--terra:#b0563a;--bloom:#5b6b86;--line:#e2d8c4;--muted:#8a8172}
+  *{box-sizing:border-box}
+  body{margin:0;background:#e6dcc8;color:var(--ink);font-family:'Inter',system-ui,sans-serif;padding:24px 14px;line-height:1.55}
+  .wrap{max-width:1000px;margin:0 auto}
+  .serif{font-family:'Cormorant Garamond',Georgia,serif}
+  .hand{font-family:'Caveat',cursive}
+  header{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:24px 26px;margin-bottom:20px}
+  h1{font-family:'Cormorant Garamond',serif;font-style:italic;font-weight:600;color:var(--green);font-size:38px;margin:0;line-height:1}
+  .sub{font-size:11px;letter-spacing:.24em;text-transform:uppercase;color:var(--muted);margin-top:8px}
+  .lede{font-size:14px;color:#5a5245;margin-top:14px;max-width:70ch}
+  .note{background:#fbf3e4;border:1px solid #e6d3b4;border-radius:8px;padding:11px 13px;font-size:12.5px;color:#7a5f36;margin-top:14px}
+  h2{font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--green);font-size:26px;margin:30px 0 4px}
+  .h2sub{font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:14px}
+  .grid{display:flex;flex-wrap:wrap;gap:18px}
+  .card{flex:1;min-width:290px;background:var(--card);border:1px solid var(--line);border-radius:12px;overflow:hidden;box-shadow:0 4px 16px rgba(90,75,45,.1);display:flex;flex-direction:column}
+  .card img{width:100%;display:block;background:#efe7d6;aspect-ratio:3/4;object-fit:cover}
+  .cbody{padding:14px 15px 16px}
+  .ct{font-family:'Cormorant Garamond',serif;font-size:20px;font-weight:600;color:var(--green);line-height:1}
+  .tags{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 10px}
+  .tag{font-size:10px;letter-spacing:.06em;text-transform:uppercase;padding:3px 9px;border-radius:999px;border:1px solid var(--line);background:#f3ecdd;color:#6b6046}
+  .tag.day{background:#f4efe0;color:#8a7a3e} .tag.night{background:#20291e;color:#cfe3b8;border-color:#33402c}
+  .ins{list-style:none;margin:0;padding:0;font-size:12.5px}
+  .ins li{padding:4px 0;border-bottom:1px dashed var(--line)}
+  .ins li:last-child{border-bottom:none}
+  .ins b{color:var(--green)}
+  .imgmiss{padding:20px;font-size:12px;color:var(--muted);text-align:center}
+  /* system */
+  .sws{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden;margin:4px 0 10px}
+  .sw{flex:1;height:44px;position:relative}
+  .sw span{position:absolute;bottom:3px;left:0;right:0;text-align:center;font-size:7px;color:#fff;text-shadow:0 1px 2px rgba(0,0,0,.5)}
+  .cols{display:flex;flex-wrap:wrap;gap:20px}
+  .col{flex:1;min-width:250px}
+  .pt{font-size:11px;color:#7a6f56;margin-bottom:4px}
+  .rec{background:var(--paper);border:1px solid var(--line);border-radius:12px;padding:18px 20px;margin-top:22px}
+  .rec h2{margin-top:0}
+  .rec ul{margin:8px 0 0;padding-left:18px;font-size:13px}
+  .rec li{margin-bottom:5px}
+  a{color:var(--sage)}
+  footer{text-align:center;font-size:11px;color:var(--muted);margin-top:26px}
+</style></head>
+<body><div class="wrap">
+  <header>
+    <h1>Plant Daddy HQ — Design Review</h1>
+    <div class="sub">Botanical field journal · renderings compared · day &amp; night</div>
+    <p class="lede">All the design explorations in one place. Skim the illustration studies (the art itself), then the app screens in day and night mode. Each card has quick branding/style notes and where it shines. Pick the direction that makes you go <em class="serif" style="font-size:16px">yes, that's it</em> — and jot any tweaks (warmer, cleaner, different art). The system spec (palette, type, components) lives in <a href="brand-board.html">brand-board.html</a>.</p>
+    <div class="note"><b>Reminder:</b> these AI renders are for <b>mood &amp; direction only</b> — the on-image text is gibberish and layouts aren't pixel-exact. The real build recreates this polish in code, with an AI watercolor plate per plant for the art and real, legible UI for all the data.</div>
+  </header>
+
+  <h2>1 · The illustration studies</h2>
+  <div class="h2sub">how each plant could be drawn</div>
+  <div class="grid">
+    <div class="card">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_37QN2ICVrvb8Cff40a8SrKoeIqN/hf_20260705_112144_802cdc39-c106-4a87-a9e8-7910208a4983.png" alt="Watercolor botanical plate of a Monstera"><div class="imgmiss">Watercolor plate — if this doesn't load, the render URL expired; ask me to re-generate.</div>
+      <div class="cbody"><div class="ct">Watercolor plate</div>
+        <div class="tags"><span class="tag">full watercolor</span><span class="tag">richest</span></div>
+        <ul class="ins">
+          <li><b>Style:</b> lush ink + watercolor, fully painted specimen plate.</li>
+          <li><b>Feel:</b> warm, romantic, apothecary — most like your Pinterest board.</li>
+          <li><b>Best for:</b> the Study-page hero "portrait plate."</li>
+          <li><b>Watch-outs:</b> static (AI-made), one per plant; heavier to produce for 24.</li>
+        </ul></div>
+    </div>
+    <div class="card">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_37QN2ICVrvb8Cff40a8SrKoeIqN/hf_20260705_112324_963e2be3-ca39-4d75-9e4e-be7cf4eb1c3f.png" alt="Graphite-forward botanical study of a Monstera"><div class="imgmiss">Graphite study — if blank, the URL expired.</div>
+      <div class="cbody"><div class="ct">Graphite study</div>
+        <div class="tags"><span class="tag">pencil + wash</span><span class="tag">airy</span></div>
+        <ul class="ins">
+          <li><b>Style:</b> delicate graphite line, restrained color, multiple angle studies.</li>
+          <li><b>Feel:</b> refined, scientific, "sexy" through restraint.</li>
+          <li><b>Best for:</b> index/at-a-glance art; pairs with the parametric evolving version.</li>
+          <li><b>Watch-outs:</b> quieter — less of a wow than full watercolor.</li>
+        </ul></div>
+    </div>
+  </div>
+
+  <h2>2 · App screens — daylight</h2>
+  <div class="h2sub">the journal, in light mode</div>
+  <div class="grid">
+    <div class="card">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_37QN2ICVrvb8Cff40a8SrKoeIqN/hf_20260705_114807_24d97de2-c3b0-404e-a922-df7dd10ffa31.png" alt="Light-mode plant study app screen"><div class="imgmiss">Study page (day) — if blank, URL expired.</div>
+      <div class="cbody"><div class="ct">Study page</div>
+        <div class="tags"><span class="tag day">day</span><span class="tag">plant detail</span></div>
+        <ul class="ins">
+          <li><b>Layout:</b> title → watercolor hero → care cards → notes + swatches.</li>
+          <li><b>Palette:</b> cream paper, sage/olive, terracotta accent.</li>
+          <li><b>Branding:</b> reads like a real specimen page — data lives in the beauty.</li>
+          <li><b>This is the heart</b> — the screen we'd build first.</li>
+        </ul></div>
+    </div>
+    <div class="card">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_37QN2ICVrvb8Cff40a8SrKoeIqN/hf_20260705_114858_1cd694c8-49e4-483b-93eb-8571b3e55c58.png" alt="Light-mode collection home app screen"><div class="imgmiss">Collection (day) — if blank, URL expired.</div>
+      <div class="cbody"><div class="ct">The Collection (home)</div>
+        <div class="tags"><span class="tag day">day</span><span class="tag">landing</span></div>
+        <ul class="ins">
+          <li><b>Layout:</b> serif header, a list of specimens with mini art + status.</li>
+          <li><b>Feel:</b> the index page of a naturalist's journal.</li>
+          <li><b>Branding:</b> calm, scannable, premium; hairline dividers over heavy cards.</li>
+          <li><b>Role:</b> your daily landing page.</li>
+        </ul></div>
+    </div>
+  </div>
+
+  <h2>3 · App screens — nightfall</h2>
+  <div class="h2sub">the journal, in dark mode</div>
+  <div class="grid">
+    <div class="card" style="max-width:320px">
+      <img src="https://d8j0ntlcm91z4.cloudfront.net/user_37QN2ICVrvb8Cff40a8SrKoeIqN/hf_20260705_114939_ceaa48c5-fb19-4356-bc8a-8a385070fd9d.png" alt="Dark-mode plant study app screen"><div class="imgmiss">Study page (night) — if blank, URL expired.</div>
+      <div class="cbody"><div class="ct">Study page · night</div>
+        <div class="tags"><span class="tag night">night</span><span class="tag">dark mode</span></div>
+        <ul class="ins">
+          <li><b>Style:</b> deep forest paper, the plant art glows.</li>
+          <li><b>Palette:</b> forest greens, chalk-cream text, amber + sage-glow accents.</li>
+          <li><b>Feel:</b> moody, premium, the "wow" you were first drawn to.</li>
+          <li><b>Role:</b> auto dark mode (follows your phone) — same layout, recolored.</li>
+        </ul></div>
+    </div>
+    <div class="col" style="min-width:280px">
+      <div class="rec" style="margin-top:0"><h2 style="font-size:22px">Day vs night — the plan</h2>
+        <p style="font-size:13px;margin:6px 0 0">One design, two skins. <b>Light / Dark / Auto</b> lives in Settings; because the app is token-based, a single switch recolors everything — paper→forest, ink→chalk, and the plant art picks up its glow at night. You never maintain two designs.</p></div>
+    </div>
+  </div>
+
+  <h2>4 · The system (from the brand board)</h2>
+  <div class="h2sub">palette &amp; type we'd build with</div>
+  <div class="cols">
+    <div class="col"><div class="pt">Daylight palette</div><div class="sws">
+      <div class="sw" style="background:#ece0c6"><span style="color:#5a4a30;text-shadow:none">Paper</span></div><div class="sw" style="background:#2f3d2c"><span>Ink</span></div><div class="sw" style="background:#5f7a4c"><span>Sage</span></div><div class="sw" style="background:#b79b4e"><span>Ochre</span></div><div class="sw" style="background:#b0563a"><span>Terra</span></div><div class="sw" style="background:#5b6b86"><span>Bloom</span></div></div>
+      <div class="pt">Nightfall palette</div><div class="sws">
+      <div class="sw" style="background:#171d15"><span>Forest</span></div><div class="sw" style="background:#1e251a"><span>Surface</span></div><div class="sw" style="background:#8fc47e"><span style="color:#14180f;text-shadow:none">Glow</span></div><div class="sw" style="background:#e6c07a"><span style="color:#3a2f12;text-shadow:none">Amber</span></div><div class="sw" style="background:#c98a6a"><span>Clay</span></div><div class="sw" style="background:#edf2e4"><span style="color:#333;text-shadow:none">Chalk</span></div></div></div>
+    <div class="col"><div class="pt">Type</div>
+      <div class="serif" style="font-size:28px;font-style:italic;color:var(--green);line-height:1">Cormorant Garamond</div>
+      <div style="font-size:12px;color:var(--muted)">display + italic Latin</div>
+      <div class="hand" style="font-size:24px;color:#6b5a3a;margin-top:8px">Caveat — field notes ♥</div>
+      <div style="font-family:'Inter';font-size:14px;margin-top:8px">Inter — data &amp; buttons</div>
+      <p style="font-size:12px;color:var(--muted);margin-top:10px">Full spec + components → <a href="brand-board.html">brand-board.html</a></p></div>
+  </div>
+
+  <div class="rec">
+    <h2>Where I'd land — and what to tell me</h2>
+    <p style="font-size:13px;margin:6px 0 10px">My recommendation: the <b>day Study page</b> as the core look, <b>hybrid art</b> (evolving line-wash daily + an AI watercolor portrait plate per plant), and <b>auto dark mode</b> using the night direction. But it's your call — when you're back, tell me:</p>
+    <ul>
+      <li><b>Direction:</b> which screen felt closest (day Study, Collection, or night)?</li>
+      <li><b>Art:</b> full watercolor, graphite study, or the hybrid?</li>
+      <li><b>Knobs:</b> warmer / cooler palette · richer notes &amp; swatches / more whitespace · loose watercolor / fine scientific plate.</li>
+    </ul>
+    <p style="font-size:13px;margin-top:10px">Point me at the changes and I'll render the next round — then build the real reskin, screen by screen.</p>
+  </div>
+
+  <footer>Plant Daddy HQ · Design Direction Review · botanical field journal · generated for offline review</footer>
+</div></body></html>

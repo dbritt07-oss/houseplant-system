@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plant Daddy HQ — Brand Board</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Caveat:wght@500;600;700&family=Inter:wght@400;500;600&family=Fraunces:opsz,ital,wght@9..144,0,400;9..144,0,500;9..144,1,400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#ece0c6; --paper2:#e7dbbe; --card:#efe6cd; --ink:#33302a; --inkgreen:#2f3d2c;
+    --sage:#5f7a4c; --olive:#8a7b3e; --ochre:#b79b4e; --terra:#b0563a; --bloom:#5b6b86;
+    --line:#cabf9c; --muted:#9a8f74; --clay:#9c6b4e;
+    /* dark */
+    --d-base:#171d15; --d-surface:#1e251a; --d-ink:#edf2e4; --d-sage:#8fc47e; --d-amber:#e6c07a; --d-clay:#c98a6a; --d-line:#2a3323;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#ded2b6;font-family:'Cormorant Garamond',Georgia,serif;color:var(--ink);padding:26px 14px;display:flex;justify-content:center}
+  .hand{font-family:'Caveat',cursive}
+  .sans{font-family:'Inter',system-ui,sans-serif}
+  .board{width:100%;max-width:760px;background:var(--paper);border:1px solid var(--line);border-radius:10px;padding:26px;box-shadow:0 12px 40px rgba(90,75,45,.22)}
+  .head{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2px solid var(--inkgreen);padding-bottom:12px}
+  .wm{font-size:44px;font-style:italic;font-weight:500;color:var(--inkgreen);line-height:.95}
+  .wm small{font-family:'Inter';font-style:normal;font-size:10px;letter-spacing:.3em;text-transform:uppercase;color:var(--muted);display:block;margin-top:6px}
+  .stamp{width:66px;height:66px;border:1.5px solid var(--clay);border-radius:50%;color:var(--clay);font-family:'Inter';font-size:8px;text-transform:uppercase;letter-spacing:.05em;display:grid;place-items:center;text-align:center;transform:rotate(-8deg);opacity:.75;line-height:1.2}
+  .essence{font-family:'Caveat';font-size:22px;color:#5a4a30;margin:14px 0 22px}
+  .sec{font-family:'Inter';font-size:10px;letter-spacing:.22em;text-transform:uppercase;color:var(--muted);margin:26px 0 11px;display:flex;align-items:center;gap:8px}
+  .sec:before{content:"✦";color:var(--sage)}
+  .cols{display:flex;flex-wrap:wrap;gap:20px}
+  .col{flex:1;min-width:260px}
+  .pt{font-family:'Inter';font-size:11px;color:#7a6f56;margin-bottom:7px}
+  .sws{display:flex;border:1px solid var(--line);border-radius:6px;overflow:hidden}
+  .sw{flex:1;height:64px;position:relative}
+  .sw b{position:absolute;top:6px;left:0;right:0;text-align:center;font-family:'Inter';font-weight:600;font-size:8px}
+  .sw span{position:absolute;bottom:5px;left:0;right:0;text-align:center;font-family:'Inter';font-size:7.5px;opacity:.85}
+  .ty{margin-bottom:14px}
+  .tyl{font-family:'Inter';font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+  .tyd{font-size:34px;font-style:italic;color:var(--inkgreen);line-height:1}
+  .tyi{font-size:19px;font-style:italic;color:#5a5a45}
+  .tyh{font-family:'Caveat';font-size:26px;color:#6b5a3a}
+  .tyu{font-family:'Inter';font-size:14px;color:var(--ink)}
+  .artbox{display:flex;gap:16px;align-items:center}
+  .artcard{width:130px;height:130px;background:#f1e9d2;border:1px solid #d3c7a4;border-radius:5px;display:grid;place-items:center;flex:0 0 auto}
+  .artcard svg{width:96px;height:96px}
+  .artnote{font-family:'Inter';font-size:13px;color:#5a4a30;line-height:1.55}
+  .spec{background:var(--paper2);border:1px solid var(--line);border-radius:6px;padding:16px;position:relative}
+  .antag{font-family:'Inter';font-size:9px;color:var(--clay);background:#f3ecd7;border:1px solid #d9cca8;border-radius:3px;padding:1px 6px;display:inline-block;margin:3px 3px 0 0}
+  .st-t{font-size:26px;font-style:italic;color:var(--inkgreen);line-height:1}
+  .st-c{font-family:'Inter';font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:#8a7f66;margin:3px 0 10px}
+  .st-row{display:flex;gap:14px}
+  .st-draw{width:120px;height:120px;flex:0 0 auto;background:#f1e9d2;border:1px solid #d3c7a4;border-radius:3px;display:grid;place-items:center}
+  .st-draw svg{width:94px;height:94px}
+  .care{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:6px}
+  .cs{background:var(--card);border:1px solid #d6caa8;border-radius:3px;padding:6px 8px}
+  .cs .l{font-family:'Inter';font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+  .cs .v{font-family:'Inter';font-size:11px;color:#3a352a;margin-top:1px}
+  .swstrip{display:flex;border:1px solid var(--line);border-radius:2px;overflow:hidden;width:fit-content}
+  .swstrip i{width:24px;height:16px;display:block}
+  .kit{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .btnp{background:#3a5a42;color:#f1e9d2;font-family:'Inter';font-size:12px;padding:10px 18px;border-radius:8px 15px 7px 14px;border:1px solid #2a3f30}
+  .btng{background:#f1e9d2;color:var(--inkgreen);font-family:'Inter';font-size:12px;padding:10px 18px;border-radius:8px 15px 7px 14px;border:1px solid #b3a884}
+  .chip{font-family:'Inter';font-size:11px;padding:5px 12px;border-radius:999px;border:1px solid #c9bd98;background:#f3ecd7;color:#6b6046}
+  .tagd{font-family:'Inter';font-size:11px;padding:5px 12px;border-radius:999px;background:#f0dccb;border:1px solid #d9a98b;color:#a3502f}
+  .ba{display:flex;gap:16px}
+  .bac{flex:1;border-radius:8px;padding:14px;text-align:center}
+  .bac.old{background:#efe5ca;border:1px solid var(--line)} .bac.new{background:var(--paper2);border:1px solid #b3a884}
+  .baL{font-family:'Inter';font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+  .bal{width:64px;height:64px;margin:0 auto}
+  .ban{font-style:italic;color:var(--inkgreen);font-size:16px;margin-top:6px}
+  .bad{font-family:'Inter';font-size:10px;color:var(--muted);margin-top:3px}
+  .foot{font-family:'Inter';font-size:10px;color:var(--muted);text-align:center;margin-top:24px;border-top:1px solid var(--line);padding-top:12px}
+</style></head>
+<body><div class="board">
+  <div class="head"><div class="wm">Plant Daddy HQ<small>Botanical Field Journal</small></div><div class="stamp">Brand<br>No. 01</div></div>
+  <div class="essence">A naturalist's journal for the modern plant keeper — warm, precise, and quietly alive.</div>
+
+  <div class="sec">Palette</div>
+  <div class="cols">
+    <div class="col"><div class="pt">Daylight · light mode</div><div class="sws">
+      <div class="sw" style="background:#ece0c6"><b style="color:#5a4a30">Paper</b><span style="color:#7a6f56">#ECE0C6</span></div>
+      <div class="sw" style="background:#2f3d2c"><b style="color:#e7dbbe">Ink Green</b><span style="color:#c9d3c0">#2F3D2C</span></div>
+      <div class="sw" style="background:#5f7a4c"><b style="color:#fff">Sage</b><span style="color:#e7efdb">#5F7A4C</span></div>
+      <div class="sw" style="background:#b79b4e"><b style="color:#33302a">Ochre</b><span style="color:#3a352a">#B79B4E</span></div>
+      <div class="sw" style="background:#b0563a"><b style="color:#fff">Terracotta</b><span style="color:#f3ded4">#B0563A</span></div>
+      <div class="sw" style="background:#5b6b86"><b style="color:#fff">Bloom Blue</b><span style="color:#dfe5ef">#5B6B86</span></div></div></div>
+    <div class="col"><div class="pt">Nightfall · dark mode</div><div class="sws">
+      <div class="sw" style="background:#171d15"><b style="color:#8fc47e">Deep Forest</b><span style="color:#9db08c">#171D15</span></div>
+      <div class="sw" style="background:#1e251a"><b style="color:#cfe3b8">Surface</b><span style="color:#9db08c">#1E251A</span></div>
+      <div class="sw" style="background:#8fc47e"><b style="color:#14180f">Sage Glow</b><span style="color:#1e321a">#8FC47E</span></div>
+      <div class="sw" style="background:#e6c07a"><b style="color:#3a2f12">Amber</b><span style="color:#4a3d1c">#E6C07A</span></div>
+      <div class="sw" style="background:#c98a6a"><b style="color:#3a2013">Clay</b><span style="color:#3a2013">#C98A6A</span></div>
+      <div class="sw" style="background:#edf2e4"><b style="color:#333">Chalk</b><span style="color:#666">#EDF2E4</span></div></div></div>
+  </div>
+
+  <div class="sec">Typography</div>
+  <div class="cols">
+    <div class="col">
+      <div class="ty"><div class="tyl">Display serif · Cormorant Garamond</div><div class="tyd">Monstera deliciosa</div></div>
+      <div class="ty"><div class="tyl">Italic serif · Latin &amp; captions</div><div class="tyi">Swiss Cheese Plant · Araceae</div></div></div>
+    <div class="col">
+      <div class="ty"><div class="tyl">Handwriting · Caveat · field notes</div><div class="tyh">wipe the leaves monthly ♥</div></div>
+      <div class="ty"><div class="tyl">UI sans · Inter · data &amp; buttons</div><div class="tyu">Water in 2 days · Bright, indirect light</div></div></div>
+  </div>
+
+  <div class="sec">Plant art — hybrid</div>
+  <div class="artbox">
+    <div class="artcard"><svg viewBox="0 0 100 110" fill="none" stroke="#33402c" stroke-width="1.2" stroke-linejoin="round"><path d="M50 104 L50 54" stroke-width="1.5"/><path d="M50 54 C50 30 66 14 92 14 C92 40 76 54 50 54 Z" fill="#88a05e" fill-opacity=".38"/><path d="M50 62 C50 40 36 26 12 26 C12 50 30 62 50 62 Z" fill="#9bb06f" fill-opacity=".34"/><path d="M50 50 L78 26 M50 58 L74 40" stroke-width=".6"/><ellipse cx="70" cy="30" rx="2.4" ry="5" fill="#e7dbbe" stroke-width=".6"/></svg></div>
+    <div class="artnote"><b>Living line-and-wash</b>, generated in-app — evolves with each plant's growth &amp; health, works offline. <span style="color:#9c6b4e">＋</span> an <b>AI watercolor "portrait plate"</b> per plant as the Study hero. The AI makes the drawing only; every label, name, and note stays real, legible UI.</div>
+  </div>
+
+  <div class="sec">Specimen plate — the app data, in the design</div>
+  <div class="spec">
+    <div class="st-t">Monstera deliciosa <span class="antag">common + Latin name</span></div>
+    <div class="st-c">Swiss Cheese Plant · Araceae</div>
+    <div class="st-row"><div class="st-draw"><svg viewBox="0 0 100 100" fill="none" stroke="#33402c" stroke-width="1.2" stroke-linejoin="round"><path d="M50 92V52"/><path d="M50 52 C50 32 64 18 88 18 C88 42 74 52 50 52 Z" fill="#88a05e" fill-opacity=".36"/><path d="M50 58 C50 40 36 26 14 26 C14 48 32 58 50 58 Z" fill="#9bb06f" fill-opacity=".32"/></svg></div>
+      <div style="flex:1"><span class="antag">drawing + growth stage</span>
+        <div class="care"><div class="cs"><div class="l">☀ Light</div><div class="v">Bright, indirect</div></div><div class="cs"><div class="l">💧 Water</div><div class="v">Every 6 days</div></div><div class="cs"><div class="l">🪴 Place</div><div class="v">Living room</div></div><div class="cs"><div class="l">⚠ Pets</div><div class="v">Toxic — keep up</div></div></div>
+        <span class="antag">live care data</span></div></div>
+    <div class="hand" style="font-size:19px;color:#5a4a30;margin-top:10px">Field tip: give it a moss pole to climb &amp; wipe the leaves monthly.</div>
+    <span class="antag">handwritten notes &amp; fun facts</span>
+    <div class="swstrip" style="margin-top:10px"><i style="background:#5f7a4c"></i><i style="background:#8a9a5a"></i><i style="background:#b79b4e"></i><i style="background:#b0563a"></i><i style="background:#5b6b86"></i></div>
+    <span class="antag">health / season swatches</span>
+  </div>
+
+  <div class="sec">Component kit</div>
+  <div class="kit"><span class="btnp">Water today</span><span class="btng">Start repot</span><span class="chip">Aroid mix</span><span class="chip">Living room</span><span class="tagd">water due</span><div class="swstrip"><i style="background:#5f7a4c"></i><i style="background:#b79b4e"></i><i style="background:#b0563a"></i></div></div>
+
+  <div class="sec">Before → after</div>
+  <div class="ba">
+    <div class="bac old"><div class="baL">Now · field sketch</div><div class="bal"><svg viewBox="0 0 100 100" fill="none" stroke="#463d2d" stroke-width="2"><path d="M50 88V44M50 44C50 26 62 16 82 16 82 34 70 44 50 44ZM50 52C50 38 40 30 22 30 22 44 34 52 50 52Z" fill="#8fa97e" fill-opacity=".5"/></svg></div><div class="ban">Monstera</div><div class="bad">cozy · casual</div></div>
+    <div class="bac new"><div class="baL">Next · specimen plate</div><div class="bal"><svg viewBox="0 0 100 100" fill="none" stroke="#33402c" stroke-width="1.2"><path d="M50 90V50M50 50C50 32 64 18 88 18 88 42 74 50 50 50ZM50 56C50 40 36 26 14 26 14 48 32 56 50 56Z" fill="#88a05e" fill-opacity=".36"/></svg></div><div class="ban">Monstera deliciosa</div><div class="bad">refined · alive · warm</div></div>
+  </div>
+
+  <div class="foot">Plant Daddy HQ · Brand Board v1 · the North Star for the botanical-journal reskin</div>
+</div></body></html>
