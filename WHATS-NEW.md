@@ -12,6 +12,15 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v13 — accessibility pass + botanical polish (T1.1)
+- [ ] **Sharper, more legible text** — quiet labels and captions are darker (now pass WCAG AA), and functional controls (nav, filters, stat labels, care readouts) moved from the handwritten font to the clean UI sans. Handwriting is kept for true margin notes.
+- [ ] **Botanical ink** — primary text and titles now use the deep **Ink Green**; plant names on the detail page are set in italic serif (the specimen binomial).
+- [ ] **Health shown as a specimen tag** — the color-only dot on each plant card is now a small letterpress **status tag** (Healthy / Stressed / Critical / Thriving) with a painted swatch — readable, and announced by screen readers.
+- [ ] **Drawn ink glyphs, not emoji** — the 💧/🍽️ quick-log buttons on **Today** are now hand-style ink marks (water droplet in Bloom Blue, feed sprig in sage), and are larger (44px) to tap.
+- [ ] **Comfortable taps + keyboard/focus** — nav arrows, gear, close, filter chips grew to 44px; a Bloom-Blue focus ring appears when using a keyboard; the active nav tab gets a Bloom-Blue underline.
+- [ ] **Calmer motion** — if your phone has "Reduce Motion" on, the sheet slide-up animation is disabled.
+- [ ] *(Where to see it: everywhere — most visibly the Today cards, the Plants grid tags, and any plant's page.)*
+
 ## internal — design tokens, phase 1 (no user-facing change; build stays v12)
 - [ ] *(developer only)* `index.html` stylesheet now uses named CSS tokens for all colors, fonts, and shadows (46 tokens in `:root`). Proven **pixel-identical** — nothing changes on your phone. Groundwork for the accessibility contrast pass (P0-2) and dark mode (V2). Remaining: radius/spacing tokens + a few `app.js` inline colors.
 

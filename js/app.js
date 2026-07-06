@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v12";
+const BUILD = "v13";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -124,7 +124,7 @@ function renderToday() {
 }
 function queueCard(p, sub, quick) {
   const right = quick
-    ? `<div class="qact"><button class="qbtn" data-act="qwater" data-id="${p.id}" title="Watered today">💧</button><button class="qbtn" data-act="qfeed" data-id="${p.id}" title="Fed today">🍽️</button></div>`
+    ? `<div class="qact"><button class="qbtn" data-act="qwater" data-id="${p.id}" aria-label="Log ${esc(p.name)} watered" title="Watered today"><svg viewBox="0 0 24 24" fill="none" stroke="var(--bloom)" stroke-width="1.7"><path d="M12 3c3.6 4.7 5.5 7.7 5.5 10.5a5.5 5.5 0 0 1-11 0C6.5 10.7 8.4 7.7 12 3Z" stroke-linejoin="round"/></svg></button><button class="qbtn" data-act="qfeed" data-id="${p.id}" aria-label="Log ${esc(p.name)} fed" title="Fed today"><svg viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.7"><path d="M12 21V8M12 8c0-3 2-5 5-5 0 3-2 5-5 5Zm0 3c0-3-2-5-5-5 0 3 2 5 5 5Z" stroke-linejoin="round"/></svg></button></div>`
     : (p.tox ? '<span class="chip warn">toxic</span>' : '<span class="chip ok">pet-safe</span>');
   return `<div class="qcard" data-act="open" data-id="${p.id}"><div class="qthumb">${thumb(p)}</div>
     <div class="qbody"><div class="qname">${esc(p.name)}</div><div class="qlatin">${esc(p.latin)}</div>
@@ -144,7 +144,7 @@ function renderPlants() {
   const cardHtml = p => {
     const idx = ST.order.indexOf(p.id) + 1;
     return `<div class="pcard" data-act="open" data-id="${p.id}">
-      <div class="panel"><span class="dot" style="background:${p.hi<=0?'var(--bad)':p.hi===1?'var(--warn)':'var(--ok)'}"></span>${thumb(p)}<span class="pageno">${String(idx).padStart(2,"0")}</span></div>
+      <div class="panel"><span class="spectag"><span class="wash" style="background:${['var(--rust)','var(--gold)','var(--sage)','var(--ink-green)'][p.hi]}"></span>${C.HEALTH[p.hi]}</span>${thumb(p)}<span class="pageno">${String(idx).padStart(2,"0")}</span></div>
       <div class="info"><div class="cn">${esc(p.name)}</div><div class="ln">${esc(p.latin)}</div><div class="loc">${esc(roomOf(p))}</div></div></div>`;
   };
   let body;
@@ -252,7 +252,7 @@ function renderSupplies() {
   const bti = repots, nema = repots;
   const fertRows = Object.keys(fertUse).length ? Object.entries(fertUse).map(([n,c]) => `<div class="recipe"><span>${esc(n)}</span><span class="amt">${c} feeding${c>1?'s':''} logged</span></div>`).join("") : `<div class="recipe"><span class="muted">No feedings logged yet</span></div>`;
   const mixRows = Object.entries(mix).sort((a,b)=>b[1]-a[1]).map(([n,c]) => `<div class="recipe"><span>${esc(n)}</span><span class="amt">${c.toFixed(1)} cups</span></div>`).join("");
-  return `<div class="grab"></div><div class="close" data-act="back">×</div>
+  return `<div class="grab"></div><div class="close" data-act="back" role="button" tabindex="0" aria-label="Close">×</div>
     <div class="pad"><p class="eyebrow">collection level</p><h1 style="font-size:23px">Supplies</h1>
     <p class="hand" style="font-size:16px;color:var(--muted);margin:4px 0 0">Totalled from your logs and current pots, so you restock before a repot run stalls.</p></div>
     <div class="block"><h3><span class="k">Gnat-war consumables</span></h3>
@@ -267,7 +267,7 @@ function renderSupplies() {
 /* ================= SETTINGS / BACKUP ================= */
 function renderSettings() {
   const perm = ("Notification" in window) ? Notification.permission : "unsupported";
-  return `<div class="grab"></div><div class="close" data-act="back">×</div>
+  return `<div class="grab"></div><div class="close" data-act="back" role="button" tabindex="0" aria-label="Close">×</div>
     <div class="pad"><p class="eyebrow">it's your data</p><h1 style="font-size:23px">Settings &amp; backup</h1></div>
     <div class="block"><h3><span class="k">Units</span></h3>
       <div class="between" style="margin-bottom:9px"><span style="font-size:13px;color:var(--muted)">Length</span>
@@ -297,8 +297,8 @@ function renderDetail() {
   const sug = C.suggestIntv(p);
   const soilless = !C.MEDIA[p.med].soil;
   const lu = ST.lenUnit, dL = cm => lu === "in" ? +C.cmIn(cm).toFixed(1) : Math.round(cm), stepL = lu === "in" ? 0.5 : 1;
-  return `<div class="grab"></div><div class="close" data-act="back">×</div>
-  <div class="navrow" style="margin-top:46px"><button class="navb" data-act="prev">‹</button><div class="navname">${esc(p.name)}<small>${idx+1} of ${ST.order.length}</small></div><button class="navb" data-act="next">›</button></div>
+  return `<div class="grab"></div><div class="close" data-act="back" role="button" tabindex="0" aria-label="Close">×</div>
+  <div class="navrow" style="margin-top:46px"><button class="navb" data-act="prev" aria-label="Previous plant">‹</button><div class="navname">${esc(p.name)}<small>${idx+1} of ${ST.order.length}</small></div><button class="navb" data-act="next" aria-label="Next plant">›</button></div>
   <div class="badges"><span class="badge">${esc(p.latin)}</span>${p.tox?`<span class="badge tox">Toxic to pets</span>`:`<span class="badge">Pet-safe</span>`}</div>
   ${(p.todo||[]).length?`<div class="todo"><div class="th">Still to finish</div>${p.todo.map((t,i)=>`<span class="titem" data-act="todone" data-i="${i}">${esc(t)}</span>`).join("")}</div>`:""}
   <div class="phero" id="stage"></div>
@@ -452,7 +452,7 @@ function renderRepot() {
   const p = P(); if (!p) return "";
   const r = C.RECIPES[p.med], lu = ST.lenUnit, vu = ST.volUnit, rootKeys = Object.keys(C.ROOTS), STEPS = 5;
   const bar = Array.from({ length: STEPS }, (_, i) => `<div class="s ${i<=ST.repotStep?'on':''}"></div>`).join("");
-  const head = `<div class="grab"></div><div class="close" data-act="back">×</div>
+  const head = `<div class="grab"></div><div class="close" data-act="back" role="button" tabindex="0" aria-label="Close">×</div>
     <div class="navrow" style="margin-top:16px"><div class="navname">Repotting ${esc(p.name)}<small>${esc(p.latin)} · ${r.name}</small></div></div>
     <div class="steps">${bar}</div><div class="rstep"><div class="k">Step ${ST.repotStep+1} of ${STEPS}</div></div>`;
 
@@ -560,7 +560,7 @@ function render() {
   const views = { today: renderToday, plants: renderPlants, soil: renderSoil, build: renderBuild };
   const titles = { today: "The Sketchbook", plants: "The Key", soil: "Soil", build: "The Plan" };
   app().innerHTML = `<div class="topbar"><span class="t">Plant Daddy HQ<span style="font-family:'Spline Sans';font-weight:500;font-size:11px;color:var(--muted);display:block;line-height:1;margin-top:2px">${titles[ST.tab]}</span></span>
-    <span style="display:flex;gap:8px;align-items:center"><span class="d">${today()}</span><button class="iconbtn" data-act="settings">${ICON.gear}</button></span></div>
+    <span style="display:flex;gap:8px;align-items:center"><span class="d">${today()}</span><button class="iconbtn" data-act="settings" aria-label="Settings &amp; backup">${ICON.gear}</button></span></div>
     ${views[ST.tab]()}
     <button class="fab" data-act="fab" aria-label="Add a plant">+</button>
     <div class="nav">${[["today","today"],["plants","key"],["soil","soil"],["build","plan"]].map(t=>`<button class="${ST.tab===t[0]?'on':''}" data-act="tab" data-v="${t[0]}">${ICON[t[0]]}<span>${t[1]}</span></button>`).join("")}</div>`;
@@ -583,7 +583,7 @@ function render() {
 /* ================= PHOTO CHECK-IN (existing plant) ================= */
 function renderCheckin() {
   const p = P(); const d = ST.checkinDraft; if (!p || !d) return "";
-  return `<div class="grab"></div><div class="close" data-act="back">×</div>
+  return `<div class="grab"></div><div class="close" data-act="back" role="button" tabindex="0" aria-label="Close">×</div>
     <div class="navrow" style="margin-top:46px"><div class="navname">Check-in · ${esc(p.name)}<small>confirm what you see</small></div></div>
     <div class="phero" style="margin-top:6px"><img src="${d.photo}" style="width:100%;height:100%;object-fit:cover" alt=""></div>
     <div class="pcardb"><h3><span class="ic"></span>AI health read</h3>
@@ -612,7 +612,7 @@ function saveCheckin() {
 
 /* ================= ADD A PLANT ================= */
 function renderAddMenu() {
-  return `<div class="grab"></div><div class="close" data-act="back">×</div>
+  return `<div class="grab"></div><div class="close" data-act="back" role="button" tabindex="0" aria-label="Close">×</div>
     <div class="pad"><p class="eyebrow">grow your library</p><h1 style="font-size:23px">Add a plant</h1>
     <p class="hand" style="font-size:16px;color:var(--muted);margin:4px 0 14px">Beyond the seeded 24 — however you like.</p></div>
     <div class="addopt" data-act="addbyphoto"><span class="ai">📷</span><div><div class="ot">Identify by photo</div><div class="os">Snap it, attach the photo, then pick the type. Auto-ID is coming; tap-to-pick works now and offline.</div></div></div>
@@ -621,7 +621,7 @@ function renderAddMenu() {
 }
 function renderAddPlant() {
   const d = ST.addDraft || (ST.addDraft = { name: "", latin: "", type: "aroid", room: "Unassigned", tox: true, photo: null });
-  return `<div class="grab"></div><div class="close" data-act="back">×</div>
+  return `<div class="grab"></div><div class="close" data-act="back" role="button" tabindex="0" aria-label="Close">×</div>
     <div class="navrow" style="margin-top:46px"><div class="navname">New plant<small>added to your library</small></div></div>
     ${d.photo ? `<div class="phero" style="margin-top:6px"><img src="${d.photo}" style="width:100%;height:100%;object-fit:cover" alt=""></div>` : ""}
     <div class="pcardb"><h3><span class="ic"></span>Name</h3>
@@ -813,6 +813,11 @@ document.addEventListener("click", e => {
     case "notifask": askNotify(); break;
     case "reseed": reseed(); break;
   }
+});
+// keyboard: activate role="button" elements (e.g. the Close ×) with Enter/Space
+document.addEventListener("keydown", e => {
+  const t = e.target;
+  if ((e.key === "Enter" || e.key === " ") && t && t.getAttribute && t.getAttribute("role") === "button") { e.preventDefault(); t.click(); }
 });
 document.addEventListener("input", e => {
   const el = e.target;
