@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v13";
+const BUILD = "v14";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -113,7 +113,7 @@ function renderToday() {
       <div class="stat"><div class="n" style="color:var(--rust)">${w.length}</div><div class="l">water due</div></div>
       <div class="stat"><div class="n" style="color:var(--warn)">${f.length}</div><div class="l">feed due</div></div>
     </div>
-    <div class="cta" data-act="openrun">Start a repot run <span class="arw">&rarr;</span></div>
+    <div class="cta" data-act="openrun">Find a plant to repot <span class="arw">&rarr;</span></div>
     <div class="banner" style="margin-top:14px" data-act="supplies"><div class="ic">${ICON.bug}</div><div><div class="bt">Supplies &amp; gnat war</div><div class="bs">Totals for fertilizer, mix, BTI and nematodes from your logs.</div></div></div>
     ${needM ? `<div class="banner" style="margin-top:10px"><div class="ic">✎</div><div><div class="bt">${needM} of ${ST.order.length} still need measurements</div><div class="bs">Open a plant and fill height, pot, medium, dates.</div></div></div>` : ""}
     <div class="section-h"><h2>Due now</h2></div>
@@ -615,7 +615,7 @@ function renderAddMenu() {
   return `<div class="grab"></div><div class="close" data-act="back" role="button" tabindex="0" aria-label="Close">×</div>
     <div class="pad"><p class="eyebrow">grow your library</p><h1 style="font-size:23px">Add a plant</h1>
     <p class="hand" style="font-size:16px;color:var(--muted);margin:4px 0 14px">Beyond the seeded 24 — however you like.</p></div>
-    <div class="addopt" data-act="addbyphoto"><span class="ai">📷</span><div><div class="ot">Identify by photo</div><div class="os">Snap it, attach the photo, then pick the type. Auto-ID is coming; tap-to-pick works now and offline.</div></div></div>
+    <div class="addopt" data-act="addbyphoto"><span class="ai">📷</span><div><div class="ot">Add with a photo</div><div class="os">Snap it and attach the photo, then pick the type. (Automatic plant ID comes later — tap-to-pick works now, offline.)</div></div></div>
     <div class="addopt" data-act="addmanual"><span class="ai">🌱</span><div><div class="ot">Add a plant manually</div><div class="os">Name it, pick a type, choose a room. Fill the rest on its page.</div></div></div>
     <div style="height:14px"></div>`;
 }
@@ -766,7 +766,7 @@ document.addEventListener("click", e => {
     case "open": ST.sel = el.dataset.id; ST.view = "detail"; render(); ovScrollTop(); break;
     case "filter": ST.filter = el.dataset.f; render(); break;
     case "back": readNote(); ST.view = null; render(); break;
-    case "openrun": ST.tab = "plants"; ST.filter = "attention"; ST.view = null; render(); toast("Open a plant, then Run the repot protocol."); break;
+    case "openrun": ST.tab = "plants"; ST.filter = "all"; ST.view = null; render(); window.scrollTo(0,0); toast("Open a plant, then tap “Run the repot protocol.”"); break;
     case "supplies": ST.view = "supplies"; render(); ovScrollTop(); break;
     case "settings": ST.view = "settings"; render(); ovScrollTop(); break;
     case "fab": ST.addDraft = null; ST.view = "addmenu"; render(); ovScrollTop(); break;

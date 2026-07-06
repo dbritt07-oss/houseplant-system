@@ -219,9 +219,9 @@
   .qbtn svg{width:20px;height:20px}
   .qbtn:active{transform:translateY(1px);background:var(--sage)}
   /* floating add button */
-  .fab{position:fixed;bottom:78px;left:calc(50% + 148px);width:56px;height:56px;border-radius:50%;background:var(--sage);border:1.5px solid var(--pen);color:var(--card);font-size:30px;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:45;box-shadow:2px 4px 0 var(--sh-fab)}
+  /* anchored to the app column's right edge (16px in), clamped to ≥16px on any width */
+  .fab{position:fixed;bottom:78px;right:max(16px, calc(50% - 204px));left:auto;width:56px;height:56px;border-radius:50%;background:var(--sage);border:1.5px solid var(--pen);color:var(--card);font-size:30px;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:45;box-shadow:2px 4px 0 var(--sh-fab)}
   .fab:active{transform:translateY(1px)}
-  @media(max-width:452px){.fab{left:auto;right:16px}}
   /* add menu options */
   .addopt{display:flex;gap:13px;align-items:center;background:var(--card);border:1.5px solid var(--line);border-radius:6px 14px 5px 13px;padding:14px;margin:0 16px 11px;cursor:pointer;box-shadow:2px 3px 0 var(--sh-card)}
   .addopt:active{transform:translate(1px,1px)}

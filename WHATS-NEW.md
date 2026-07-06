@@ -12,6 +12,11 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v14 — Sprint 1 fixes (T1.2–T1.4)
+- [ ] **Add button (＋) sits correctly** — it now hugs the right edge of the app on every screen width (no more drifting off-canvas on some phones). *(Bottom-right, any screen.)*
+- [ ] **Honest Today button** — the big green button now reads **“Find a plant to repot →”** and takes you to your Plants so you can open one and run the protocol (it no longer implies it starts a run by itself). *(Today tab.)*
+- [ ] **Clearer add-with-photo label** — the “＋ → photo” option now reads **“Add with a photo”** (no false promise of automatic ID yet). *(＋ button → Add a plant.)*
+
 ## build v13 — accessibility pass + botanical polish (T1.1)
 - [ ] **Sharper, more legible text** — quiet labels and captions are darker (now pass WCAG AA), and functional controls (nav, filters, stat labels, care readouts) moved from the handwritten font to the clean UI sans. Handwriting is kept for true margin notes.
 - [ ] **Botanical ink** — primary text and titles now use the deep **Ink Green**; plant names on the detail page are set in italic serif (the specimen binomial).

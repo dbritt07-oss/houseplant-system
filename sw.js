@@ -4,7 +4,7 @@
    you're online), cache as the offline fallback. Plant DATA never
    lives here; it stays in IndexedDB on the device.
    ============================================================ */
-const CACHE = "hps-v13";
+const CACHE = "hps-v14";
 const SHELL = [
   "./",
   "./index.html",
