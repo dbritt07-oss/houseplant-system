@@ -30,9 +30,15 @@
 - **PASS** = the standalone (installed) run completes Connect + Back up + Restore. → Build T4.1–T4.3 on Google Identity Services token flow, client-side, no backend.
 - **FAIL** (popup won't open / never returns a token in standalone) = → Plan B: a tiny serverless OAuth proxy (Cloudflare/Netlify/Vercel). Adds ~a week (per the execution plan).
 
-## Findings (fill in during the test)
+## Findings (recorded — T0.4 complete)
 
-- Browser-tab run: __
-- Standalone (installed PWA) run: __
-- Errors seen: __
-- Decision: __
+- **Standalone (installed PWA) run: ✅ PASS** — on iPhone, home-screen icon, banner confirmed `STANDALONE`. Connect returned an access token (len 338); Back up created a file in `appDataFolder`; Restore returned the exact JSON with matching nonce. Full round-trip works.
+- Browser-tab run: not needed — standalone is the stricter case and it passed.
+- Errors seen: none (one benign "enter Client ID first" from tapping Connect before pasting).
+- **Decision: ✅ PASS → use client-side Google Identity Services token flow + Drive REST `appDataFolder`. No serverless proxy. Plan B not needed.**
+
+## Carry-forward notes for building T4.1–T4.3 (not spike blockers)
+
+1. **Silent token refresh (verify in T4.2):** GIS access tokens are short-lived (~1h) and the token model returns no refresh token. Automatic backup must silently re-request a token via `requestAccessToken({prompt:''})` while the user has an active Google session; confirm this works without a popup before relying on unattended backups.
+2. **Folder choice (decide in T4.1):** `appDataFolder` is private and app-managed (user can't browse it in Drive, only via *Settings → Manage apps*). If we want the backup file user-visible/downloadable, use a named "Plant Daddy HQ" folder with the `drive.file` scope instead. Pick per the Bible's "your data, portable" intent.
+3. **Consent screen stays in Testing** until productization; publishing/verification is a V1-ship/V2 concern, not needed for founder use.

@@ -38,10 +38,12 @@ reskin, built screen by screen. *(Full detail: Product Bible §15.)*
 
 ## P0 — release gates (V1 cannot ship without these)
 
-### Epic P0-1 · Automatic cloud backup ⬜  *(effort: L · risk: High)*
+### Epic P0-1 · Automatic cloud backup ⬜  *(effort: L · risk: ~~High~~ → Medium after spike)*
 The one non-negotiable: years of records must survive a lost phone or iOS storage eviction. One-way
 automatic backup to the owner's **own Google Drive**, plus restore. Manual export/import stays as the
 offline/portable path.
+
+**Spike result (T0.4 ✅ PASS):** client-side **Google Identity Services token flow** + Drive REST `appDataFolder` works end-to-end **from an installed iOS PWA** (verified on device: connect → back up → restore round-trip, no secret in client). **Decision: build on this; no serverless proxy needed** (Plan B retired → epic risk drops High→Medium; no extra week). Carry-forward for the build: verify silent token refresh (`prompt:''`) for unattended backups; decide `appDataFolder` (private) vs a visible `drive.file` folder; keep the OAuth app in Testing for now. See `spike/README.md`.
 
 **Stories**
 - As an owner, I connect my Google Drive once so backups happen without me thinking about it.
