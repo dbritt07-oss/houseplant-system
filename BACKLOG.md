@@ -30,7 +30,7 @@ Aged toned paper, elegant serif titles (Latin names), handwritten margin notes, 
 selective watercolor, earthy muted palette, light + dark. Flow: Index → Study (specimen plate) →
 Care (recipe + gnat steps) → Grow. Art: parametric line-wash evolves for daily; optional AI portrait
 plate as the Study hero (V2). AI generates the drawing only; all text/data stays real UI. Token-based
-reskin, built screen by screen. *(Full detail: Product Bible §15.)*
+reskin, built screen by screen. **Governing docs: `docs/VISUAL-CONSTITUTION.md` (the visual law) + `design/brand-board.html` (the North Star) + Product Bible §15.** Every UI task below is validated against the Visual Constitution's Design Review Gate before it ships.
 
 ---
 
@@ -66,6 +66,7 @@ offline/portable path.
 
 ### Epic P0-2 · Accessibility pass to WCAG 2.1 AA ⬜  *(effort: M · risk: Low)*
 AA is a Bible §18 release gate. Fix the audit's a11y failures across the existing UI (no redesign).
+**Visual Constitution guardrail:** accessibility must *reinforce* the Brand Board, not flatten it — achieve AA with **darker warm ink, never colder gray**. Canonical values `--faint #685e49`, `--muted #655c46`, text ink → **Ink Green `#2f3d2c`**; status = **specimen/archive tags** (not SaaS pills); functional emoji → **hand-drawn ink glyphs**; keyboard focus ring in **Bloom Blue `#5b6b86`**. Validate against the Design Review Gate. (Preview: `a11y.preview.html`.)
 
 **Stories**
 - As a low-vision user, all text and meaningful UI meets AA contrast.
@@ -94,7 +95,7 @@ AA is a Bible §18 release gate. Fix the audit's a11y failures across the existi
 Formalize the ad-hoc `:root` CSS variables into a documented, single-source token set for light mode.
 Enables the AA fix now and dark mode later (V2). No visual redesign.
 
-**Status (T0.3):** ✅ stylesheet **colors, fonts, and shadows/scrims** tokenized in `index.html` (46 tokens; 0 orphan literals; proven pixel-identical by token back-substitution; `npm test` + `npm run check` green). ⬜ **Remaining:** radius/spacing tokens, and the ~6 inline SVG color literals in `js/app.js`. Epic stays open until those land.
+**Status (T0.3):** ✅ stylesheet **colors, fonts, and shadows/scrims** tokenized in `index.html` (46 tokens; 0 orphan literals; proven pixel-identical by token back-substitution; `npm test` + `npm run check` green). ⬜ **Remaining:** radius/spacing tokens; the ~6 inline SVG color literals in `js/app.js`; and adding **Ink Green `#2f3d2c`** + **Bloom Blue `#5b6b86`** tokens per `docs/VISUAL-CONSTITUTION.md` §6. Epic stays open until those land.
 
 **Stories**
 - As a builder, every color/type/spacing/radius value is a named token in one place.
@@ -110,7 +111,7 @@ Enables the AA fix now and dark mode later (V2). No visual redesign.
 ### Epic P1-2 · IA consolidation → 3 tabs (Home / Plants / Care) ⬜  *(effort: M · risk: Med)*
 Drop from 4 tabs to 3. Remove the "Build/Plan" dev-notes tab. Create a unified **Care** hub that
 absorbs the Soil content, the Supplies view, and a Repot-run entry point. No new features — only
-re-homing and routing.
+re-homing and routing. **Visual Constitution:** the nav + Care hub must read *editorial*, not dashboard (§3, §10) — compose, don't template; one hero; remove chrome.
 
 **Stories**
 - As a user, the bottom nav shows Home · Plants · Care (plus FAB add + gear Settings).
@@ -141,7 +142,7 @@ Add a sort control alongside existing search/filter. Ship **3 modes only**.
 
 ### Epic P1-4 · Study page reorder (Reference / Ritual / Record) ⬜  *(effort: M · risk: Low)*
 Reorganize the detail page's existing cards into the Bible's three-job order; lighten re-renders;
-clarify the two photo paths. No new content.
+clarify the two photo paths. No new content. **Visual Constitution — this is the Brand Board reclamation moment:** compose the Study as an actual **specimen plate** (hero drawing + 2×2 care grid + health/season **swatch strip** + collection date + **stamp/seal** + handwritten margin note), not a uniform card stack (§2, §3, §5). The plant is the hero; the interface recedes. Highest-leverage screen for the botanical identity — hold it hard to the Design Review Gate.
 
 **Stories**
 - As a user, the plant page reads top-to-bottom as Reference → Ritual → Record.
@@ -218,6 +219,8 @@ A tiny script asserting known care-math outputs, protecting the moat during the 
 
 # V2 — earned after V1's gate
 
+*All V2 UI work (Nightfall dark mode, the living dashboard, analytics surface, AI portrait plates) is bound by `docs/VISUAL-CONSTITUTION.md` — especially §6 (Nightfall is a deep-forest twilight, not an inverted gray dashboard), §5 (AI makes the drawing only), and §10 (never a busy dashboard).*
+
 - AI photo ID + health read (opt-in, serverless key-proxy; tap-to-pick + check-in scaffold already shipped).
 - Dark mode / "Nightfall" (built on the P1-1 token layer).
 - Opt-in anonymous telemetry (off by default; event counts only).
@@ -250,6 +253,7 @@ A tiny script asserting known care-math outputs, protecting the moat during the 
 - One commit per logical change, clear message. Revert from GitHub Desktop History if needed.
 - This file is the build source of truth; the Master Doc is the care-math brain; the Bible is the constitution.
 - **Every feature must pass the twelve-gate `docs/DEFINITION-OF-DONE.md` before it's "done."**
+- **Every UI change must pass the Design Review Gate in `docs/VISUAL-CONSTITUTION.md` before it ships** — the visual law, peer to the Product Bible. If it fails the gate (feels like software, plant not the hero, wouldn't belong on the Brand Board), it's reworked or cut.
 - **Every sprint ends with the Sprint Review ritual** (demo → dogfood 2–3 days → record friction → remove one interaction → fix one annoyance) — see `docs/V1-Execution-Plan.md`.
 - Sequencing, effort, and risk for V1 live in `docs/V1-Execution-Plan.md`.
 - **Dev checks:** `npm test` (care-math golden assertions) and `npm run check` (syntax-check all JS) should be green before any commit.

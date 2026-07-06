@@ -1,6 +1,8 @@
 # Plant Daddy HQ — V1 Engineering Execution Plan
 
-**Role:** Staff Engineering Manager / TPM. **Inputs only:** Product Bible v2.0, `docs/V1-Product-Decisions.md`, `BACKLOG.md`, `docs/V1-UI-Audit.md`.
+**Role:** Staff Engineering Manager / TPM. **Inputs only:** Product Bible v2.0, `docs/V1-Product-Decisions.md`, `BACKLOG.md`, `docs/V1-UI-Audit.md`, `docs/VISUAL-CONSTITUTION.md`.
+
+> **Design law:** every UI-touching task below (T0.3, T1.1, T2.1, T3.1, T3.2) must pass the **Design Review Gate in `docs/VISUAL-CONSTITUTION.md`** before it's done — accessibility and craft are held together, never traded. If a change is functional but feels like software rather than a botanical artifact, it is reworked or cut.
 **Assumptions:** one full-time solo founder-dev · existing codebase (extend, do not rebuild) · shipping V1 is the only objective · tech debt is touched only when it directly reduces implementation risk.
 **No UI redesign. No scope change. No new features.**
 
@@ -50,7 +52,8 @@ Format per task: **Sprint · Epic · Story · Task — Why · Deps · Effort(h) 
 - *Deps:* T0.3 (tokens hold the color values). *Effort:* 14h. *Risk:* Low (but may force minor palette tweaks).
 - *DoD:* `--muted`/`--faint`/body text ≥ 4.5:1 (large ≥ 3:1); plant-card health **dot gains text/icon label**; all interactive targets ≥ 44×44; every icon button has `aria-label`; visible focus states; `prefers-reduced-motion` disables sheet-rise/decorative motion; hand/serif fonts removed from nav labels + filter chips.
 - *Testing:* automated contrast check on the token palette; keyboard-only pass; VoiceOver spot-check of Home/Plants/Study; reduced-motion toggle.
-- *User-visible impact:* legible text, labeled status, comfortable taps, calmer motion — the "premium" step-up.
+- *Visual Constitution:* achieve AA with **darker warm ink, not gray** (`--faint #685e49`, `--muted #655c46`, ink → **Ink Green #2f3d2c**); status as **specimen tags** not SaaS pills; functional emoji → **ink glyphs**; focus ring in **Bloom Blue #5b6b86**. Preview: `a11y.preview.html`. Must pass the Design Review Gate.
+- *User-visible impact:* legible text, labeled status, comfortable taps, calmer motion — the "premium" step-up, **warmer not flatter**.
 
 **T1.2 — S1 · P1-7 · "the add button sits right" · Fix FAB position across widths**
 - *Why:* `left:calc(50% + 148px)` mispositions at ~440–452px.
@@ -110,6 +113,7 @@ Format per task: **Sprint · Epic · Story · Task — Why · Deps · Effort(h) 
 - *Deps:* T0.1 (assertions), T0.3. *Effort:* 12h. *Risk:* Low.
 - *DoD:* cards grouped Reference → Ritual → Record (Photos no longer above Vitals); detail chip/segment taps route through `detailRefresh` (not full `render()`), preserving scroll+focus; copy distinguishes "Photo check-in" from the "＋ photo" tile.
 - *Testing:* change every chip/segment and confirm no scroll jump + values persist; `npm test` green; verify timeline/photos intact.
+- *Visual Constitution — Brand Board reclamation:* this is the highest-leverage screen for the botanical identity. Compose the Study as an actual **specimen plate** (hero drawing + 2×2 care grid + health/season **swatch strip** + collection date + **stamp/seal** + margin note), not a uniform card stack (VC §2/§3/§5). The plant is the hero; chrome recedes. Hold hard to the Design Review Gate.
 - *User-visible impact:* a legible, smoother specimen page.
 
 **T3.2 — S3 · P2-3 · "a glance at collection health" · Minimal collection-health line on Home**
