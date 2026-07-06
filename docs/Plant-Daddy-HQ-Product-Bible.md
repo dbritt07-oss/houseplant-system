@@ -10,7 +10,7 @@ Philosophy, product strategy, UX, technical direction, and long-term vision.
 | **Owner** | Dorian (Founder) · Head of Product |
 | **Version** | 2.0 |
 | **Last updated** | July 2026 |
-| **Related docs** | `docs/VISUAL-CONSTITUTION.md` (**the visual law — peer to this Bible**), `design/brand-board.html` (visual North Star), `Houseplant-System-Master-Doc.md` (care models + collection), `BACKLOG.md` (execution tracker), `WHATS-NEW.md` (release verification) |
+| **Related docs** | `docs/DESIGN-GOVERNANCE.md` (**how all the docs relate + decision hierarchy**), `docs/VISUAL-CONSTITUTION.md` (the visual law — peer to this Bible), `design/brand-board.html` (visual North Star), `Houseplant-System-Master-Doc.md` (care models + collection), `BACKLOG.md` (execution tracker), `WHATS-NEW.md` (release verification) |
 
 > **How to use this document.** This is the constitution, not the changelog. It defines what is true and what we believe. When a feature, design, or business decision is proposed, it must be justified against this document. When reality forces a change, change it *here first*, then let it flow downstream. The care models and species constants live in `Houseplant-System-Master-Doc.md`; this Bible governs *why* and *what*, that doc governs the *math*.
 

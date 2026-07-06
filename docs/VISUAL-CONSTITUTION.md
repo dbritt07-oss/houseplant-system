@@ -8,6 +8,7 @@ Where the Product Bible governs *what we build and why*, this governs *how it mu
 | **Status** | Permanent source of truth — living, but changed deliberately |
 | **Owner** | Dorian (Founder) |
 | **Companion law** | `docs/Plant-Daddy-HQ-Product-Bible.md` (product) · `design/brand-board.html` (the visual North Star this codifies) |
+| **Governance** | `docs/DESIGN-GOVERNANCE.md` — how all design docs relate, who wins in a conflict, and the review workflow every change follows |
 | **Authority** | Every UI change is validated against this document **before** implementation. If a change fails the Design Review Gate (§11), it does not ship — it is reworked or cut. |
 
 > **How to use this document.** This is not a component library and not a style guide of pixels — those change. This is the *philosophy* beneath every visual decision, written so that if a stranger rebuilt the app from it, the result would still feel like Plant Daddy HQ. When a screen, control, illustration, color, or motion is proposed, it is justified against these principles. When the Brand Board and this document agree, that is law. When reality forces a change, change it *here first*, then let it flow into the build.
