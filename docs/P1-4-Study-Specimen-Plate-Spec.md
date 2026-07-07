@@ -24,6 +24,42 @@ If time is tight in Sprint 2, ship the composition + swatch strip + stamp + call
 
 ---
 
+## ★ Art Direction — Elevation Pass (toward timeless / museum quality)
+
+*The governing lens over everything below. It adds no features — it refines composition, material, type, and atmosphere so the Study page could hang in a gallery. **Where this section and a zone spec differ, this section wins.***
+
+**North star for the screen:** *a page you would frame.* The first viewport should read as a **mounted botanical specimen**, not an app screen — screenshot it and it looks like a plate from a 19th-century flora, quietly modernized.
+
+**The defining tension — name it, design to it: *a personal museum.*** The plate is *institutional* (printed labels, catalog numbers, registration marks, a collector's stamp); the margins are *personal* (a keeper's handwritten note, a dated observation). Timelessness lives in that tension — reverent and warm at once. Neither side wins; they coexist on one sheet.
+
+**1 · Editorial composition.** Lay the whole plate on an **invisible modular grid with a true baseline rhythm** — nothing floats arbitrarily; everything snaps, as if set by a compositor. **One screen, one specimen:** the first viewport is the *plate* (binomial · drawing · determination label · a whisper of swatch) with almost no UI; measurements, ritual, and record live *below the fold*, revealed by scrolling like turning to the notes behind a mounted sheet. Asymmetry with **tension, not just offset** — anchor the drawing to a strong vertical (the left third-line), hang the names against it, and leave the opposing space *deliberately empty*.
+
+**2 · Museum quality.** Mount the drawing on a **toned mount board** inset within the sheet, with a **hairline keyline** and **registration corner marks** (⌐ ¬) — a matted print. Adopt a **determination label**: a small off-white bordered label (as glued to herbarium sheets) holding *name · family · det. [keeper] · collection date* — authentic museum grammar for the identity block. Set a **plate number** like a folio (`Pl. 05`), and a discreet reduction note (`drawn ~⅓ life`) where scaled. Banish anything that looks like an app control from the plate.
+
+**3 · Visual rhythm.** A **strict typographic scale (4 sizes, one musical ratio)**. A single **printer's ornament** (a small engraved leaf) as the section divider — used once per movement, never as filler. Density rhythm: **airy hero → measured data → intimate record**; alternate breath and detail on purpose.
+
+**4 · Negative space.** Give the hero **luxurious** space — the drawing floats, the top of the sheet is mostly paper. **Three callouts, not four**, each with long thin leaders and air. Empty gutter is *rest*, not waste. When unsure, remove, then add space.
+
+**5 · Materiality.** **Replace the dot-grid with laid paper** — the single highest-impact change. A dot-grid reads as graph paper / engineering; **laid paper** (fine horizontal laid lines, faint chain lines, soft rag tooth) reads as *herbarium* and is instantly timeless. Add a faint **deckle / soft edge vignette**, a **letterpress deboss** on the collector's stamp (pressed, not printed), and ink with slight weight variation + a touch of bleed at terminals.
+
+**6 · Typography.** For this screen, **resolve the display serif to Cormorant Garamond** (the Brand Board face) — Fraunces is characterful but contemporary; Cormorant is the timeless botanical-folio voice. **True small caps** (`font-feature-settings:"smcp"`) for family + section labels — never faux-uppercased tracking. **Old-style figures** (`onum`) for dates and inline numbers (they sit like text — deeply editorial); lining/tabular figures only in the measurement table. Binomial always italic, genus capitalized, a hair of tracking, hung punctuation. Four sizes, generous leading — *discipline is the luxury*.
+
+**7 · Botanical storytelling.** Compose a **narrative arc**, not a data dump: *specimen → identity → nature → life-with-you.* Drawing (specimen) → determination label (identity) → growth caption + one evocative field line, from existing copy (nature) → the record (life with you). Each scroll is a page-turn. The growth caption is **narration**, not a stat, in the keeper's hand.
+
+**8 · Specimen-plate language.** Real herbarium grammar as *visual language*: determination label, plate number, registration marks, an optional **scale bar**, the collector's stamp. These organize with authority and age well.
+
+**9 · Field-journal atmosphere.** **Restraint in the hand** — one or two Caveat notes on the entire plate, no more; timeless journals are sparse. The keeper's presence via a dated note and an initial — quiet, never cute.
+
+**What to resist (the line between *timeless* and *twee*):**
+- **No literal props** — no coffee rings, taped/paper-clipped corners, faux-torn edges. Atmosphere comes from paper, ink, type, and space, not costume.
+- **No dot-grid, decorative drop shadows, gradients, or glass.**
+- **No second hero and no second accent color** on the plate at once.
+- **No faux-vintage photo filters** — age the *materials*, never the *photo*.
+
+**Amendments to the sections below (this pass overrides them):** paper = **laid, not dot-grid**; display serif = **Cormorant** for this screen; callouts = **3**; add **mount board + keyline + registration marks + determination label + plate number**; first viewport = **plate only, data below the fold**; type gains **true small caps + old-style figures**.
+
+---
+
 ## 1. Information Hierarchy (what matters, in order)
 
 The plate answers three questions in the Bible's order — **Reference → Ritual → Record** — but *composed*, not stacked.
@@ -144,7 +180,7 @@ Each zone lists: **content · data source · type · VC/Brand refs**.
 - *Brand:* "Plant art — hybrid" + specimen `.st-draw`. *VC:* §5 illustration.
 
 **D. Callout labels (botanical anatomy).**
-- 3–4 hairline **leader lines** (0.5px dotted ink-green) from the drawing to **text labels** in the right gutter. Points are **static per art archetype** (new small map):
+- **3** hairline **leader lines** (0.5px dotted ink-green) from the drawing to **text labels** in the right gutter, each with generous air (see Elevation §4). Points are **static per art archetype** (new small map):
   - Monstera/aroid: fenestration · aerial root · growth point
   - Shield (Alocasia): midrib · petiole · corm
   - Snake: leaf tip · rhizome · variegation margin
@@ -219,6 +255,8 @@ Each zone lists: **content · data source · type · VC/Brand refs**.
 
 Serif names the living thing; sans runs the machine; hand whispers in the margin. No exceptions.
 
+**Elevation refinements (per Art Direction §6):** display serif → **Cormorant Garamond** for this screen; **true small caps** (`smcp`) for family/section labels (not tracked uppercase); **old-style figures** (`onum`) for dates/inline numbers, lining/tabular only in the measurement table; hung punctuation on the binomial; hold to **four sizes** on one ratio.
+
 ## 9. Motion Ideas (VC §7 — expressive, last layer, all reduced-motion-safe)
 
 - **Leader lines draw in** on first open (`stroke-dashoffset` 0.4s ease), then hold.
@@ -270,4 +308,4 @@ Serif names the living thing; sans runs the machine; hand whispers in the margin
 
 ---
 
-*P1-4 Study Specimen Plate — design specification v1. The flagship. Build from this in Sprint 2; do not re-explore. Warm, precise, and quietly alive — the screen that defines Plant Daddy HQ.*
+*P1-4 Study Specimen Plate — design specification v1.1 (+ Art-Direction Elevation Pass). The flagship. Build from this in Sprint 2; do not re-explore. A page you would frame — a personal museum. Warm, precise, and quietly alive — the screen that defines Plant Daddy HQ.*
