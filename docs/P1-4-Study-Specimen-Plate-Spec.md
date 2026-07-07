@@ -40,9 +40,9 @@ If time is tight in Sprint 2, ship the composition + swatch strip + stamp + call
 
 **4 · Negative space.** Give the hero **luxurious** space — the drawing floats, the top of the sheet is mostly paper. **Three callouts, not four**, each with long thin leaders and air. Empty gutter is *rest*, not waste. When unsure, remove, then add space.
 
-**5 · Materiality.** **Replace the dot-grid with laid paper** — the single highest-impact change. A dot-grid reads as graph paper / engineering; **laid paper** (fine horizontal laid lines, faint chain lines, soft rag tooth) reads as *herbarium* and is instantly timeless. Add a faint **deckle / soft edge vignette**, a **letterpress deboss** on the collector's stamp (pressed, not printed), and ink with slight weight variation + a touch of bleed at terminals.
+**5 · Materiality.** **Replace the dot-grid with laid paper** — the single highest-impact change. A dot-grid reads as graph paper / engineering; **laid paper** (fine horizontal laid lines, faint chain lines, soft rag tooth) reads as *herbarium* and is instantly timeless. (Laid paper satisfies Visual Constitution §2's "aged rag paper with tooth" for the **whole app** — P1-4 leads the migration off the dot-grid, not a one-screen exception.) Add a faint **deckle / soft edge vignette**, a **letterpress deboss** on the collector's stamp (pressed, not printed), and ink with slight weight variation + a touch of bleed at terminals.
 
-**6 · Typography.** For this screen, **resolve the display serif to Cormorant Garamond** (the Brand Board face) — Fraunces is characterful but contemporary; Cormorant is the timeless botanical-folio voice. **True small caps** (`font-feature-settings:"smcp"`) for family + section labels — never faux-uppercased tracking. **Old-style figures** (`onum`) for dates and inline numbers (they sit like text — deeply editorial); lining/tabular figures only in the measurement table. Binomial always italic, genus capitalized, a hair of tracking, hung punctuation. Four sizes, generous leading — *discipline is the luxury*.
+**6 · Typography.** **Resolve the display serif to Cormorant Garamond** (the Brand Board face) — Fraunces is characterful but contemporary; Cormorant is the timeless botanical-folio voice. Per Visual Constitution §4, Fraunces is only an *interim*, so **P1-4 initiates the app-wide swap to Cormorant — it is not a one-screen fork** (avoid two display serifs coexisting). **True small caps** (`font-feature-settings:"smcp"`) for family + section labels — never faux-uppercased tracking. **Old-style figures** (`onum`) for dates and inline numbers (they sit like text — deeply editorial); lining/tabular figures only in the measurement table. Binomial always italic, genus capitalized, a hair of tracking, hung punctuation. Four sizes, generous leading — *discipline is the luxury*.
 
 **7 · Botanical storytelling.** Compose a **narrative arc**, not a data dump: *specimen → identity → nature → life-with-you.* Drawing (specimen) → determination label (identity) → growth caption + one evocative field line, from existing copy (nature) → the record (life with you). Each scroll is a page-turn. The growth caption is **narration**, not a stat, in the keeper's hand.
 
@@ -245,7 +245,7 @@ Each zone lists: **content · data source · type · VC/Brand refs**.
 
 | Role | Face | Size | Color | Where |
 |---|---|---|---|---|
-| Common name | serif (Cormorant target / Fraunces now) | 28px | ink-green | header |
+| Common name | **Cormorant Garamond** (Elevation §6 — Fraunces is the interim until the app-wide swap) | 28px | ink-green | header |
 | Binomial | serif **italic** | 18px | ink-green | header, callout title |
 | Section labels / family | sans caps, letterspaced | 10px | muted | zone headers |
 | Care values, measurements, ritual | sans | 13px | ink | data everywhere |
