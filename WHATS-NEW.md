@@ -12,6 +12,11 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v15 — Sprint 2, chunk 1: botanical foundation (P1-4)
+- [ ] **New display type** — titles and plant names now set in **Cormorant Garamond** (the botanical-folio serif from the Brand Board), replacing Fraunces app-wide. *(Everywhere — most visible on Today's headline and any plant name.)*
+- [ ] **Laid paper** — the background is now fine **laid-paper** lines (like a herbarium sheet) instead of the dot-grid. Subtle, but it's the ground the specimen plate will sit on. *(Whole app.)*
+- [ ] *Foundation for the Study specimen plate (coming next). No layout or data changed.*
+
 ## build v14 — Sprint 1 fixes (T1.2–T1.4)
 - [ ] **Add button (＋) sits correctly** — it now hugs the right edge of the app on every screen width (no more drifting off-canvas on some phones). *(Bottom-right, any screen.)*
 - [ ] **Honest Today button** — the big green button now reads **“Find a plant to repot →”** and takes you to your Plants so you can open one and run the protocol (it no longer implies it starts a run by itself). *(Today tab.)*
