@@ -1,0 +1,232 @@
+<!doctype html>
+<html lang="en"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plant Daddy HQ — Study Specimen Plate (P1-4 prototype)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,400;1,500&family=Caveat:wght@500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#ece0c6; --mount:#e6dabc; --sheet-edge:#d8caa6;
+    --ink:#2f3d2c; --ink-soft:#4a5443; --muted:#655c46; --faint:#685e49;
+    --line:#cabf9c; --hair:#b9ac86;
+    --sage:#5f7a4c; --ochre:#b79b4e; --terra:#b0563a; --bloom:#5b6b86; --wash:#88a05e;
+    --label:#f3ecd7;
+    --serif:'Cormorant Garamond',Georgia,serif; --sans:'Inter',system-ui,sans-serif; --hand:'Caveat',cursive;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:#d7cbb0;display:flex;justify-content:center;padding:22px 12px;
+    font-family:var(--sans);color:var(--ink);font-feature-settings:"onum" 1;-webkit-font-smoothing:antialiased}
+  .framenote{position:fixed;top:8px;left:0;right:0;text-align:center;font-size:11px;color:#6b6046;letter-spacing:.12em;text-transform:uppercase}
+
+  /* THE SHEET — laid paper, not dot-grid */
+  .sheet{width:100%;max-width:430px;position:relative;padding:22px 20px 26px;border-radius:3px;
+    background-color:var(--paper);
+    background-image:
+      repeating-linear-gradient(0deg, rgba(70,60,35,.045) 0 1px, transparent 1px 4px),          /* laid lines */
+      repeating-linear-gradient(90deg, rgba(70,60,35,.05) 0 1px, transparent 1px 27px),          /* chain lines */
+      radial-gradient(120% 90% at 50% 0%, rgba(255,250,235,.5), transparent 60%);                /* soft light */
+    box-shadow:0 18px 50px rgba(70,55,30,.28), inset 0 0 0 1px var(--sheet-edge);
+  }
+  /* soft edge vignette (deferred-polish, shown faint) */
+  .sheet::after{content:"";position:absolute;inset:0;border-radius:3px;pointer-events:none;
+    box-shadow:inset 0 0 26px rgba(90,72,40,.10)}
+
+  /* PLATE HEADER (masthead) */
+  .head{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:2px solid var(--ink);padding-bottom:10px}
+  .nom{flex:1}
+  .common{font-family:var(--serif);font-weight:600;font-size:33px;line-height:.95;color:var(--ink)}
+  .binom{font-family:var(--serif);font-style:italic;font-weight:500;font-size:19px;color:var(--ink-soft);margin-top:2px}
+  .fam{font-family:var(--sans);font-variant:small-caps;letter-spacing:.14em;font-size:11px;color:var(--muted);margin-top:5px}
+  .plno{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--muted);text-align:right;white-space:nowrap;margin-left:10px}
+  .nav{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
+  .nav b{width:30px;height:30px;border:1px solid var(--hair);border-radius:50%;display:grid;place-items:center;color:var(--muted);font-size:15px}
+
+  .tags{display:flex;gap:6px;margin:9px 0 0}
+  .antag{font-family:var(--sans);font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;
+    color:var(--ink);background:var(--label);border:1px solid #d9cca8;border-radius:2px;padding:2px 7px;display:inline-flex;gap:5px;align-items:center}
+  .antag .w{width:8px;height:8px;border-radius:1px}
+
+  /* HERO PLATE — mount board + keyline + registration marks + drawing + callouts */
+  .plate{position:relative;margin:14px 0 6px;background:var(--mount);border:1px solid var(--hair);border-radius:2px;
+    padding:16px 14px;display:flex;gap:6px}
+  .reg{position:absolute;width:12px;height:12px;border:1px solid var(--hair)}
+  .reg.tl{top:5px;left:5px;border-right:none;border-bottom:none}
+  .reg.tr{top:5px;right:5px;border-left:none;border-bottom:none}
+  .reg.bl{bottom:5px;left:5px;border-right:none;border-top:none}
+  .reg.br{bottom:5px;right:5px;border-left:none;border-top:none}
+  .draw{flex:0 0 62%;display:grid;place-items:center}
+  .draw svg{width:100%;height:auto}
+  .gutter{flex:1;position:relative;display:flex;flex-direction:column;justify-content:center;gap:22px;padding-left:4px}
+  .call{font-family:var(--sans);font-size:9.5px;font-variant:small-caps;letter-spacing:.1em;color:var(--muted);position:relative}
+  .call::before{content:"";position:absolute;left:-30px;top:50%;width:26px;border-top:1px dotted var(--ink-soft)}
+  .cap{font-family:var(--hand);font-size:16px;color:var(--muted);text-align:center;margin:2px 0 0;line-height:1.25}
+
+  /* determination label — pinned near the plate */
+  .detlabel{background:var(--label);border:1px solid #d3c6a2;border-radius:2px;padding:7px 10px;margin:8px 0 0;
+    box-shadow:1px 1px 0 rgba(120,100,60,.12)}
+  .detlabel .dt{font-family:var(--serif);font-style:italic;font-size:15px;color:var(--ink)}
+  .detlabel .df{font-family:var(--sans);font-variant:small-caps;letter-spacing:.12em;font-size:9.5px;color:var(--muted);margin-top:1px}
+  .detlabel .dm{font-family:var(--sans);font-size:10px;color:var(--ink-soft);margin-top:4px;border-top:1px solid #e0d4b4;padding-top:4px}
+
+  /* swatch strip */
+  .swwrap{display:flex;align-items:center;gap:10px;margin:14px 0 0}
+  .swstrip{display:flex;border:1px solid var(--hair);border-radius:1px;overflow:hidden}
+  .swstrip i{width:30px;height:18px;display:block;position:relative}
+  .swstrip i.on::after{content:"";position:absolute;inset:2px;border:1.5px solid var(--ink)}
+  .swcap{font-family:var(--sans);font-variant:small-caps;letter-spacing:.12em;font-size:10px;color:var(--muted)}
+
+  /* rules + section labels */
+  .rule{height:1px;background:var(--hair);margin:18px 0 0}
+  .sec{font-family:var(--sans);font-variant:small-caps;letter-spacing:.16em;font-size:11px;color:var(--muted);margin:16px 0 8px}
+  .orn{display:block;text-align:center;color:var(--sage);font-size:13px;margin:2px 0 -6px;opacity:.7}
+
+  /* care 2×2 */
+  .care{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:var(--hair);border:1px solid var(--hair);border-radius:2px;overflow:hidden}
+  .cs{background:var(--paper);padding:9px 11px}
+  .cs .l{display:flex;align-items:center;gap:6px;font-family:var(--sans);font-variant:small-caps;letter-spacing:.1em;font-size:10px;color:var(--muted)}
+  .cs .l svg{width:15px;height:15px}
+  .cs .v{font-family:var(--sans);font-size:13px;color:var(--ink);margin-top:3px}
+  .cs .v em{font-style:normal;color:var(--muted);font-size:11px}
+
+  /* measurements */
+  .mrow{display:flex;justify-content:space-between;align-items:baseline;padding:6px 0;border-bottom:1px dotted var(--hair);font-size:13px}
+  .mrow:last-child{border-bottom:none}
+  .mrow .k{font-family:var(--sans);font-variant:small-caps;letter-spacing:.08em;font-size:11px;color:var(--muted)}
+  .mrow .v{font-family:var(--sans)}
+  .mrow .v b{font-family:var(--serif);font-size:18px;font-weight:600;color:var(--ink)}
+
+  /* ritual */
+  .rit{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px dotted var(--hair);font-size:13px}
+  .rit:last-child{border-bottom:none}
+  .rit svg{width:18px;height:18px;flex:0 0 auto}
+  .rit .t{flex:1}
+  .rit .t b{color:var(--ink)} .rit .t span{color:var(--muted)}
+  .rit .go{font-family:var(--sans);font-size:11px;font-weight:600;color:var(--sage);white-space:nowrap}
+
+  /* record — mounted prints */
+  .prints{display:flex;gap:12px}
+  .print{width:96px;height:104px;background:#efe7d3;border:1px solid var(--hair);padding:6px;position:relative;box-shadow:1px 2px 0 rgba(120,100,60,.12)}
+  .print .img{width:100%;height:72px;background:linear-gradient(135deg,#cdbf98,#b7a97f);display:grid;place-items:center;color:#efe7d3;font-size:10px}
+  .print .cn{font-family:var(--hand);font-size:13px;color:var(--muted);margin-top:4px;text-align:center}
+  .print .corner{position:absolute;width:9px;height:9px;border:1px solid var(--muted);opacity:.5}
+  .print .c1{top:2px;left:2px;border-right:none;border-bottom:none}.print .c2{top:2px;right:2px;border-left:none;border-bottom:none}
+  .log{margin-top:12px}
+  .logrow{display:flex;gap:11px;padding:6px 0;border-bottom:1px dotted var(--hair);font-size:12.5px}
+  .logrow .d{font-family:var(--hand);font-size:15px;color:var(--terra);width:52px;flex:0 0 auto}
+  .logrow .x{color:var(--ink-soft)}
+  .logrow .stamp-mk{color:var(--terra);opacity:.7;margin-left:4px}
+  .fieldnote{font-family:var(--hand);font-size:17px;color:var(--muted);margin:12px 2px 0;line-height:1.3}
+
+  /* collector stamp */
+  .stamp{position:absolute;top:78px;right:16px;width:66px;height:66px;border:1.4px solid var(--terra);border-radius:50%;
+    color:var(--terra);opacity:.72;display:grid;place-items:center;text-align:center;transform:rotate(-8deg);
+    font-family:var(--sans);font-size:7.5px;letter-spacing:.06em;text-transform:uppercase;line-height:1.25}
+  .stamp b{display:block;font-size:8px}
+
+  .foot{text-align:center;font-family:var(--sans);font-size:10px;color:var(--muted);margin-top:18px;letter-spacing:.04em}
+</style></head>
+<body>
+<div class="framenote">P1-4 prototype · static mock for review · not wired to the app</div>
+<div class="sheet">
+
+  <!-- collector stamp (printed seal; letterpress deboss = Deferred Beyond V1) -->
+  <div class="stamp"><span>Plant Daddy HQ<b>№ 05</b>in your care · ’26</span></div>
+
+  <!-- HEADER -->
+  <div class="head">
+    <div class="nom">
+      <div class="common">Monstera</div>
+      <div class="binom">Monstera&nbsp;deliciosa</div>
+      <div class="fam">Swiss Cheese Plant · Araceae</div>
+    </div>
+    <div style="text-align:right">
+      <div class="plno">Pl.&nbsp;05</div>
+      <div class="nav"><b>‹</b><b>›</b></div>
+    </div>
+  </div>
+  <div class="tags"><span class="antag"><span class="w" style="background:var(--terra)"></span>Toxic — keep up</span></div>
+
+  <!-- HERO PLATE -->
+  <div class="plate">
+    <span class="reg tl"></span><span class="reg tr"></span><span class="reg bl"></span><span class="reg br"></span>
+    <div class="draw">
+      <svg viewBox="0 0 150 175" fill="none" stroke="var(--ink)" stroke-width="1.1" stroke-linejoin="round" stroke-linecap="round">
+        <!-- stem -->
+        <path d="M74 172 C72 140 73 120 75 104" stroke-width="1.4"/>
+        <!-- lower left leaf (wash + line, fenestrated) -->
+        <path d="M75 108 C60 104 34 108 18 96 C10 118 30 140 60 138 C72 136 76 122 75 108Z" fill="var(--wash)" fill-opacity=".30"/>
+        <path d="M75 116 L40 122 M75 124 L46 134 M62 112 L58 130" stroke-width=".55" stroke="var(--ink-soft)"/>
+        <ellipse cx="34" cy="118" rx="2.4" ry="5.5" transform="rotate(24 34 118)" fill="var(--paper)" stroke-width=".5"/>
+        <!-- upper right leaf (hero, fenestrated) -->
+        <path d="M75 100 C82 66 108 46 138 48 C140 82 118 104 84 102 C80 101 76 101 75 100Z" fill="var(--wash)" fill-opacity=".34"/>
+        <path d="M78 96 L120 60 M80 90 L116 74 M92 98 L104 62" stroke-width=".55" stroke="var(--ink-soft)"/>
+        <ellipse cx="112" cy="66" rx="2.6" ry="6.5" transform="rotate(-34 112 66)" fill="var(--paper)" stroke-width=".5"/>
+        <ellipse cx="100" cy="82" rx="2.2" ry="5" transform="rotate(-30 100 82)" fill="var(--paper)" stroke-width=".5"/>
+        <!-- new growth spear -->
+        <path d="M75 104 C79 92 86 86 92 88" stroke-width=".9"/>
+        <!-- aerial root -->
+        <path d="M74 150 C64 150 58 156 56 166" stroke-width=".8" stroke="var(--ink-soft)"/>
+      </svg>
+    </div>
+    <div class="gutter">
+      <div class="call">fenestration</div>
+      <div class="call">aerial root</div>
+      <div class="call">growth point</div>
+    </div>
+  </div>
+  <div class="cap">~ drawn at 53% toward its 2.1 m ceiling, filling in ~</div>
+
+  <!-- determination label -->
+  <div class="detlabel">
+    <div class="dt">Monstera deliciosa</div>
+    <div class="df">Araceae · aroid</div>
+    <div class="dm">det. Dorian · living room · coll. Jul 2026</div>
+  </div>
+
+  <!-- swatch strip -->
+  <div class="swwrap">
+    <div class="swstrip">
+      <i style="background:var(--terra)"></i><i style="background:var(--ochre)"></i>
+      <i class="on" style="background:var(--sage)"></i><i style="background:#3f5733"></i><i style="background:var(--bloom)"></i>
+    </div>
+    <div class="swcap">health · late summer</div>
+  </div>
+
+  <div class="rule"></div>
+  <div class="sec">Care</div>
+  <div class="care">
+    <div class="cs"><div class="l"><svg viewBox="0 0 24 24" fill="none" stroke="var(--ochre)" stroke-width="1.4"><circle cx="12" cy="12" r="4"/><path d="M12 3v3M12 18v3M3 12h3M18 12h3M6 6l2 2M16 16l2 2M18 6l-2 2M8 16l-2 2" stroke-linecap="round"/></svg>Light</div><div class="v">Bright, indirect</div></div>
+    <div class="cs"><div class="l"><svg viewBox="0 0 24 24" fill="none" stroke="var(--bloom)" stroke-width="1.4"><path d="M12 3c3.6 4.7 5.5 7.7 5.5 10.5a5.5 5.5 0 0 1-11 0C6.5 10.7 8.4 7.7 12 3Z"/></svg>Water</div><div class="v">every 6 days <em>· check soil first</em></div></div>
+    <div class="cs"><div class="l"><svg viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="1.4"><path d="M4 11l8-6 8 6M6 10v9h12v-9" stroke-linejoin="round"/></svg>Place</div><div class="v">Living room floor</div></div>
+    <div class="cs"><div class="l"><svg viewBox="0 0 24 24" fill="none" stroke="var(--terra)" stroke-width="1.4"><path d="M12 4l8 14H4z" stroke-linejoin="round"/><path d="M12 10v4M12 16v.5" stroke-linecap="round"/></svg>Pets</div><div class="v">Toxic — keep up</div></div>
+  </div>
+
+  <div class="rule"></div>
+  <div class="sec">Measurements</div>
+  <div class="mrow"><span class="k">Height</span><span class="v"><b>1.12</b> m · 53% grown</span></div>
+  <div class="mrow"><span class="k">Pot</span><span class="v">⌀ 24 · base 18 · h 22 · terracotta</span></div>
+  <div class="mrow"><span class="k">Medium</span><span class="v">Aroid mix · drains</span></div>
+  <div class="mrow"><span class="k">Volume</span><span class="v"><b>7.7</b> L ≈ 32 cups</span></div>
+
+  <div class="rule"></div>
+  <div class="sec">Ritual</div>
+  <div class="rit"><svg viewBox="0 0 24 24" fill="none" stroke="var(--bloom)" stroke-width="1.5"><path d="M12 3c3.6 4.7 5.5 7.7 5.5 10.5a5.5 5.5 0 0 1-11 0C6.5 10.7 8.4 7.7 12 3Z" stroke-linejoin="round"/></svg><div class="t"><b>Water</b> <span>· next in 3 days</span></div><span class="go">Watered today</span></div>
+  <div class="rit"><svg viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5"><path d="M12 21V8M12 8c0-3 2-5 5-5 0 3-2 5-5 5Zm0 3c0-3-2-5-5-5 0 3 2 5 5 5Z" stroke-linejoin="round"/></svg><div class="t"><b>Feed</b> <span>· every 2 weeks</span></div><span class="go">Fed today</span></div>
+  <div class="rit"><svg viewBox="0 0 24 24" fill="none" stroke="var(--ink-soft)" stroke-width="1.5"><path d="M4 12a8 8 0 0 1 14-5M20 12a8 8 0 0 1-14 5" stroke-linecap="round"/><path d="M18 3v4h-4M6 21v-4h4" stroke-linecap="round" stroke-linejoin="round"/></svg><div class="t"><b>Repot</b> <span>· check roots in 4–7 months · roots snug</span></div><span class="go">Run →</span></div>
+  <div class="rit"><svg viewBox="0 0 24 24" fill="none" stroke="var(--sage)" stroke-width="1.5"><circle cx="12" cy="13" r="4.5"/><path d="M12 8.5V5M8.8 9.5 7 7.7M15.2 9.5 17 7.7M7.5 13H5M19 13h-2.5" stroke-linecap="round"/></svg><div class="t"><b>Gnats</b> <span>· 0 traps this week · trend flat</span></div></div>
+
+  <div class="rule"></div>
+  <div class="sec">Record</div>
+  <div class="prints">
+    <div class="print"><span class="corner c1"></span><span class="corner c2"></span><div class="img">photo</div><div class="cn">Jul 5</div></div>
+    <div class="print"><span class="corner c1"></span><span class="corner c2"></span><div class="img">photo</div><div class="cn">Jun 28</div></div>
+  </div>
+  <div class="log">
+    <div class="logrow"><span class="d">Jul 5</span><span class="x">Photo check-in — healthy, new leaf opening</span></div>
+    <div class="logrow"><span class="d">Jun 28</span><span class="x">Repotted, aroid mix, roots snug<span class="stamp-mk">⊛</span></span></div>
+  </div>
+  <div class="fieldnote">~ give it a moss pole to climb & wipe the leaves monthly ~</div>
+
+  <div class="foot">Specimen № 05 · in your care</div>
+</div>
+</body></html>

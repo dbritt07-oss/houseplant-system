@@ -158,6 +158,8 @@ These are bright lines. Crossing one is a defect, not a trade-off.
 - **Excessive metrics / busy dashboards.** Numbers are quiet annotations, never the main event.
 - **Cold minimalism.** Empty ≠ sterile; our emptiness is warm paper, not white void.
 - **Trend-chasing.** No adopting the current app-design fashion; the herbarium doesn't go out of style.
+- **Aging the photograph.** *Age the materials, never the photographs.* Materials (paper, ink, board, the stamp) may carry warmth, texture, and archival character — but the plant photograph must remain **honest and contemporary**. No sepia, vintage filters, faux aging, or any effect that distorts the true appearance of the plant.
+- **Decorative nostalgia.** *Prefer authentic botanical reference over theatrical vintage styling.* Draw from real herbarium and botanical-documentation practice — determination labels, mounts, plate numbers, laid paper. **No coffee rings, taped or dog-eared corners, faux-torn edges, artificial distressing, or decorative props.** Authenticity over costume; the line between *timeless* and *twee*.
 
 ---
 
@@ -179,4 +181,6 @@ If a change is accessible, functional, and on-schedule but fails this gate, it i
 
 ---
 
-*Plant Daddy HQ — Visual Constitution v1. The permanent visual source of truth, peer to the Product Bible. Warm, precise, and quietly alive. Change it here first, then let it flow into every pixel.*
+*Plant Daddy HQ — Visual Constitution v1.1. The permanent visual source of truth, peer to the Product Bible. Warm, precise, and quietly alive. Change it here first, then let it flow into every pixel.*
+
+*Amendment log — v1.1: added two §10 guardrails ("age the materials, never the photographs"; "authentic botanical reference over decorative nostalgia"), promoted from the P1-4 spec to bind the whole app. Additive only — no prior guidance superseded. Frozen again after this amendment.*

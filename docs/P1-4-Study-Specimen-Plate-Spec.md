@@ -22,6 +22,8 @@ Build the **composition, materiality, and all data** in V1. Leave clean seams fo
 
 If time is tight in Sprint 2, ship the composition + swatch strip + stamp + callouts static; motion and AI plate are explicitly deferable without redesign.
 
+**Deferred Beyond V1** (build the core plate now; these are intentionally postponed and **evaluated after V1 ships, using real user feedback and implementation experience** — not a new roadmap stage): letterpress deboss on the stamp · deckle / soft edge vignette · the printer's-ornament section divider · the "breathing" idle motion. The core plate does **not** depend on any of them. Also material-honesty rule for the record zone: **age the materials, never the photograph** (Visual Constitution §10) — mounts and corners may look archival; the plant photo stays true.
+
 ---
 
 ## ★ Art Direction — Elevation Pass (toward timeless / museum quality)
