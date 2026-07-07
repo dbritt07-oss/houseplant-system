@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v15";
+const BUILD = "v16";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -306,8 +306,7 @@ function renderDetail() {
 
   <div class="pcardb"><h3><span class="ic"></span>Photos</h3>
     <div class="photos" id="photos"></div>
-    <button class="btn primary" data-act="photochk" style="width:100%;margin:12px 0 0">📷 Photo check-in</button>
-    <div class="fac" style="margin-top:8px">A check-in snaps a photo and lets you confirm the plant's health in one step (the spot the AI read will drop into). The ＋ tile just attaches a photo.</div>
+    <div class="fac" style="margin-top:8px">Tap ＋ to add a dated photo and confirm how it's looking — it saves to the timeline. (Where the AI health read will drop in.)</div>
   </div>
 
   <div class="pcardb"><h3><span class="ic"></span>Vitals</h3>
@@ -397,7 +396,7 @@ function detailRefresh() {
     const s = $(sId); if (s && document.activeElement !== s) s.value = val;
   };
   if ($("stage")) $("stage").innerHTML = plantArt(p);
-  if ($("photos")) $("photos").innerHTML = (p.photos||[]).map((ph,i)=>`<div class="ph"><img src="${ph.dataUrl}" alt=""><button class="del" data-act="delphoto" data-i="${i}">×</button></div>`).join("") + `<div class="addphoto" data-act="capture">＋<br>photo</div>`;
+  if ($("photos")) $("photos").innerHTML = (p.photos||[]).map((ph,i)=>`<div class="ph"><img src="${ph.dataUrl}" alt=""><button class="del" data-act="delphoto" data-i="${i}">×</button></div>`).join("") + `<div class="addphoto" data-act="photochk">＋<br>photo</div>`;
   const stage = g<0.35?"a young start":g<0.7?"filling in":"near its mature form";
   if ($("growcap")) $("growcap").innerHTML = `Drawn at <b>${Math.round(g*100)}% to its ${C.len(p.matureCm,lu)} ceiling</b>, ${stage}, reading ${C.HEALTH[p.hi].toLowerCase()}.`;
   setNum("s_hn", "s_h", p.hCm, true);
@@ -432,6 +431,22 @@ function detailRefresh() {
   if ($("gnatline")) $("gnatline").innerHTML = `Last week ${p.trapL}. Trend <b>${dir}</b>. ${dir==="down"?"You're winning. Keep the protocol on.":dir==="flat"&&p.trapN===0?"Clean. Hold the line.":"Re-drench with BTI and keep the top dry."}`;
   const tl = [...(p.log||[])].sort((a,b)=>b.date<a.date?-1:1);
   if ($("timeline")) $("timeline").innerHTML = tl.map(e=>{ const ph = e.photoId && (p.photos||[]).find(x=>x.id===e.photoId); return `<li><span class="d">${C.fmt(e.date)}</span><span class="x">${esc(e.t)}${ph?`<img class="tlimg" src="${ph.dataUrl}" alt="">`:""}</span></li>`; }).join("") || `<li><span class="x" style="color:var(--faint)">No entries yet.</span></li>`;
+  // T3.1 · keep chip/segment selection states in sync so chip taps refresh in place (no full re-render)
+  const setSel = (nodes, isOn) => nodes.forEach(b => b.classList.toggle("on", isOn(b)));
+  setSel(document.querySelectorAll("[data-med]"),  b => b.dataset.med  === p.med);
+  setSel(document.querySelectorAll("[data-mat]"),  b => b.dataset.mat  === p.mat);
+  setSel(document.querySelectorAll("[data-fert]"), b => b.dataset.fert === p.fert);
+  setSel(document.querySelectorAll("[data-root]"), b => b.dataset.root === p.rootcond);
+  setSel(document.querySelectorAll("[data-room]"), b => roomOf(p) === b.dataset.room);
+  setSel(document.querySelectorAll('[data-act="potshape"]'), b => b.dataset.v === (p.shape === "square" ? "square" : "round"));
+  setSel(document.querySelectorAll("[data-seg]"), b => {
+    const id = b.dataset.seg, v = b.dataset.v;
+    return id === "health" ? v === String(p.hi)
+      : id === "light" ? v === p.light
+      : id === "water" ? v === p.water
+      : id === "drain" ? v === (p.drain ? "y" : "n") : false;
+  });
+  const _roomi = $("roomi"); if (_roomi && document.activeElement !== _roomi) _roomi.value = roomOf(p) === "Unassigned" ? "" : (p.room || "");
 }
 
 /* ================= REPOT RUN (bench mode) ================= */
@@ -753,13 +768,13 @@ document.addEventListener("click", e => {
   // add-plant draft chips
   if (el.dataset.atype) { (ST.addDraft = ST.addDraft || {}).type = el.dataset.atype; render(); return; }
   if (el.dataset.atox) { (ST.addDraft = ST.addDraft || {}).tox = (el.dataset.atox === "y"); render(); return; }
-  if (el.dataset.room) { const p = P(); if (p) { p.room = el.dataset.room; save(p); render(); } return; }
+  if (el.dataset.room) { const p = P(); if (p) { p.room = el.dataset.room; save(p); detailRefresh(); } return; }
   // chip groups on the detail page
-  if (el.dataset.med) { P().med = el.dataset.med; if (!C.MEDIA[P().med].soil) P().fert = P().fert==="bgl"?"hydro":P().fert; save(P()); render(); return; }
-  if (el.dataset.mat) { P().mat = el.dataset.mat; save(P()); render(); return; }
-  if (el.dataset.fert) { P().fert = el.dataset.fert; save(P()); render(); return; }
-  if (el.dataset.root) { P().rootcond = el.dataset.root; pushLog(P(), "Root check: " + C.ROOTS[el.dataset.root].label); save(P()); render(); return; }
-  if (el.dataset.seg) { const id = el.dataset.seg, v = el.dataset.v; if (id==="health") P().hi=+v; else if (id==="light") P().light=v; else if (id==="water") P().water=v; else if (id==="drain") P().drain=(v==="y"); save(P()); render(); return; }
+  if (el.dataset.med) { P().med = el.dataset.med; if (!C.MEDIA[P().med].soil) P().fert = P().fert==="bgl"?"hydro":P().fert; save(P()); detailRefresh(); return; }
+  if (el.dataset.mat) { P().mat = el.dataset.mat; save(P()); detailRefresh(); return; }
+  if (el.dataset.fert) { P().fert = el.dataset.fert; save(P()); detailRefresh(); return; }
+  if (el.dataset.root) { P().rootcond = el.dataset.root; pushLog(P(), "Root check: " + C.ROOTS[el.dataset.root].label); save(P()); detailRefresh(); return; }
+  if (el.dataset.seg) { const id = el.dataset.seg, v = el.dataset.v; if (id==="health") P().hi=+v; else if (id==="light") P().light=v; else if (id==="water") P().water=v; else if (id==="drain") P().drain=(v==="y"); save(P()); detailRefresh(); return; }
   const a = el.dataset.act;
   switch (a) {
     case "tab": ST.tab = el.dataset.v; ST.view = null; render(); window.scrollTo(0,0); break;
@@ -795,7 +810,7 @@ document.addEventListener("click", e => {
     case "repot": ST.sel = el.dataset.id; ST.view = "repot"; ST.repotStep = 0; ST.repotChecks = []; ST.root = ""; ST.note = ""; ST.repotNewPot = false; ST.repotPot = { top: P().top, bot: P().bot, ph: P().ph, shape: P().shape || "round" }; render(); ovScrollTop(); break;
     case "repotpot": ST.repotNewPot = (el.dataset.v === "new"); render(); break;
     case "repotshape": ST.repotPot.shape = el.dataset.v; if (!ST.repotNewPot) { const pp = P(); if (pp) { pp.shape = el.dataset.v; save(pp); } } render(); break;
-    case "potshape": { const pp = P(); if (pp) { pp.shape = el.dataset.v; save(pp); render(); } break; }
+    case "potshape": { const pp = P(); if (pp) { pp.shape = el.dataset.v; save(pp); detailRefresh(); } break; }
     case "rootphoto": startCapture("root"); break;
     case "check": { const k = el.dataset.k; ST.repotChecks.includes(k) ? ST.repotChecks = ST.repotChecks.filter(x=>x!==k) : ST.repotChecks.push(k); render(); break; }
     case "rnext": {

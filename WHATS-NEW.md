@@ -12,6 +12,10 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v16 — Sprint 2, chunk 2a: smoother plant page + one photo path
+- [ ] **No more flicker when tuning a plant** — changing a plant's medium, pot material, health, light, water, drainage, room, or pot shape now updates **in place** (the chip highlight moves and the readouts refresh) instead of rebuilding the whole page and jumping. *(Any plant's page — tap the chips/segments.)*
+- [ ] **One way to add a photo** — the separate "Photo check-in" button is gone; tapping the **＋ photo** tile now snaps a photo *and* lets you confirm how it's looking, in one flow. *(Plant page → Photos.)*
+
 ## build v15 — Sprint 2, chunk 1: botanical foundation (P1-4)
 - [ ] **New display type** — titles and plant names now set in **Cormorant Garamond** (the botanical-folio serif from the Brand Board), replacing Fraunces app-wide. *(Everywhere — most visible on Today's headline and any plant name.)*
 - [ ] **Laid paper** — the background is now fine **laid-paper** lines (like a herbarium sheet) instead of the dot-grid. Subtle, but it's the ground the specimen plate will sit on. *(Whole app.)*
