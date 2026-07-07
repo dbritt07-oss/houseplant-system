@@ -12,6 +12,11 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v17 — Sprint 2, chunk 2b: the Study specimen plate 🌿
+- [ ] **A plant's page is now a mounted specimen plate.** Open any plant: it opens **plate-first** — the name in the botanical serif, the italic *binomial*, a family line, a collector's stamp, and the drawing **mounted** with registration corner marks. Below it: a **determination label**, a **health/season swatch strip**, then everything grouped under **Reference · Ritual · Record**. *(Any plant → tap to open.)*
+- [ ] Everything still works exactly as before — all sliders, chips, dates, the repot run, photos, timeline — just re-composed as a specimen sheet. Nothing was removed.
+- [ ] *(Known follow-ups, within V1: the section cards may become hairline rules, and the callout leaders/scale are a first pass. Content + data are final.)*
+
 ## build v16 — Sprint 2, chunk 2a: smoother plant page + one photo path
 - [ ] **No more flicker when tuning a plant** — changing a plant's medium, pot material, health, light, water, drainage, room, or pot shape now updates **in place** (the chip highlight moves and the readouts refresh) instead of rebuilding the whole page and jumping. *(Any plant's page — tap the chips/segments.)*
 - [ ] **One way to add a photo** — the separate "Photo check-in" button is gone; tapping the **＋ photo** tile now snaps a photo *and* lets you confirm how it's looking, in one flow. *(Plant page → Photos.)*

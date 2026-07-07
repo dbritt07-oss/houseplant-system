@@ -236,6 +236,40 @@
   .roomhead .rl{font-family:var(--font-sans);font-weight:600;font-size:15px;color:var(--ink-green)}
   .roomhead .rc{font-size:11px;color:var(--muted);background:var(--card2);border:1.5px solid var(--line);border-radius:999px;padding:2px 8px}
   .roomhead .line{flex:1;height:1px;background:var(--line)}
+  /* --- P1-4 · Study specimen plate --- */
+  .plate-head{position:relative;margin:44px 18px 0}
+  .ph-nav{display:flex;justify-content:space-between;align-items:center}
+  .ph-count{font-family:var(--font-sans);font-size:11px;letter-spacing:.12em;color:var(--muted)}
+  .ph-stamp{position:absolute;top:30px;right:0;width:60px;height:60px;border:1.3px solid var(--rust);border-radius:50%;color:var(--rust);opacity:.72;display:grid;place-items:center;text-align:center;transform:rotate(-8deg);font-family:var(--font-sans);font-size:7px;letter-spacing:.04em;text-transform:uppercase;line-height:1.2;padding:5px}
+  .ph-stamp b{display:block;font-size:9px;margin:1px 0}
+  .ph-name{font-family:var(--font-serif);font-weight:600;font-size:34px;line-height:.95;color:var(--ink-green);margin:10px 0 0}
+  .ph-binom{font-family:var(--font-serif);font-style:italic;font-size:19px;color:var(--pen);margin-top:1px}
+  .ph-fam{font-family:var(--font-sans);font-variant:small-caps;letter-spacing:.14em;font-size:11px;color:var(--muted);margin-top:5px}
+  .ph-tags{display:flex;gap:6px;margin-top:9px;border-bottom:2px solid var(--ink-green);padding-bottom:11px}
+  .ptag{font-family:var(--font-sans);font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-green);background:var(--card2);border:1px solid var(--border-warn);border-radius:2px;padding:3px 7px;display:inline-flex;gap:5px;align-items:center}
+  .ptag .w{width:8px;height:8px;border-radius:1px}
+  .mount{position:relative;margin:14px 18px 0;background:var(--card);background-image:var(--laid);border:1px solid var(--line);border-radius:2px;padding:16px 12px;display:flex;gap:4px}
+  .mount .reg{position:absolute;width:12px;height:12px;border:1px solid var(--muted);opacity:.5}
+  .mount .reg.tl{top:5px;left:5px;border-right:none;border-bottom:none}
+  .mount .reg.tr{top:5px;right:5px;border-left:none;border-bottom:none}
+  .mount .reg.bl{bottom:5px;left:5px;border-right:none;border-top:none}
+  .mount .reg.br{bottom:5px;right:5px;border-left:none;border-top:none}
+  .mdraw{flex:0 0 62%;display:grid;place-items:center;min-height:150px}
+  .mdraw svg{width:92%;height:auto}
+  .mgutter{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px;padding-left:16px}
+  .mgutter .call{font-family:var(--font-sans);font-size:9.5px;font-variant:small-caps;letter-spacing:.08em;color:var(--muted);position:relative}
+  .mgutter .call::before{content:"";position:absolute;left:-14px;top:50%;width:12px;border-top:1px dotted var(--pen)}
+  .detlabel{background:var(--card);border:1px solid var(--line);border-radius:2px;padding:7px 10px;margin:9px 18px 0;box-shadow:1px 1px 0 var(--sh-card-soft)}
+  .detlabel .dt{font-family:var(--font-serif);font-style:italic;font-size:15px;color:var(--ink-green)}
+  .detlabel .df{font-family:var(--font-sans);font-variant:small-caps;letter-spacing:.12em;font-size:9.5px;color:var(--muted);margin-top:1px}
+  .detlabel .dm{font-family:var(--font-sans);font-size:10px;color:var(--pen);margin-top:4px;border-top:1px solid var(--line);padding-top:4px}
+  .swwrap{display:flex;align-items:center;gap:10px;margin:13px 18px 0}
+  .swstrip{display:flex;border:1px solid var(--line);border-radius:1px;overflow:hidden}
+  .swstrip i{width:30px;height:16px;display:block;position:relative}
+  .swstrip i.on::after{content:"";position:absolute;inset:2px;border:1.5px solid var(--ink-green)}
+  .swcap{font-family:var(--font-sans);font-variant:small-caps;letter-spacing:.12em;font-size:10px;color:var(--muted)}
+  .zrule{height:1px;background:var(--line);margin:20px 18px 0}
+  .zsec{font-family:var(--font-sans);font-variant:small-caps;letter-spacing:.2em;font-size:12px;color:var(--muted);margin:14px 18px 2px}
   /* --- T1.1 · accessibility + materiality (per Visual Constitution) --- */
   /* specimen/archive status tag — replaces the color-only dot on plant cards */
   .pcard .panel .spectag{position:absolute;top:6px;left:6px;z-index:1;display:inline-flex;align-items:center;gap:5px;

@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v16";
+const BUILD = "v17";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -289,7 +289,12 @@ function renderSettings() {
     <div style="height:10px"></div>`;
 }
 
-/* ================= PLANT PAGE (finalized, ported) ================= */
+/* ================= PLANT PAGE — the Study specimen plate (P1-4) ================= */
+/* Static botanical reference per art archetype — family (determination label) and
+   anatomy callouts (decorative leaders on the plate). No new data; display only. */
+const FAMILY = { pMonstera:"Araceae", pShield:"Araceae", pSnake:"Asparagaceae", pStrap:"Asparagaceae", pVine:"Araceae", pPaddle:"Strelitziaceae", pBromeliad:"Bromeliaceae", pPalm:"Arecaceae", pTree:"Moraceae" };
+const ANATOMY = { pMonstera:["fenestration","aerial root","growth point"], pShield:["midrib","petiole","corm"], pSnake:["leaf tip","rhizome","variegation"], pStrap:["cane","leaf node","crown"], pVine:["node","aerial root","new leaf"], pPaddle:["midrib","petiole","fan base"], pBromeliad:["central cup","rosette","pup"], pPalm:["spear","frond","crown"], pTree:["apex","leaf","trunk"] };
+
 function renderDetail() {
   const p = P(); if (!p) return "";
   const idx = ST.order.indexOf(ST.sel);
@@ -298,16 +303,34 @@ function renderDetail() {
   const soilless = !C.MEDIA[p.med].soil;
   const lu = ST.lenUnit, dL = cm => lu === "in" ? +C.cmIn(cm).toFixed(1) : Math.round(cm), stepL = lu === "in" ? 0.5 : 1;
   return `<div class="grab"></div><div class="close" data-act="back" role="button" tabindex="0" aria-label="Close">×</div>
-  <div class="navrow" style="margin-top:46px"><button class="navb" data-act="prev" aria-label="Previous plant">‹</button><div class="navname">${esc(p.name)}<small>${idx+1} of ${ST.order.length}</small></div><button class="navb" data-act="next" aria-label="Next plant">›</button></div>
-  <div class="badges"><span class="badge">${esc(p.latin)}</span>${p.tox?`<span class="badge tox">Toxic to pets</span>`:`<span class="badge">Pet-safe</span>`}</div>
-  ${(p.todo||[]).length?`<div class="todo"><div class="th">Still to finish</div>${p.todo.map((t,i)=>`<span class="titem" data-act="todone" data-i="${i}">${esc(t)}</span>`).join("")}</div>`:""}
-  <div class="phero" id="stage"></div>
+
+  <div class="plate-head">
+    <div class="ph-nav"><button class="navb" data-act="prev" aria-label="Previous plant">‹</button><span class="ph-count">${String(idx+1).padStart(2,"0")} / ${String(ST.order.length).padStart(2,"0")}</span><button class="navb" data-act="next" aria-label="Next plant">›</button></div>
+    <div class="ph-stamp">Plant Daddy HQ<b>№ ${String(idx+1).padStart(2,"0")}</b>in your care</div>
+    <h1 class="ph-name">${esc(p.name)}</h1>
+    <div class="ph-binom">${esc(p.latin)}</div>
+    <div class="ph-fam">${FAMILY[p.art]?esc(FAMILY[p.art]):"Plantae"} · ${esc(C.MEDIA[p.med].label)}</div>
+    <div class="ph-tags">${p.tox?`<span class="ptag"><span class="w" style="background:var(--terra)"></span>Toxic — keep up</span>`:`<span class="ptag"><span class="w" style="background:var(--sage)"></span>Pet-safe</span>`}</div>
+  </div>
+
+  ${(p.todo||[]).length?`<div class="todo"><div class="th">Specimen incomplete</div>${p.todo.map((t,i)=>`<span class="titem" data-act="todone" data-i="${i}">${esc(t)}</span>`).join("")}</div>`:""}
+
+  <div class="mount">
+    <span class="reg tl"></span><span class="reg tr"></span><span class="reg bl"></span><span class="reg br"></span>
+    <div class="mdraw" id="stage"></div>
+    <div class="mgutter" aria-hidden="true">${(ANATOMY[p.art]||[]).map(a=>`<div class="call">${esc(a)}</div>`).join("")}</div>
+  </div>
   <div class="cap" id="growcap"></div>
 
-  <div class="pcardb"><h3><span class="ic"></span>Photos</h3>
-    <div class="photos" id="photos"></div>
-    <div class="fac" style="margin-top:8px">Tap ＋ to add a dated photo and confirm how it's looking — it saves to the timeline. (Where the AI health read will drop in.)</div>
+  <div class="detlabel">
+    <div class="dt">${esc(p.latin)}</div>
+    <div class="df">${FAMILY[p.art]?esc(FAMILY[p.art]):"—"} · ${esc(C.MEDIA[p.med].label)}</div>
+    <div class="dm">det. keeper · <span id="detloc">${roomOf(p)==="Unassigned"?"unplaced":esc(roomOf(p).toLowerCase())}</span>${p.repotDate?` · repotted ${esc(C.fmt(p.repotDate))}`:""}</div>
   </div>
+
+  <div class="swwrap"><div class="swstrip"><i data-sw="0" style="background:var(--terra)"></i><i data-sw="1" style="background:var(--gold)"></i><i data-sw="2" style="background:var(--sage)"></i><i data-sw="3" style="background:#3f5733"></i></div><div class="swcap">health · ${C.season()?"growing":"resting"}</div></div>
+
+  <div class="zrule"></div><div class="zsec">Reference</div>
 
   <div class="pcardb"><h3><span class="ic"></span>Vitals</h3>
     <div class="row"><label>Height (${lu})</label><input type="range" id="s_h" min="8" max="${p.matureCm}" step="0.5" value="${p.hCm}"><input type="number" class="cnum" id="s_hn" step="${stepL}" value="${dL(p.hCm)}"></div>
@@ -356,6 +379,8 @@ function renderDetail() {
     <div class="read" id="feednote" style="margin-top:10px"></div>
   </div>
 
+  <div class="zrule"></div><div class="zsec">Ritual</div>
+
   <div class="pcardb"><h3><span class="ic"></span>When to check for repotting</h3>
     <div class="row"><label>Root-snug %</label><input type="range" id="s_snug" min="0" max="100" value="${p.snug}"><input type="number" class="cnum" id="s_snugn" step="5" min="0" max="100" value="${p.snug}"></div>
     <div class="read" id="repotwin"></div><div class="pnote" id="repotnote"></div><div class="fac" id="repotfac"></div>
@@ -368,6 +393,13 @@ function renderDetail() {
   <div class="pcardb"><h3><span class="ic"></span>Gnat watch</h3>
     <div class="step"><button data-act="tminus">–</button><input type="number" id="trapc" class="cnum" min="0" value="${p.trapN}"><button data-act="tplus">+</button><span style="font-size:12px;color:var(--muted)">traps this week</span></div>
     <div class="read" id="gnatline"></div>
+  </div>
+
+  <div class="zrule"></div><div class="zsec">Record</div>
+
+  <div class="pcardb"><h3><span class="ic"></span>Photos</h3>
+    <div class="photos" id="photos"></div>
+    <div class="fac" style="margin-top:8px">Tap ＋ to add a dated photo and confirm how it's looking — it saves to the timeline. (Where the AI health read will drop in.)</div>
   </div>
 
   <div class="pcardb"><h3><span class="ic"></span>Care timeline</h3>
@@ -447,6 +479,9 @@ function detailRefresh() {
       : id === "drain" ? v === (p.drain ? "y" : "n") : false;
   });
   const _roomi = $("roomi"); if (_roomi && document.activeElement !== _roomi) _roomi.value = roomOf(p) === "Unassigned" ? "" : (p.room || "");
+  // plate: swatch strip highlights current health; determination label reflects current room
+  setSel(document.querySelectorAll("[data-sw]"), b => +b.dataset.sw === p.hi);
+  if ($("detloc")) $("detloc").textContent = roomOf(p) === "Unassigned" ? "unplaced" : roomOf(p).toLowerCase();
 }
 
 /* ================= REPOT RUN (bench mode) ================= */
