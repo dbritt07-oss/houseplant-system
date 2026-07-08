@@ -108,7 +108,31 @@ Over time the app should learn each zone's character — sun, shade, wind, humid
 
 For keepers who want it, the app can quietly reflect the investment a collection represents — plants, pots, media, fertilizer, accessories, tools, and treatments — and total it into a sense of the whole. This is a lens on the collection's worth, offered gently. **It is always optional and must never dominate the experience;** the collection is a relationship first and an asset a distant second.
 
-## VI. Telling the story to the world
+## VI. The Supply Cabinet (Botanical Pantry)
+
+*Theme: inventory awareness — the materials on hand, not only the plants*
+
+Long-term, Plant Daddy HQ should understand not only the plants a keeper owns but the **plant-care materials they currently have on hand.** This is an *inventory-awareness* system, not a shopping list — the point is that the app knows what's in the cabinet, so its guidance can account for reality.
+
+**What the cabinet holds.** A keeper could catalog, in whatever depth suits them:
+
+- **Growing media** — potting soil, aroid mix, LECA, Pon, moss, coco chips, bark, perlite, pumice, charcoal, and other amendments.
+- **Nutrition** — liquid, slow-release, and organic fertilizers; soil conditioners.
+- **Treatments** — BTI, beneficial nematodes, neem oil, fungicides, insecticides, and other plant treatments.
+- **Containers** — nursery pots, decorative pots, terracotta, cache pots, self-watering pots.
+- **Tools** — moisture meters, pruners, stakes, trellises, grow lights, and other equipment.
+
+**What a keeper can do.** Add supplies manually or by **photographing the product**; organize them into categories; archive or remove what they no longer own; and, optionally, track approximate quantities remaining. "Optionally" is load-bearing — see the principles below.
+
+**Why it exists — context for intelligence, not an end in itself.** The cabinet is most valuable not as a list but as *knowledge the rest of the app can reason over*: warning when a recommended care task needs a material the keeper doesn't have; suggesting sensible substitutions; helping avoid duplicate purchases; supporting smarter repot planning; connecting treatments to a plant's medical history; and sharpening AI recommendations by grounding them in what's actually available. (This is the anchor the future "editable/substitutable mix during a repot" and "supply-aware repot" ideas point to.)
+
+**Design principles.** Inventory must **reduce uncertainty, not create work.** The system stays **optional**; a keeper should never feel required to maintain perfect counts. The goal is **awareness, not warehouse management** — a glance at what's in the cabinet, not a second job.
+
+**Relationship to other themes.** The cabinet deepens **Plant Medical Records** (Theme I — treatments tied to history), **Growing Medium Intelligence** (Theme II — comparisons grounded in what's on hand), repot workflows, **Calendar Intelligence** (Theme III — don't schedule a task you lack materials for), and the personalized horticultural intelligence that runs through all of it.
+
+**Gate.** This stays a Future Vision item until real user behavior shows that inventory awareness delivers meaningful value *without* increasing complexity — the moment it starts to feel like warehouse management, it has failed its own test.
+
+## VII. Telling the story to the world
 
 *Theme: Landing Page / Marketing Future*
 
