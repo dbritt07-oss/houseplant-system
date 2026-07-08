@@ -12,6 +12,10 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v18 — plate fixes: stamp position + always-reachable close
+- [ ] **Stamp no longer covers the ›** — the collector's seal moved down beside the binomial, clear of the next-plant arrow. *(Any plant page, top-right.)*
+- [ ] **Exit without scrolling up** — the **×** close now stays pinned to the top-right of the screen while you scroll a plant's page, so you can leave from anywhere. *(Any open card.)*
+
 ## build v17 — Sprint 2, chunk 2b: the Study specimen plate 🌿
 - [ ] **A plant's page is now a mounted specimen plate.** Open any plant: it opens **plate-first** — the name in the botanical serif, the italic *binomial*, a family line, a collector's stamp, and the drawing **mounted** with registration corner marks. Below it: a **determination label**, a **health/season swatch strip**, then everything grouped under **Reference · Ritual · Record**. *(Any plant → tap to open.)*
 - [ ] Everything still works exactly as before — all sliders, chips, dates, the repot run, photos, timeline — just re-composed as a specimen sheet. Nothing was removed.
