@@ -12,6 +12,14 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v26 — Sprint 3: plain-language filters
+- [ ] **Clearer filter chips** on Plants — the medium filters now read **Aroid mix · General mix · Gritty mix** (the same names you see when assigning a plant's medium), and the status chips read **Needs care** and **Measured**. Same filtering, friendlier words. *(Plants tab, the chip row under Sort.)*
+- [ ] Filters, Sort, and ▦ by room all still work together.
+
+## build v25 — Sprint 3: sort your collection
+- [ ] **Sort control on Plants** — a **Sort** dropdown above the filter chips offers **A → Z**, **Due soonest**, and **Recently added**. It works together with search, the filter chips, and ▦ by room. Your choice sticks until you close the app. *(Plants tab, under the search box.)*
+- [ ] The specimen numbers (01, 02…) stay with each plant like catalog numbers, so they won't renumber when you re-sort.
+
 ## build v24 — Sprint 3: three tabs, one Care hub
 - [ ] **The bottom nav is now three tabs — Home · Plants · Care.** The old **Plan** tab (developer roadmap/notes) is gone. *(Bottom of any screen.)*
 - [ ] **New Care tab** gathers everything hands-on in one place: a **Run a repot protocol** shortcut (pick a plant, then walk the steps), a **Supplies & gnat war** shortcut, the **Mix calculator** + "your plants on this mix" + "would also thrive," and the **Soil recipes** and **Gnat protocol** lists. *(Care tab.)*

@@ -12,7 +12,7 @@ import { ARCHETYPES, newPlant } from "./seed.js";
 /* ---------- state ---------- */
 let ST = {
   tab: "today", plants: {}, order: [], lenUnit: "in", volUnit: "gal",
-  q: "", filter: "all", groupByRoom: false,
+  q: "", filter: "all", sortMode: "az", groupByRoom: false,
   view: null,          // null | "detail" | "repot" | "run" | "supplies" | "settings" | "addmenu" | "addplant"
   sel: null,           // selected plant id
   repotStep: 0, repotChecks: [], root: "", note: "", potUsed: "Medium",
@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v24";
+const BUILD = "v26";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -133,7 +133,8 @@ function queueCard(p, sub, quick) {
 }
 function renderPlants() {
   const query = ST.q.toLowerCase();
-  const filters = [["all","all"],["aroid","aroid"],["general","general"],["gritty","gritty"],["attention","needs you"],["measured","done"]];
+  // P2-1 · plain-language labels (display only); keys/buckets/filter logic unchanged, composes with sort + group-by-room
+  const filters = [["all","All"],["aroid","Aroid mix"],["general","General mix"],["gritty","Gritty mix"],["attention","Needs care"],["measured","Measured"]];
   const list = ST.order.map(k => ST.plants[k]).filter(p => {
     const m = (p.name + " " + p.latin + " " + p.loc).toLowerCase().includes(query);
     let fl = true;
@@ -142,6 +143,13 @@ function renderPlants() {
     else if (["aroid","general","gritty"].includes(ST.filter)) fl = p.med === ST.filter;
     return m && fl;
   });
+  // P1-3 · sort (composes with search/filter/group-by-room; session-scoped, no data change)
+  const rank = {}; ST.order.forEach((k,i) => rank[k] = i);
+  const dueDays = p => (p.intvMan ? p.intv : C.suggestIntv(p)) - p.lastW;
+  const cmp = ST.sortMode === "due"    ? (a,b) => dueDays(a) - dueDays(b) || a.name.localeCompare(b.name)
+            : ST.sortMode === "recent" ? (a,b) => rank[b.id] - rank[a.id]
+            :                            (a,b) => a.name.localeCompare(b.name);
+  list.sort(cmp);
   const cardHtml = p => {
     const idx = ST.order.indexOf(p.id) + 1;
     return `<div class="pcard" data-act="open" data-id="${p.id}">
@@ -160,6 +168,7 @@ function renderPlants() {
   return `<div class="pad"><p class="eyebrow">the key</p><h1 style="font-size:24px">Every plant, drawn</h1>
     <p class="hand" style="font-size:16px;color:var(--muted);margin:4px 0 14px">Tap for its full page: vitals, pot math, watering, feeding, repot window, photos, timeline.</p>
     <input class="search" placeholder="Search name, species, or spot" value="${esc(ST.q)}" data-inp="search">
+    <div class="between" style="margin:0 0 11px;gap:10px"><span style="font-size:12px;color:var(--muted);flex:0 0 auto">Sort</span><select class="nselect" data-inp="sortmode" style="max-width:210px" aria-label="Sort plants">${[["az","A → Z"],["due","Due soonest"],["recent","Recently added"]].map(o=>`<option value="${o[0]}" ${ST.sortMode===o[0]?'selected':''}>${o[1]}</option>`).join("")}</select></div>
     <div class="filters"><button class="fbtn ${ST.groupByRoom?'on':''}" data-act="grouproom">▦ by room</button>${filters.map(fb => `<button class="fbtn ${ST.filter===fb[0]?'on':''}" data-act="filter" data-f="${fb[0]}">${fb[1]}</button>`).join("")}</div>
     <div class="grid">${body || '<p class="hand" style="font-size:18px">Nothing matches.</p>'}</div><div style="height:8px"></div></div>`;
 }
@@ -867,6 +876,7 @@ document.addEventListener("input", e => {
   if (el.dataset && el.dataset.inp) {
     const k = el.dataset.inp;
     if (k==="search") { ST.q = el.value; const pos = el.selectionStart; render(); const ni = document.querySelector('[data-inp="search"]'); if (ni){ni.focus(); ni.setSelectionRange(pos,pos);} return; }
+    if (k==="sortmode") { ST.sortMode = el.value; render(); return; }
     if (k==="calcBucket") { ST.calcBucket = el.value; render(); return; }
     if (k==="calcSize") { ST.calcSize = el.value; render(); return; }
     if (k==="potUsed") { ST.potUsed = el.value; if (ST.view==="repot") { const mini = document.querySelector('.pcardb'); render(); } return; }
