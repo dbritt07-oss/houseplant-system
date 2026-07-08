@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v26";
+const BUILD = "v27";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -815,7 +815,13 @@ document.addEventListener("click", e => {
     case "tab": ST.tab = el.dataset.v; ST.view = null; render(); window.scrollTo(0,0); break;
     case "open": ST.sel = el.dataset.id; ST.view = "detail"; render(); ovScrollTop(); break;
     case "filter": ST.filter = el.dataset.f; render(); break;
-    case "back": readNote(); ST.view = null; render(); break;
+    case "back": {
+      // P2-2 · abandon-guard: a repot run in progress confirms before discarding (× or scrim tap)
+      if (ST.view === "repot" && (ST.repotStep > 0 || ST.root || ST.repotChecks.length)) {
+        if (!confirm("Leave this repot run? Steps you haven't inked won't be saved.")) break;
+      }
+      readNote(); ST.view = null; render(); break;
+    }
     case "openrun": ST.tab = "plants"; ST.filter = "all"; ST.view = null; render(); window.scrollTo(0,0); toast("Open a plant, then tap “Run the repot protocol.”"); break;
     case "supplies": ST.view = "supplies"; render(); ovScrollTop(); break;
     case "settings": ST.view = "settings"; render(); ovScrollTop(); break;

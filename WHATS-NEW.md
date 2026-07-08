@@ -12,6 +12,9 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v27 — Sprint 3: don't lose a repot run
+- [ ] **Abandon-guard on the repot run** — if you're partway through a repot (past the first step, or you've noted a root condition or checked a kill-step) and tap **×** or outside the sheet to close, it now asks **"Leave this repot run?"** before discarding, so you don't lose your progress by accident. Closing an untouched run (still on step 1) still just closes. *(Any plant → Run the repot protocol.)*
+
 ## build v26 — Sprint 3: plain-language filters
 - [ ] **Clearer filter chips** on Plants — the medium filters now read **Aroid mix · General mix · Gritty mix** (the same names you see when assigning a plant's medium), and the status chips read **Needs care** and **Measured**. Same filtering, friendlier words. *(Plants tab, the chip row under Sort.)*
 - [ ] Filters, Sort, and ▦ by room all still work together.
