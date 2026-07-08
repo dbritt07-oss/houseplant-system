@@ -195,10 +195,21 @@ Format per task: **Sprint · Epic · Story · Task — Why · Deps · Effort(h) 
 --- *remaining sprints* ---
 
 ### Sprint 3 — IA consolidation + collection + foundation-finish → schema freeze
-- **Goal:** three coherent tabs, a findable collection, the tokenize tail closed, and the data model frozen for backup.
-- **Deliverables:** **open the sprint by closing Sprint 2's DoD** (v23 device pass) and the one approved Founder-Review follow-up (to-do-card affordance fix); then P1-1 tail (radius/spacing tokens + inline SVG literals); **P1-2** Home/Plants/Care nav + Care hub (soil + supplies + repot entry) + Build removed; **P1-3** sort (3 modes); **P2-1** plain-language filters; **P2-2** repot abandon-guard; **P2-3** Home collection-health line; then **T3.3** documented, frozen data schema + full regression.
+- **Goal:** three coherent tabs, a findable collection, the tokenize tail closed, and the data model frozen for backup. **T3.3 Schema Freeze is the primary milestone of this sprint; everything else serves it or is subordinate to it.**
+
+- **Admission rule (schema-freeze protection — governs every candidate before it enters this sprint).** Before implementing any work, evaluate whether it: (a) **changes navigation or information architecture**, (b) **changes the data model or persistent state**, or (c) **is required to safely complete the schema freeze.** If **yes** to any → it belongs in Sprint 3. If **no** to all three → **defer to Sprint 4 (Backup) or Sprint 5 (QA/Release)**, *unless it is already explicitly approved V1 scope* (a P0/P1/P2 epic in `BACKLOG.md`), in which case it may stay as schema-neutral fill but must never delay the freeze. **Polish, convenience features, and newly discovered ideas do not delay the freeze** — they defer by default.
+
+- **Deliverables (admission-rule verdicts noted):**
+  - **Open by closing Sprint 2's DoD** — v23 on-device device pass. *(Verification of prior work, not new implementation; zero schema surface. Admitted as the opening gate.)*
+  - **P1-2 — Home/Plants/Care nav + Care hub (soil + supplies + repot entry) + Build removed.** *(Changes nav/IA → **core of the sprint**.)*
+  - **P1-3 — sort (3 modes).** *(Approved V1 P1; session-scoped view state. Admitted as approved scope.)*
+  - **P1-1 tail — radius/spacing tokens + inline SVG literals.** *(Approved V1 P1; schema-neutral. Admitted as fill; droppable to S5 if the sprint runs hot.)*
+  - **P2-1 plain-language filters · P2-2 repot abandon-guard · P2-3 Home health line.** *(Approved V1 P2; schema-neutral. Admitted as fill only.)*
+  - **T3.3 — documented, frozen data schema + full regression.** *(The milestone. Closes the sprint.)*
+- **Deferred by the admission rule (NOT in this sprint):**
+  - **To-do-card affordance fix** (Founder-Review follow-up) → **Sprint 5.** *(No nav/IA change, no data-model change, not required for the freeze, and not a P0/P1/P2 backlog epic — it is clarity polish. Deferred to protect the milestone. Supersedes the Sprint-2-Retro §12 note that had slotted it as the sprint opener.)*
 - **Exit criteria:** 3 tabs, no `build` route, all prior actions work; sort+filter+group compose; abandon-guard fires; health line live; **schema documented & frozen**; `npm test` green.
-- **Drop order if hot (P2 tier, per program analysis):** P2-1, then P2-3, then P2-2. Do not drop P1-2/P1-3 or the schema freeze.
+- **Drop order if hot (P2/fill tier):** P2-1, then P2-3, then P2-2, then P1-1 tail. **Never drop or delay:** P1-2, P1-3, or the T3.3 schema freeze.
 - **Demo milestone:** "Tour the 3 tabs; sort and filter the collection; start a repot run from Care and get guarded on close; show the frozen schema JSON."
 
 ### Sprint 4 — Automatic backup (the P0 gate, isolated)
