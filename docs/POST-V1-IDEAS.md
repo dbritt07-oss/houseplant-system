@@ -15,6 +15,7 @@ Ideas that are **out of V1 scope** but worth keeping. Captured per the founder's
 
 ## Future concepts (not V1, not near-term)
 - **Focus Mode (repotting)** — while physically repotting, hide everything except pot size, soil recipe, root check, gnat protocol, notes, photo. A distraction-free workbench.
+- **Broader gesture navigation** — after core V1 is stable, explore extending swipe gestures to the main tab pages, and consider **page-flip / editorial transitions** *only if* they reinforce the specimen-journal feel. Evaluate strictly with accessibility and `prefers-reduced-motion` preserved. (Confirmed post-V1; the V1 swipe is scoped to the plant detail only.)
 - **Three complementary product surfaces** — as functionality grows, think in *workflows/modes*, not more pages:
   - **Reference** — plant encyclopedia, care guides.
   - **Operations** — watering, feeding, repotting, daily maintenance.

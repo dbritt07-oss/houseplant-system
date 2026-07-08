@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v20";
+const BUILD = "v21";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -622,7 +622,7 @@ function render() {
   const sameContext = ST._renderKey === (ST.view ? ST.view + ":" + (ST.sel || "") : "");
   if (ST.view) {
     const inner = ST.view==="detail"?renderDetail():ST.view==="repot"?renderRepot():ST.view==="supplies"?renderSupplies():ST.view==="settings"?renderSettings():ST.view==="addmenu"?renderAddMenu():ST.view==="addplant"?renderAddPlant():ST.view==="checkin"?renderCheckin():"";
-    ov.innerHTML = `<div class="overlay"><div class="scrim" data-act="back"></div><div class="sheet">${inner}</div></div>`;
+    ov.innerHTML = `<div class="overlay"><div class="scrim" data-act="back"></div><div class="sheet${ST.view==="detail"?" plate":""}">${inner}</div></div>`;
     if (ST.view === "detail") detailRefresh();
     const newSheet = document.querySelector(".sheet");
     if (newSheet && sameContext) newSheet.scrollTop = prevScroll;

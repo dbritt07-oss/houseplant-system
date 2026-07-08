@@ -12,6 +12,11 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v21 — museum treatment: one continuous plate
+- [ ] **The plant page reads as one mounted sheet, not stacked cards** — the boxed sections (Vitals, Place & light, Pot, etc.) lost their borders/shadows and are now separated by fine **hairline rules** on the laid paper, under the Reference / Ritual / Record headings. Calmer, more editorial. *(Any plant page.)*
+- [ ] **Callout leaders anchored** — the drawing's labels (fenestration, aerial root…) now have longer dotted leaders with a small node pointing toward the illustration. *(Any plant page, the mounted drawing.)*
+- [ ] Visual only — every control, value, and action is unchanged.
+
 ## build v20 — flip through plants with swipes
 - [ ] **Swipe left / right** on a plant's page to move to the **next / previous** plant — like flipping through specimen plates, no need to return to The Key. *(Open a plant, swipe sideways.)*
 - [ ] **Swipe down from the top** of a plant's page to **close** it. *(Open a plant, pull down while at the very top.)*

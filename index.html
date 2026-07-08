@@ -256,11 +256,15 @@
   .mount .reg.tr{top:5px;right:5px;border-left:none;border-bottom:none}
   .mount .reg.bl{bottom:5px;left:5px;border-right:none;border-top:none}
   .mount .reg.br{bottom:5px;right:5px;border-left:none;border-top:none}
-  .mdraw{flex:0 0 62%;display:grid;place-items:center;min-height:150px}
+  .mdraw{flex:0 0 60%;display:grid;place-items:center;min-height:150px}
   .mdraw svg{width:92%;height:auto}
-  .mgutter{flex:1;display:flex;flex-direction:column;justify-content:center;gap:18px;padding-left:16px}
+  .mgutter{flex:1;display:flex;flex-direction:column;justify-content:center;gap:22px;padding-left:32px}
   .mgutter .call{font-family:var(--font-sans);font-size:9.5px;font-variant:small-caps;letter-spacing:.08em;color:var(--muted);position:relative}
-  .mgutter .call::before{content:"";position:absolute;left:-14px;top:50%;width:12px;border-top:1px dotted var(--pen)}
+  .mgutter .call::before{content:"";position:absolute;left:-30px;top:50%;width:26px;border-top:1px dotted var(--pen);opacity:.55}
+  .mgutter .call::after{content:"";position:absolute;left:-32px;top:calc(50% - 2px);width:4px;height:4px;border-radius:50%;background:var(--pen);opacity:.55}
+  /* museum treatment — on the plant plate, boxed cards become one continuous sheet with hairline sections */
+  .sheet.plate .pcardb{background:transparent;border:none;box-shadow:none;border-radius:0;margin:0 18px;padding:15px 0 5px;border-top:1px solid var(--line)}
+  .sheet.plate .zsec + .pcardb{border-top:none}
   .detlabel{background:var(--card);border:1px solid var(--line);border-radius:2px;padding:7px 10px;margin:9px 18px 0;box-shadow:1px 1px 0 var(--sh-card-soft)}
   .detlabel .dt{font-family:var(--font-serif);font-style:italic;font-size:15px;color:var(--ink-green)}
   .detlabel .df{font-family:var(--font-sans);font-variant:small-caps;letter-spacing:.12em;font-size:9.5px;color:var(--muted);margin-top:1px}
