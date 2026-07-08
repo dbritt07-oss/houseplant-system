@@ -12,6 +12,10 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v22 — Soil page: your plants first, reference tucked away
+- [ ] **Shorter, calmer Soil page** — the Mix calculator, **Your plants on this mix**, and **Would also thrive** stay visible at the top; the long **Soil recipes** and **Gnat protocol** lists are now behind **▸ show** disclosures you open only when you need them. *(Soil tab.)*
+- [ ] **Add sheet** is a little more compact (tighter header). *(＋ button.)*
+
 ## build v21 — museum treatment: one continuous plate
 - [ ] **The plant page reads as one mounted sheet, not stacked cards** — the boxed sections (Vitals, Place & light, Pot, etc.) lost their borders/shadows and are now separated by fine **hairline rules** on the laid paper, under the Reference / Ritual / Record headings. Calmer, more editorial. *(Any plant page.)*
 - [ ] **Callout leaders anchored** — the drawing's labels (fenestration, aerial root…) now have longer dotted leaders with a small node pointing toward the illustration. *(Any plant page, the mounted drawing.)*

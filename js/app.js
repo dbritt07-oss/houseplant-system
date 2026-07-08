@@ -17,7 +17,7 @@ let ST = {
   sel: null,           // selected plant id
   repotStep: 0, repotChecks: [], root: "", note: "", potUsed: "Medium",
   repotNewPot: false, repotPot: { top: 18, bot: 15, ph: 16 },
-  calcBucket: "aroid", calcSize: "Medium",
+  calcBucket: "aroid", calcSize: "Medium", soilRecipes: false, soilGnat: false,
   addDraft: null,      // { photo, name, latin, type, room, tox } while adding a plant
   checkinDraft: null,  // { photo, hi, note } while doing a photo check-in on an existing plant
   notify: false
@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v21";
+const BUILD = "v22";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -209,8 +209,11 @@ function renderSoil() {
       <select data-inp="calcSize">${["Small","Medium","Large","Extra large"].map(s=>`<option ${ST.calcSize===s?'selected':''}>${s}</option>`).join("")}</select></div>${calcRows}</div>
     ${matchBlock}
     ${recBlock}
-    ${recipeCards}
-    <div class="block"><h3><span class="k">Gnat protocol · every repot</span></h3>${C.PROTOCOL.map((s,i)=>`<div class="recipe"><span>${i+1}. ${s.t}</span></div>`).join("")}<div class="tweak">Do all of it. One layer alone will not end it.</div></div>`;
+    <div class="disc" data-act="toggleRecipes"><span class="k">Soil recipes</span><span class="chev">${ST.soilRecipes?"▾ hide":"▸ show all"}</span></div>
+    ${ST.soilRecipes ? recipeCards : ""}
+    <div class="disc" data-act="toggleGnat"><span class="k">Gnat protocol · every repot</span><span class="chev">${ST.soilGnat?"▾ hide":"▸ show"}</span></div>
+    ${ST.soilGnat ? `<div class="block">${C.PROTOCOL.map((s,i)=>`<div class="recipe"><span>${i+1}. ${s.t}</span></div>`).join("")}<div class="tweak">Do all of it. One layer alone will not end it.</div></div>` : ""}
+    <div style="height:12px"></div>`;
 }
 function renderBuild() {
   const ROADMAP = [
@@ -663,8 +666,8 @@ function saveCheckin() {
 /* ================= ADD A PLANT ================= */
 function renderAddMenu() {
   return `<div class="grab"></div><div class="close" data-act="back" role="button" tabindex="0" aria-label="Close">×</div>
-    <div class="pad"><p class="eyebrow">grow your library</p><h1 style="font-size:23px">Add a plant</h1>
-    <p class="hand" style="font-size:16px;color:var(--muted);margin:4px 0 14px">Beyond the seeded 24 — however you like.</p></div>
+    <div class="pad" style="padding-top:8px"><h1 style="font-size:20px">Add a plant</h1>
+    <p class="hand" style="font-size:15px;color:var(--muted);margin:2px 0 10px">Beyond the seeded 24 — however you like.</p></div>
     <div class="addopt" data-act="addbyphoto"><span class="ai">📷</span><div><div class="ot">Add with a photo</div><div class="os">Snap it and attach the photo, then pick the type. (Automatic plant ID comes later — tap-to-pick works now, offline.)</div></div></div>
     <div class="addopt" data-act="addmanual"><span class="ai">🌱</span><div><div class="ot">Add a plant manually</div><div class="os">Name it, pick a type, choose a room. Fill the rest on its page.</div></div></div>
     <div style="height:14px"></div>`;
@@ -824,6 +827,8 @@ document.addEventListener("click", e => {
     case "addbyphoto": ST.addDraft = { name:"", latin:"", type:"aroid", room:"Unassigned", tox:true, photo:null }; startCapture("add"); break;
     case "createplant": readAddFields(); createPlant(); break;
     case "grouproom": ST.groupByRoom = !ST.groupByRoom; render(); break;
+    case "toggleRecipes": ST.soilRecipes = !ST.soilRecipes; render(); break;
+    case "toggleGnat": ST.soilGnat = !ST.soilGnat; render(); break;
     case "prev": { const i = ST.order.indexOf(ST.sel); ST.sel = ST.order[(i-1+ST.order.length)%ST.order.length]; render(); ovScrollTop(); break; }
     case "next": { const i = ST.order.indexOf(ST.sel); ST.sel = ST.order[(i+1)%ST.order.length]; render(); ovScrollTop(); break; }
     case "watered": { const q = P(); const oW = q.lastW, oLen = q.log.length; q.lastW = 0; pushLog(q, "Watered"); save(q); render(); toastUndo("Watered " + q.name, () => { q.lastW = oW; q.log.length = oLen; save(q); render(); }); break; }
