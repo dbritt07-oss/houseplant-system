@@ -42,6 +42,9 @@ Two principles sit above the rest and govern how the others are interpreted:
 > **Plant Daddy HQ should become more personal over time, not more complicated.**
 > Every future capability should make the app feel like it understands the user's collection *better* — not simply offer more controls or more options. Growth is measured in understanding, not in surface area.
 
+> **Plant Daddy HQ should become more valuable every year a person owns it.**
+> Because value accrues from accumulated history, the app a keeper holds after five years should be meaningfully richer than the one they held after one — not through added features, but through the depth of what it remembers.
+
 ---
 
 # The themes
@@ -62,7 +65,7 @@ The through-line of the entire future is this: **Plant Daddy HQ's lasting advant
 
 **History becomes something you can relive.** The signature long-term experience is *Garden Replay* — the ability to scrub through time and watch the collection evolve: plants growing, beds maturing, photos changing, journal entries surfacing, harvests and repottings and seasons unfolding. The goal is not analytics; it is memory — letting a keeper relive years of their own gardening.
 
-**Guiding stance:** as a user's history grows, guidance should lean ever more on *their* record and ever less on generalized advice. Personal context is the moat.
+**Guiding stance:** as a user's history grows, guidance should lean ever more on *their* record and ever less on generalized advice. Personal history is the moat.
 
 ## II. Intelligence that learns the collection
 
@@ -79,7 +82,7 @@ If history is the foundation, intelligence is what reads it back to the keeper. 
 > *"You tend to underwater Alocasias during winter."*
 > *"Your Hoyas consistently flower after this fertilizer schedule."*
 
-**The long-term objective is predictive horticultural intelligence built from the user's own history** — recommendations that reference previous successes and failures, seasonal growth, fertilizer response, repot timing, lighting and medium changes, and root and pest history. Generic AI is the fallback; personalized understanding is the point.
+**The long-term objective is predictive horticultural intelligence built from the user's own history** — recommendations that reference previous successes and failures, seasonal growth, fertilizer response, repot timing, lighting and medium changes, and root and pest history. Generic AI is the baseline. Personalized understanding is the product.
 
 ## III. Care woven into daily life
 
