@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v27";
+const BUILD = "v28";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -106,6 +106,10 @@ function renderToday() {
   const needM = needMeasureCount();
   const attention = ST.order.map(k => ST.plants[k]).filter(p => p.hi <= 1 || (p.rootcond === "rot"));
   const dueCards = [...new Set([...w, ...f])];
+  // P2-3 · collection-health pulse: one computed line from current health values (nothing stored)
+  let thr = 0, hlt = 0, wat = 0;
+  ST.order.forEach(k => { const h = ST.plants[k].hi; if (h === 3) thr++; else if (h === 2) hlt++; else wat++; });
+  const pulse = [thr ? `${thr} thriving` : "", hlt ? `${hlt} healthy` : "", wat ? `${wat} watching` : ""].filter(Boolean).join(" · ");
   return `<div class="pad">
     <p class="eyebrow">reference · ritual · record</p>
     <h1 style="font-size:26px">${w.length + f.length === 0 ? "Nothing thirsty today." : "A few need you today."}</h1>
@@ -114,6 +118,7 @@ function renderToday() {
       <div class="stat"><div class="n" style="color:var(--rust)">${w.length}</div><div class="l">water due</div></div>
       <div class="stat"><div class="n" style="color:var(--warn)">${f.length}</div><div class="l">feed due</div></div>
     </div>
+    ${pulse ? `<div style="font-family:var(--font-sans);font-size:12.5px;color:var(--muted);letter-spacing:.02em;margin:2px 2px 0">${pulse}</div>` : ""}
     <div class="cta" data-act="openrun">Find a plant to repot <span class="arw">&rarr;</span></div>
     <div class="banner" style="margin-top:14px" data-act="supplies"><div class="ic">${ICON.bug}</div><div><div class="bt">Supplies &amp; gnat war</div><div class="bs">Totals for fertilizer, mix, BTI and nematodes from your logs.</div></div></div>
     ${needM ? `<div class="banner" style="margin-top:10px"><div class="ic">✎</div><div><div class="bt">${needM} of ${ST.order.length} still need measurements</div><div class="bs">Open a plant and fill height, pot, medium, dates.</div></div></div>` : ""}

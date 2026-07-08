@@ -12,6 +12,9 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v28 — Sprint 3: a glance at collection health
+- [ ] **Collection-health line on Home** — under the plants / water-due / feed-due stats, one quiet line summarizes how the whole collection is doing, e.g. **"3 thriving · 19 healthy · 2 watching."** It's computed live from each plant's current health — nothing new is stored, and it's not a new screen. *(Home tab, under the stats.)*
+
 ## build v27 — Sprint 3: don't lose a repot run
 - [ ] **Abandon-guard on the repot run** — if you're partway through a repot (past the first step, or you've noted a root condition or checked a kill-step) and tap **×** or outside the sheet to close, it now asks **"Leave this repot run?"** before discarding, so you don't lose your progress by accident. Closing an untouched run (still on step 1) still just closes. *(Any plant → Run the repot protocol.)*
 
