@@ -12,6 +12,11 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v24 — Sprint 3: three tabs, one Care hub
+- [ ] **The bottom nav is now three tabs — Home · Plants · Care.** The old **Plan** tab (developer roadmap/notes) is gone. *(Bottom of any screen.)*
+- [ ] **New Care tab** gathers everything hands-on in one place: a **Run a repot protocol** shortcut (pick a plant, then walk the steps), a **Supplies & gnat war** shortcut, the **Mix calculator** + "your plants on this mix" + "would also thrive," and the **Soil recipes** and **Gnat protocol** lists. *(Care tab.)*
+- [ ] Nothing was removed from your plants or data — this is a re-homing of where things live, not a change to what they do. Supplies is still reachable from Today too.
+
 ## build v23 — final Sprint 2 polish
 - [ ] **Settings grouped** — **Preferences** (units, reminders) is now separated from **Your data** (backup, reset) with section labels, so the two kinds of settings read distinctly. *(Settings.)*
 - [ ] **Lighter plate top** — the plant page's ‹ › arrows are now bare editorial glyphs (no heavy boxes) and the × has a softer shadow — calmer, still easy to find and tap, still accessible. *(Any plant page.)*

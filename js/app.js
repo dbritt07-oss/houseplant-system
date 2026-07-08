@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v23";
+const BUILD = "v24";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -35,6 +35,7 @@ const ICON = {
   today:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 5h16v15H4zM4 9h16M8 3v4M16 3v4" stroke-linecap="round"/></svg>',
   plants:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M12 21V10M12 12c0-4 3-6 7-6 0 4-3 6-7 6Z M12 14c0-3-3-5-7-5 0 3 3 5 7 5Z" stroke-linejoin="round"/></svg>',
   soil:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 9h14l-1.4 9.2a2 2 0 0 1-2 1.8H8.4a2 2 0 0 1-2-1.8L5 9Z" stroke-linejoin="round"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>',
+  care:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M5 9h14l-1.4 9.2a2 2 0 0 1-2 1.8H8.4a2 2 0 0 1-2-1.8L5 9Z" stroke-linejoin="round"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/></svg>',
   build:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 20V8l8-4 8 4v12" stroke-linejoin="round"/><path d="M9 20v-6h6v6"/></svg>',
   bug:'<svg viewBox="0 0 24 24" fill="none" stroke="#5f7a4c" stroke-width="1.6"><circle cx="12" cy="13" r="5"/><path d="M12 8V5M8.5 9 6.5 7M15.5 9l2-2M7 13H4M20 13h-3M8.5 17l-2 2M15.5 17l2 2" stroke-linecap="round"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="#f4ecd6" stroke-width="3"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
@@ -187,7 +188,7 @@ const SOILLESS_TIPS = {
   leca: "Semi-hydro. No food in the clay pebbles, so feed at <b>every top-up</b> with dilute hydroponic nutrients (¼–½ strength), year-round — ease back in winter but don't stop. Keep a shallow reservoir in the bottom third, let the top pebbles dry between, and flush the whole pot every couple weeks to clear salt build-up. Watering rides the reservoir — check about every 4 days.",
   pon: "Inorganic mineral mix. Drains and dries fast and feeds nothing, so <b>top-water often with dilute nutrients</b>. Excellent for rot-prone roots and gnat resistance since there's no organic matter to breed in."
 };
-function renderSoil() {
+function renderCare() {
   const r = C.RECIPES[ST.calcBucket], total = { "Small":4,"Medium":8,"Large":16,"Extra large":32 }[ST.calcSize];
   const calcRows = r.parts.map(pt => `<div class="recipe"><span>${pt[0]}</span><span class="amt">${(pt[1]/100*total).toFixed(1)} cups · ${pt[1]}%</span></div>`).join("");
   const recipeCards = Object.entries(C.RECIPES).map(([k,v]) => `<div class="block"><h3><span class="k">${v.name}</span></h3>${v.parts.map(pt=>`<div class="recipe"><span>${pt[0]}</span><span class="amt">${pt[1]}%</span></div>`).join("")}${v.note?`<div class="tweak">${v.note}</div>`:""}</div>`).join("");
@@ -202,8 +203,12 @@ function renderSoil() {
     ${recommend.length ? `<div class="chips" style="margin-bottom:0">${recommend.map(pp => `<span class="rchip" data-act="open" data-id="${pp.id}">${esc(pp.name)} <span style="color:var(--faint)">· now ${C.MEDIA[pp.med].label.split(" ")[0].toLowerCase()}</span></span>`).join("")}</div>
       <div class="fac" style="margin-top:8px">These would suit this mix too but are on something else. Tap one to open it and switch its Growing medium if you'd like to try it.</div>`
       : `<div class="fac">Everything that suits this mix is already on it. Nice.</div>`}</div>`;
-  return `<div class="pad" style="padding-bottom:0"><p class="eyebrow">no guessing</p><h1 style="font-size:24px">Soil &amp; protocol</h1>
-    <p class="hand" style="font-size:16px;color:var(--muted);margin:4px 0 0">Buckets are the start. Each plant's page builds the exact mix from its real pot volume.</p></div>
+  return `<div class="pad" style="padding-bottom:0"><p class="eyebrow">the care bench</p><h1 style="font-size:24px">Care</h1>
+    <p class="hand" style="font-size:16px;color:var(--muted);margin:4px 0 0">Mixes, supplies, and the repot ritual — everything hands-on, in one place.</p></div>
+    <div class="banner" style="margin:12px 16px 0" data-act="openrun"><div class="ic">${ICON.care}</div><div><div class="bt">Run a repot protocol</div><div class="bs">Pick a plant, then walk pot → mix → roots → the four-step gnat kill.</div></div></div>
+    <div class="banner" style="margin:10px 16px 2px" data-act="supplies"><div class="ic">${ICON.bug}</div><div><div class="bt">Supplies &amp; gnat war</div><div class="bs">Totals for fertilizer, mix, BTI and nematodes from your logs.</div></div></div>
+    <div class="pad" style="padding-top:16px;padding-bottom:0"><p class="eyebrow">no guessing</p><h2 style="font-size:19px;margin:0">Soil &amp; mixes</h2>
+    <p class="hand" style="font-size:15px;color:var(--muted);margin:3px 0 0">Buckets are the start. Each plant's page builds the exact mix from its real pot volume.</p></div>
     <div class="block"><h3><span class="k">Mix calculator</span></h3><div class="calc">
       <select data-inp="calcBucket">${Object.entries(C.RECIPES).map(([k,v])=>`<option value="${k}" ${ST.calcBucket===k?'selected':''}>${v.name}</option>`).join("")}</select>
       <select data-inp="calcSize">${["Small","Medium","Large","Extra large"].map(s=>`<option ${ST.calcSize===s?'selected':''}>${s}</option>`).join("")}</select></div>${calcRows}</div>
@@ -215,25 +220,6 @@ function renderSoil() {
     ${ST.soilGnat ? `<div class="block">${C.PROTOCOL.map((s,i)=>`<div class="recipe"><span>${i+1}. ${s.t}</span></div>`).join("")}<div class="tweak">Do all of it. One layer alone will not end it.</div></div>` : ""}
     <div style="height:12px"></div>`;
 }
-function renderBuild() {
-  const ROADMAP = [
-    ["1","Reconcile","Fix the marginata name, add Rubber, Ginseng Ficus, second Corn.","Done. 24 locked"],
-    ["2","Roll the 24","Finalized page across every plant, seeded from the Master Doc.","Done. In this app"],
-    ["3","Build the app","Installable PWA: camera, photos, reminders, offline, backup.","Done. You're in it"],
-    ["4","Walk the collection","Photo + variable fields, plant by plant, inside the app.","Your turn"],
-    ["5","Design integration","Repeat-pot tiered staging into the Townhouse book. Add ZZ + Kentia.","Queued"]
-  ];
-  const ADDS = [["ZZ plant","Glossy, architectural, gnat-resistant in grit. Best MCM fit."],["Kentia palm","The forgiving palm. Majestic replacement."],["Olive tree","Organic modern. Bright window only."],["Ficus Audrey","Calmer statement tree. Japandi-friendly."]];
-  return `<div class="pad"><p class="eyebrow">what this is</p><h1 style="font-size:26px">A sketchbook you repot alongside.</h1>
-    <p class="lede" style="margin-top:12px">Three jobs in one app. <b>Reference</b>: what each plant needs. <b>Ritual</b>: bench mode walks the four-step gnat kill, hands dirty. <b>Record</b>: photos, field notes and logs stamp with the date and stay on your phone. Everything works offline. Your data backs up to a file you save to your own Drive.</p></div>
-    <div class="block"><h3><span class="k">Roadmap</span></h3>${ROADMAP.map(p=>`<div class="phase"><div class="pn">${p[0]}</div><div><div class="pt">${p[1]}</div><div class="ps">${p[2]}</div><div class="pstat">${p[3]}</div></div></div>`).join("")}</div>
-    <div class="block"><h3><span class="k">Reminders on this phone</span></h3>
-      <p class="muted" style="font-size:13px;line-height:1.55">In-app due and overdue states always work. Real device notifications fire when the app is open, and in the background on Android/Chrome. <b style="color:var(--rust)">On iPhone, installed-PWA notifications are limited</b> and background scheduling isn't reliable, so treat the in-app Due-now list as the source of truth there. Manage it in Settings.</p></div>
-    <div class="block"><h3><span class="k">Design layer · repeat the pot, vary the height</span></h3>
-      <p class="muted" style="font-size:13px;margin-bottom:10px">Cohesion comes from repeated planters, not matched plants. Steer new buys toward dry-loving sculptural species.</p>
-      ${ADDS.map(a=>`<div class="add"><div class="ab"></div><div><div class="at">${a[0]}</div><div class="as">${a[1]}</div></div></div>`).join("")}</div>`;
-}
-
 /* ================= SUPPLIES ================= */
 function renderSupplies() {
   // Fertilizer usage from feed logs; repot consumables from repot logs; mix components across current pots.
@@ -612,13 +598,13 @@ function finishRepot() {
 
 /* ================= RENDER + OVERLAY ================= */
 function render() {
-  const views = { today: renderToday, plants: renderPlants, soil: renderSoil, build: renderBuild };
-  const titles = { today: "The Sketchbook", plants: "The Key", soil: "Soil", build: "The Plan" };
+  const views = { today: renderToday, plants: renderPlants, care: renderCare };
+  const titles = { today: "The Sketchbook", plants: "The Key", care: "Care" };
   app().innerHTML = `<div class="topbar"><span class="t">Plant Daddy HQ<span style="font-family:'Spline Sans';font-weight:500;font-size:11px;color:var(--muted);display:block;line-height:1;margin-top:2px">${titles[ST.tab]}</span></span>
     <span style="display:flex;gap:8px;align-items:center"><span class="d">${today()}</span><button class="iconbtn" data-act="settings" aria-label="Settings &amp; backup">${ICON.gear}</button></span></div>
     ${views[ST.tab]()}
     <button class="fab" data-act="fab" aria-label="Add a plant">+</button>
-    <div class="nav">${[["today","today"],["plants","key"],["soil","soil"],["build","plan"]].map(t=>`<button class="${ST.tab===t[0]?'on':''}" data-act="tab" data-v="${t[0]}">${ICON[t[0]]}<span>${t[1]}</span></button>`).join("")}</div>`;
+    <div class="nav">${[["today","home"],["plants","plants"],["care","care"]].map(t=>`<button class="${ST.tab===t[0]?'on':''}" data-act="tab" data-v="${t[0]}">${ICON[t[0]]}<span>${t[1]}</span></button>`).join("")}</div>`;
   const ov = ovRoot();
   // Preserve the open sheet's scroll position across in-place edits (chips, toggles,
   // steppers, dates). Navigation actions call ovScrollTop() after render() to reset to 0.
