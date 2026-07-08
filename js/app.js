@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v18";
+const BUILD = "v19";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -306,7 +306,6 @@ function renderDetail() {
 
   <div class="plate-head">
     <div class="ph-nav"><button class="navb" data-act="prev" aria-label="Previous plant">‹</button><span class="ph-count">${String(idx+1).padStart(2,"0")} / ${String(ST.order.length).padStart(2,"0")}</span><button class="navb" data-act="next" aria-label="Next plant">›</button></div>
-    <div class="ph-stamp">Plant Daddy HQ<b>№ ${String(idx+1).padStart(2,"0")}</b>in your care</div>
     <h1 class="ph-name">${esc(p.name)}</h1>
     <div class="ph-binom">${esc(p.latin)}</div>
     <div class="ph-fam">${FAMILY[p.art]?esc(FAMILY[p.art]):"Plantae"} · ${esc(C.MEDIA[p.med].label)}</div>
@@ -319,13 +318,14 @@ function renderDetail() {
     <span class="reg tl"></span><span class="reg tr"></span><span class="reg bl"></span><span class="reg br"></span>
     <div class="mdraw" id="stage"></div>
     <div class="mgutter" aria-hidden="true">${(ANATOMY[p.art]||[]).map(a=>`<div class="call">${esc(a)}</div>`).join("")}</div>
+    <div class="mount-stamp" aria-hidden="true">Plant Daddy HQ<b>№ ${String(idx+1).padStart(2,"0")}</b>in your care</div>
   </div>
   <div class="cap" id="growcap"></div>
 
   <div class="detlabel">
     <div class="dt">${esc(p.latin)}</div>
     <div class="df">${FAMILY[p.art]?esc(FAMILY[p.art]):"—"} · ${esc(C.MEDIA[p.med].label)}</div>
-    <div class="dm">det. keeper · <span id="detloc">${roomOf(p)==="Unassigned"?"unplaced":esc(roomOf(p).toLowerCase())}</span>${p.repotDate?` · repotted ${esc(C.fmt(p.repotDate))}`:""}</div>
+    <div class="dm">observed · <span id="detloc">${roomOf(p)==="Unassigned"?"unplaced":esc(roomOf(p).toLowerCase())}</span>${p.repotDate?` · repotted ${esc(C.fmt(p.repotDate))}`:""}</div>
   </div>
 
   <div class="swwrap"><div class="swstrip"><i data-sw="0" style="background:var(--terra)"></i><i data-sw="1" style="background:var(--gold)"></i><i data-sw="2" style="background:var(--sage)"></i><i data-sw="3" style="background:#3f5733"></i></div><div class="swcap">health · ${C.season()?"growing":"resting"}</div></div>

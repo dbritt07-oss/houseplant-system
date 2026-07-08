@@ -12,6 +12,12 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v19 — plate polish: uncrowd the corner + small refinements
+- [ ] **Un-crowded top corner** — the collector's seal moved **off the header and onto the specimen plate** (stamped in the drawing's corner), so the top-right is no longer cluttered with the ×, the ›, and the stamp all at once. *(Any plant page.)*
+- [ ] **Determination label** now reads "observed · [room]" (cleaner than the old "det. keeper").
+- [ ] **＋ button** sits a little higher above the tab bar (clears the safe-area on notched phones).
+- [ ] **Soil recipe rows** have a touch more breathing room between ingredients.
+
 ## build v18 — plate fixes: stamp position + always-reachable close
 - [ ] **Stamp no longer covers the ›** — the collector's seal moved down beside the binomial, clear of the next-plant arrow. *(Any plant page, top-right.)*
 - [ ] **Exit without scrolling up** — the **×** close now stays pinned to the top-right of the screen while you scroll a plant's page, so you can leave from anywhere. *(Any open card.)*

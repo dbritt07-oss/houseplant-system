@@ -177,7 +177,7 @@
   .block{margin:15px 16px;background:var(--card);border:1.5px solid var(--line);border-radius:6px 13px 5px 12px;padding:14px;box-shadow:2px 3px 0 var(--sh-card-soft)}
   .block h3{font-size:14px;margin-bottom:9px;font-family:var(--font-sans);font-weight:600;display:flex;align-items:center}
   .block h3 .k{font-family:var(--font-serif);font-style:italic;font-weight:500;font-size:18px;color:var(--ink-green)}
-  .recipe{display:flex;justify-content:space-between;font-size:13px;padding:6px 0;border-bottom:1px dashed var(--line)}
+  .recipe{display:flex;justify-content:space-between;font-size:13px;padding:8px 0;border-bottom:1px dashed var(--line)}
   .recipe:last-child{border-bottom:none} .recipe .amt{color:var(--muted)}
   .tweak{font-family:var(--font-hand);font-size:15px;color:var(--rust);margin-top:9px;line-height:1.35}
   .calc{display:flex;gap:8px;margin:6px 0 12px}
@@ -223,7 +223,7 @@
   .qbtn:active{transform:translateY(1px);background:var(--sage)}
   /* floating add button */
   /* anchored to the app column's right edge (16px in), clamped to ≥16px on any width */
-  .fab{position:fixed;bottom:78px;right:max(16px, calc(50% - 204px));left:auto;width:56px;height:56px;border-radius:50%;background:var(--sage);border:1.5px solid var(--pen);color:var(--card);font-size:30px;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:45;box-shadow:2px 4px 0 var(--sh-fab)}
+  .fab{position:fixed;bottom:calc(84px + env(safe-area-inset-bottom));right:max(16px, calc(50% - 204px));left:auto;width:56px;height:56px;border-radius:50%;background:var(--sage);border:1.5px solid var(--pen);color:var(--card);font-size:30px;line-height:1;display:grid;place-items:center;cursor:pointer;z-index:45;box-shadow:2px 4px 0 var(--sh-fab)}
   .fab:active{transform:translateY(1px)}
   /* add menu options */
   .addopt{display:flex;gap:13px;align-items:center;background:var(--card);border:1.5px solid var(--line);border-radius:6px 14px 5px 13px;padding:14px;margin:0 16px 11px;cursor:pointer;box-shadow:2px 3px 0 var(--sh-card)}
@@ -241,11 +241,12 @@
   .plate-head{position:relative;margin:44px 18px 0}
   .ph-nav{display:flex;justify-content:space-between;align-items:center}
   .ph-count{font-family:var(--font-sans);font-size:11px;letter-spacing:.12em;color:var(--muted)}
-  .ph-stamp{position:absolute;top:52px;right:0;width:58px;height:58px;border:1.3px solid var(--rust);border-radius:50%;color:var(--rust);opacity:.72;display:grid;place-items:center;text-align:center;transform:rotate(-8deg);font-family:var(--font-sans);font-size:7px;letter-spacing:.04em;text-transform:uppercase;line-height:1.2;padding:5px}
-  .ph-stamp b{display:block;font-size:9px;margin:1px 0}
-  .ph-name{font-family:var(--font-serif);font-weight:600;font-size:34px;line-height:.95;color:var(--ink-green);margin:10px 0 0;padding-right:66px}
-  .ph-binom{font-family:var(--font-serif);font-style:italic;font-size:19px;color:var(--pen);margin-top:1px;padding-right:66px}
-  .ph-fam{font-family:var(--font-sans);font-variant:small-caps;letter-spacing:.14em;font-size:11px;color:var(--muted);margin-top:5px;padding-right:66px}
+  .ph-name{font-family:var(--font-serif);font-weight:600;font-size:34px;line-height:.95;color:var(--ink-green);margin:10px 0 0}
+  .ph-binom{font-family:var(--font-serif);font-style:italic;font-size:19px;color:var(--pen);margin-top:1px}
+  .ph-fam{font-family:var(--font-sans);font-variant:small-caps;letter-spacing:.14em;font-size:11px;color:var(--muted);margin-top:5px}
+  /* collector's seal — stamped on the plate itself, out of the crowded header corner */
+  .mount-stamp{position:absolute;bottom:8px;right:10px;width:54px;height:54px;border:1.3px solid var(--rust);border-radius:50%;color:var(--rust);opacity:.58;display:grid;place-items:center;text-align:center;transform:rotate(-8deg);font-family:var(--font-sans);font-size:6.5px;letter-spacing:.03em;text-transform:uppercase;line-height:1.2;padding:5px;pointer-events:none}
+  .mount-stamp b{display:block;font-size:9px;margin:1px 0}
   .ph-tags{display:flex;gap:6px;margin-top:9px;border-bottom:2px solid var(--ink-green);padding-bottom:11px}
   .ptag{font-family:var(--font-sans);font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-green);background:var(--card2);border:1px solid var(--border-warn);border-radius:2px;padding:3px 7px;display:inline-flex;gap:5px;align-items:center}
   .ptag .w{width:8px;height:8px;border-radius:1px}
