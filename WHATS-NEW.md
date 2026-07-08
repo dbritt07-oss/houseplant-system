@@ -12,6 +12,13 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v29 — Sprint 4: back up to your own Google Drive (connect + manual)
+- [ ] **New "Back up to Google Drive"** in **Settings → Your data**. One-time setup (paste a public Google Client ID — steps in `docs/BACKUP-SETUP.md`), tap **Connect**, and your plants/logs/photos back up to **your own** Drive. Nothing goes to any other server. *(Settings.)*
+- [ ] **Back up now** and **Restore from Drive** buttons, plus a **last-backup** status line and **Disconnect**. Restore asks to confirm before it replaces this device's data. *(Settings, once connected.)*
+- [ ] The **manual export/import file** is still here as the offline/portable fallback.
+- [ ] *(This build adds the connect + manual backup/restore mechanism. Automatic-on-change backup and restore hardening land in the next builds.)*
+- [ ] **Verify on device:** Settings → Back up to Google Drive → paste Client ID → Connect → approve → "last backup just now"; tap Back up now; tap Restore from Drive → confirm → data returns.
+
 ## build v28 — Sprint 3: a glance at collection health
 - [ ] **Collection-health line on Home** — under the plants / water-due / feed-due stats, one quiet line summarizes how the whole collection is doing, e.g. **"3 thriving · 19 healthy · 2 watching."** It's computed live from each plant's current health — nothing new is stored, and it's not a new screen. *(Home tab, under the stats.)*
 

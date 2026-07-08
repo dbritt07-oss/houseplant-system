@@ -8,6 +8,7 @@ import * as C from "./care.js";
 import { ART } from "./art.js";
 import { DB, compressImage } from "./db.js";
 import { ARCHETYPES, newPlant } from "./seed.js";
+import * as Drive from "./drive.js";
 
 /* ---------- state ---------- */
 let ST = {
@@ -25,7 +26,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v28";
+const BUILD = "v29";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -268,8 +269,20 @@ function renderSupplies() {
 }
 
 /* ================= SETTINGS / BACKUP ================= */
+function relTime(iso) {
+  if (!iso) return "never";
+  const d = new Date(iso), s = (Date.now() - d.getTime()) / 1000;
+  if (s < 60) return "just now";
+  if (s < 3600) return Math.floor(s / 60) + " min ago";
+  if (s < 86400) return Math.floor(s / 3600) + " h ago";
+  const days = Math.floor(s / 86400);
+  return days < 7 ? days + " d ago" : d.toLocaleDateString();
+}
 function renderSettings() {
   const perm = ("Notification" in window) ? Notification.permission : "unsupported";
+  const dConn = Drive.isConnected(), dHasCid = Drive.hasClientId();
+  const dState = Drive.lastState(), dLast = relTime(Drive.lastBackup());
+  const dFail = dState && dState.indexOf("error:") === 0;
   return `<div class="grab"></div><div class="close" data-act="back" role="button" tabindex="0" aria-label="Close">×</div>
     <div class="pad"><p class="eyebrow">it's your data</p><h1 style="font-size:23px">Settings &amp; backup</h1></div>
     <div class="zsec" style="margin:6px 16px 2px">Preferences</div>
@@ -283,9 +296,21 @@ function renderSettings() {
       <p class="muted" style="font-size:13px;line-height:1.5">Permission: <b>${perm}</b>. In-app Due-now always works. Device notifications fire when the app is open, and in the background on Android/Chrome. On iPhone they're limited.</p>
       <button class="btn ${perm==='granted'?'ghost':'primary'}" data-act="notifask" style="width:100%;margin:12px 0 8px">${perm==='granted'?'Test a reminder now':'Turn on device reminders'}</button></div>
     <div class="zsec" style="margin:22px 16px 2px">Your data</div>
-    <div class="block"><h3><span class="k">Backup — export &amp; import</span></h3>
-      <p class="muted" style="font-size:13px;line-height:1.5">Your plants, logs and photos live only on this phone. Export bundles everything into one file to save on your Google Drive. Import restores it here or on another device.</p>
-      <button class="btn primary" data-act="export" style="width:100%;margin:12px 0 8px">Export a backup file</button>
+    <div class="block"><h3><span class="k">Back up to Google Drive</span></h3>
+      <p class="muted" style="font-size:13px;line-height:1.5">Automatic backup to <b>your own</b> Google Drive, so a lost or reset phone loses nothing. Your plants, logs and photos go only to your Drive — never to our servers or the app maker.</p>
+      ${dConn ? `
+      <div class="read" style="font-size:14px;margin:10px 0 0">Connected · last backup <b>${dLast}</b>${dFail ? ` · <span style="color:var(--rust)">last attempt failed</span>` : ``}</div>
+      <button class="btn primary" data-act="drivebackup" style="width:100%;margin:12px 0 8px">Back up now</button>
+      <button class="btn ghost" data-act="driverestore" style="width:100%;margin:0 0 8px">Restore from Drive</button>
+      <button class="btn ghost" data-act="drivedisconnect" style="width:100%;margin:0;color:var(--rust);border-color:#cf9d8b">Disconnect Drive</button>`
+      : `
+      ${dHasCid ? `` : `<input class="nfld" id="drivecid" placeholder="Google Client ID (…apps.googleusercontent.com)" value="${esc(Drive.storedClientId())}" autocapitalize="off" autocorrect="off" spellcheck="false" style="margin:10px 0 8px">`}
+      <button class="btn primary" data-act="driveconnect" style="width:100%;margin:${dHasCid ? '12px' : '0'} 0 8px">Connect Google Drive</button>
+      <div class="read" style="font-size:12px;color:var(--faint)">One-time setup: paste the <b>public</b> Client ID from your Google Cloud project (it’s public, not a secret). Setup steps are in <b>BACKUP-SETUP</b>.</div>`}
+    </div>
+    <div class="block"><h3><span class="k">Manual backup — file (offline / portable)</span></h3>
+      <p class="muted" style="font-size:13px;line-height:1.5">Bundle everything into one file to keep anywhere, or move to another device. Works fully offline, and is your fallback if you don’t use Drive.</p>
+      <button class="btn ghost" data-act="export" style="width:100%;margin:12px 0 8px">Export a backup file</button>
       <button class="btn ghost" data-act="import" style="width:100%;margin:0">Import a backup file</button></div>
     <div class="block"><h3><span class="k">Reset</span></h3>
       <p class="muted" style="font-size:13px;line-height:1.5">Re-seed the 24 from constants. Wipes your entered data on this device. Export first.</p>
@@ -785,6 +810,32 @@ async function doExport() {
   setTimeout(() => URL.revokeObjectURL(url), 4000);
   toast("Backup file downloaded. Save it to your Drive.");
 }
+/* ---- Google Drive backup (T4.1) ---- */
+async function driveConnect() {
+  const el = document.getElementById("drivecid"); if (el) Drive.setClientId(el.value);
+  if (!Drive.hasClientId()) { toast("Paste your Google Client ID first."); return; }
+  toast("Opening Google sign-in…");
+  try { await Drive.connect(); toast("Drive connected. Backing up…"); await Drive.backupNow(); render(); toast("Backed up to your Drive."); }
+  catch (e) { render(); toast(e.message || "Could not connect to Drive."); }
+}
+async function driveBackup() {
+  toast("Backing up to Drive…");
+  try { await Drive.backupNow(); render(); toast("Backed up to your Drive."); }
+  catch (e) { render(); toast(e.message || "Backup failed. Check your connection."); }
+}
+async function driveRestore() {
+  if (!confirm("Restore from Drive? This replaces the plants and settings on this device with your latest Drive backup.")) return;
+  toast("Restoring from Drive…");
+  try {
+    const obj = await Drive.fetchBackup();
+    await DB.importAll(obj);
+    const loaded = await DB.init();
+    ST.plants = loaded.plants; ST.order = loaded.order;
+    if (loaded.settings) applyUnitSettings(loaded.settings);
+    ST.view = null; render();
+    toast("Restored from your Drive.");
+  } catch (e) { toast(e.message || "Restore failed."); }
+}
 function doImportPick() { document.getElementById("importInput").click(); }
 async function onImportFile(file) {
   if (!file) return;
@@ -873,6 +924,10 @@ document.addEventListener("click", e => {
     case "volunit": ST.volUnit = el.dataset.v; DB.setSetting("volUnit", ST.volUnit); render(); break;
     case "export": doExport(); break;
     case "import": doImportPick(); break;
+    case "driveconnect": driveConnect(); break;
+    case "drivebackup": driveBackup(); break;
+    case "driverestore": driveRestore(); break;
+    case "drivedisconnect": Drive.disconnect(); render(); toast("Drive disconnected. The app is fully local."); break;
     case "notifask": askNotify(); break;
     case "reseed": reseed(); break;
   }
@@ -893,6 +948,8 @@ document.addEventListener("input", e => {
     if (k==="potUsed") { ST.potUsed = el.value; if (ST.view==="repot") { const mini = document.querySelector('.pcardb'); render(); } return; }
     return;
   }
+  // Drive Client ID field — store device-local as typed (no re-render, keep focus)
+  if (el.id === "drivecid") { Drive.setClientId(el.value); return; }
   // new-plant draft fields (no re-render, keep focus)
   if (el.id==="np_name" || el.id==="np_latin" || el.id==="np_room") {
     ST.addDraft = ST.addDraft || {};

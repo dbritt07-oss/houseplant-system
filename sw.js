@@ -4,7 +4,7 @@
    you're online), cache as the offline fallback. Plant DATA never
    lives here; it stays in IndexedDB on the device.
    ============================================================ */
-const CACHE = "hps-v28";
+const CACHE = "hps-v29";
 const SHELL = [
   "./",
   "./index.html",
@@ -14,6 +14,7 @@ const SHELL = [
   "./js/art.js",
   "./js/seed.js",
   "./js/db.js",
+  "./js/drive.js",
   "./icons/icon-192.png",
   "./icons/icon-512.png",
   "./icons/icon-maskable-512.png",
@@ -46,6 +47,11 @@ self.addEventListener("fetch", e => {
         return res;
       }).catch(() => caches.match(req).then(hit => hit || caches.match("./index.html")))
     );
+    return;
+  }
+  // Google auth + Drive API: NEVER cache (auth scripts + API responses must be live).
+  if (url.hostname === "accounts.google.com" || url.hostname.endsWith("googleapis.com")) {
+    e.respondWith(fetch(req));
     return;
   }
   // Cross-origin (Google Fonts): stale-while-revalidate.
