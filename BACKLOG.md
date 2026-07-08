@@ -62,9 +62,10 @@ offline/portable path.
 
 **Dependencies**
 - Backup/restore serialization can reuse the existing `DB.exportAll` / `DB.importAll` JSON format.
-- Should land after **P2-4 (care-math assertion script)** exists so restore correctness can be spot-checked.
+- Should land after **P2-4 (care-math assertion script)** exists so restore correctness can be spot-checked. ✅ (shipped)
+- **Data schema frozen (T3.3, Sprint 3)** — build against the locked shape in `docs/DATA-SCHEMA.md` (enforced by the schema-lock test); any shape change follows that doc's change-control rule. This precondition is now satisfied.
 
-### Epic P0-2 · Accessibility pass to WCAG 2.1 AA ⬜  *(effort: M · risk: Low)*
+### Epic P0-2 · Accessibility pass to WCAG 2.1 AA ✅ *(shipped v13 · effort: M · risk: Low)*
 AA is a Bible §18 release gate. Fix the audit's a11y failures across the existing UI (no redesign).
 **Visual Constitution guardrail:** accessibility must *reinforce* the Brand Board, not flatten it — achieve AA with **darker warm ink, never colder gray**. Canonical values `--faint #685e49`, `--muted #655c46`, text ink → **Ink Green `#2f3d2c`**; status = **specimen/archive tags** (not SaaS pills); functional emoji → **hand-drawn ink glyphs**; keyboard focus ring in **Bloom Blue `#5b6b86`**. Validate against the Design Review Gate. (Preview: `a11y.preview.html`.)
 
@@ -91,11 +92,11 @@ AA is a Bible §18 release gate. Fix the audit's a11y failures across the existi
 
 ## P1 — ship-defining
 
-### Epic P1-1 · Tokenize the design system (light) 🔨 *(effort: M · risk: Low — in progress)*
+### Epic P1-1 · Tokenize the design system (light) 🔨 *(effort: M · risk: Low — color/font/shadow tokens shipped; radius/spacing + inline-SVG tail carried to Sprint 5 / release cleanup, not a functional blocker)*
 Formalize the ad-hoc `:root` CSS variables into a documented, single-source token set for light mode.
 Enables the AA fix now and dark mode later (V2). No visual redesign.
 
-**Status (T0.3):** ✅ stylesheet **colors, fonts, and shadows/scrims** tokenized in `index.html` (46 tokens; 0 orphan literals; proven pixel-identical by token back-substitution; `npm test` + `npm run check` green). ⬜ **Remaining:** radius/spacing tokens; the ~6 inline SVG color literals in `js/app.js`; and adding **Ink Green `#2f3d2c`** + **Bloom Blue `#5b6b86`** tokens per `docs/VISUAL-CONSTITUTION.md` §6. Epic stays open until those land.
+**Status (T0.3):** ✅ stylesheet **colors, fonts, shadows/scrims** tokenized in `index.html` (46 tokens; 0 orphan literals; proven pixel-identical by token back-substitution; `npm test` + `npm run check` green), and **Ink Green `--ink-green #2f3d2c`** + **Bloom Blue `--bloom #5b6b86`** tokens added per `docs/VISUAL-CONSTITUTION.md` §6. 🔨 **Remaining tail — carried to Sprint 5 / release cleanup (schema-neutral, not a functional blocker):** radius/spacing tokens + the ~6 inline SVG color literals in `js/app.js`.
 
 **Stories**
 - As a builder, every color/type/spacing/radius value is a named token in one place.
@@ -108,7 +109,7 @@ Enables the AA fix now and dark mode later (V2). No visual redesign.
 
 **Dependencies** — Pairs with P0-2 (shared color layer). No other blockers.
 
-### Epic P1-2 · IA consolidation → 3 tabs (Home / Plants / Care) ⬜  *(effort: M · risk: Med)*
+### Epic P1-2 · IA consolidation → 3 tabs (Home / Plants / Care) ✅ *(shipped v24 · effort: M · risk: Med)*
 Drop from 4 tabs to 3. Remove the "Build/Plan" dev-notes tab. Create a unified **Care** hub that
 absorbs the Soil content, the Supplies view, and a Repot-run entry point. No new features — only
 re-homing and routing. **Visual Constitution:** the nav + Care hub must read *editorial*, not dashboard (§3, §10) — compose, don't template; one hero; remove chrome.
@@ -127,7 +128,7 @@ re-homing and routing. **Visual Constitution:** the nav + Care hub must read *ed
 
 **Dependencies** — Enables **P2-2 (Repot entry point + abandon-guard)**. Touches the same nav/render path as P1-6/P1-7.
 
-### Epic P1-3 · Sort in the Plants index ⬜  *(effort: S–M · risk: Low)*
+### Epic P1-3 · Sort in the Plants index ✅ *(shipped v25 · effort: S–M · risk: Low)*
 Add a sort control alongside existing search/filter. Ship **3 modes only**.
 
 **Stories**
@@ -140,7 +141,7 @@ Add a sort control alongside existing search/filter. Ship **3 modes only**.
 
 **Dependencies** — Shares the Plants view with **P2-1 (relabel medium filters)**; build together.
 
-### Epic P1-4 · Study page reorder (Reference / Ritual / Record) ⬜  *(effort: M · risk: Low)*
+### Epic P1-4 · Study page reorder (Reference / Ritual / Record) ✅ *(shipped v15–v23 · effort: M · risk: Low)*
 Reorganize the detail page's existing cards into the Bible's three-job order; lighten re-renders;
 clarify the two photo paths. No new content. **Visual Constitution — this is the Brand Board reclamation moment:** compose the Study as an actual **specimen plate** (hero drawing + 2×2 care grid + health/season **swatch strip** + collection date + **stamp/seal** + handwritten margin note), not a uniform card stack (§2, §3, §5). The plant is the hero; the interface recedes. Highest-leverage screen for the botanical identity — hold it hard to the Design Review Gate.
 
@@ -156,7 +157,7 @@ clarify the two photo paths. No new content. **Visual Constitution — this is t
 
 **Dependencies** — Benefits from **P2-4 (care-math assertions)** to guarantee no math regressions during refactor.
 
-### Epic P1-5 · Fix the Today CTA ⬜  *(effort: S · risk: Low)*
+### Epic P1-5 · Fix the Today CTA ✅ *(shipped v14 · effort: S · risk: Low)*
 The prominent "Start a repot run" button doesn't start a run. Make label match behavior. Relabel only.
 
 **Stories**
@@ -168,7 +169,7 @@ The prominent "Start a repot run" button doesn't start a run. Make label match b
 
 **Dependencies** — Minor overlap with P1-2 (Care entry to repot); keep independent/relabel-first.
 
-### Epic P1-6 · Rename "Identify by photo" (honest label) ⬜  *(effort: S · risk: Low)*
+### Epic P1-6 · Rename "Identify by photo" (honest label) ✅ *(shipped v14 · effort: S · risk: Low)*
 AI auto-ID is deferred to V2; the entry currently implies auto-identification. Align the label with
 what it does today (attach a photo, then tap-to-pick the type).
 
@@ -178,7 +179,7 @@ what it does today (attach a photo, then tap-to-pick the type).
 
 **Dependencies** — None.
 
-### Epic P1-7 · FAB reposition fix ⬜  *(effort: S · risk: Low)*
+### Epic P1-7 · FAB reposition fix ✅ *(shipped v14 · effort: S · risk: Low)*
 The floating add button mispositions between ~440–452px viewport (`left:calc(50% + 148px)`).
 
 **Acceptance Criteria**
@@ -191,19 +192,19 @@ The floating add button mispositions between ~440–452px viewport (`left:calc(5
 
 ## P2 — include if cheap (won't block the gate)
 
-### Epic P2-1 · Relabel medium filters to plain words ⬜  *(effort: S · risk: Low)*
+### Epic P2-1 · Relabel medium filters to plain words ✅ *(shipped v26 · effort: S · risk: Low)*
 Raw taxonomy ("aroid/general/gritty") is opaque to a non-founder keeper. Rename filter labels to human terms; keep the underlying buckets.
 
 **Acceptance Criteria** — Filter chips read in plain language; underlying filtering unchanged; no structural filter re-architecture.
 **Dependencies** — Build with **P1-3 (sort)** — same view.
 
-### Epic P2-2 · Repot abandon-guard + Care entry point ⬜  *(effort: S · risk: Low)*
+### Epic P2-2 · Repot abandon-guard + Care entry point ✅ *(shipped v27 · effort: S · risk: Low)*
 Prevent silent loss of an in-progress repot run; add a way into the run from Care.
 
 **Acceptance Criteria** — Closing a run mid-way asks to confirm before discarding progress; Care surface offers an entry into the repot run.
 **Dependencies** — Requires **P1-2 (Care hub)**.
 
-### Epic P2-3 · Minimal collection-health line on Home ⬜  *(effort: S · risk: Low)*
+### Epic P2-3 · Minimal collection-health line on Home ✅ *(shipped v28 · effort: S · risk: Low)*
 One computed line summarizing collection health from existing health values (the Analytics seed). Not a new surface.
 
 **Acceptance Criteria** — Home shows a single line (e.g., "N thriving · M watching") derived from current `hi` values; no new screen, no stored analytics.
