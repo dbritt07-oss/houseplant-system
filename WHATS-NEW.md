@@ -12,6 +12,12 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v30 — Sprint 4: backups now happen automatically
+- [ ] **Automatic backup** — once Drive is connected, the app backs itself up **on its own** a few seconds after you change something (water, feed, repot, edit a plant, add/remove, change units), and again when you reopen the app if anything changed while it was closed. No button needed. *(Runs quietly in the background.)*
+- [ ] **Silent + non-blocking** — automatic backups never pop up a sign-in and never interrupt you; if one can't run (offline, sign-in expired), **nothing is lost** — Settings shows "last attempt failed" and it simply retries on the next change or reopen.
+- [ ] **A change made right before you close** still gets backed up the next time you open the app (a device-local "needs backup" flag remembers).
+- [ ] **Verify on device:** with Drive connected, water a plant → wait ~10s → Settings shows **"last backup just now."** Then change something, force-close, reopen → it backs up on open. Turn on Airplane Mode, make a change → Settings shows a failed attempt; turn Wi-Fi back on, make another change → it recovers.
+
 ## build v29 — Sprint 4: back up to your own Google Drive (connect + manual)
 - [ ] **New "Back up to Google Drive"** in **Settings → Your data**. One-time setup (paste a public Google Client ID — steps in `docs/BACKUP-SETUP.md`), tap **Connect**, and your plants/logs/photos back up to **your own** Drive. Nothing goes to any other server. *(Settings.)*
 - [ ] **Back up now** and **Restore from Drive** buttons, plus a **last-backup** status line and **Disconnect**. Restore asks to confirm before it replaces this device's data. *(Settings, once connected.)*

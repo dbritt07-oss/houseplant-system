@@ -27,7 +27,8 @@ const LS = {
   cid:   "pdhq_drive_cid",        // the public Client ID (device-local)
   conn:  "pdhq_drive_connected",  // "1" once connected at least once
   last:  "pdhq_drive_last",       // ISO time of last successful backup
-  state: "pdhq_drive_state"       // "ok" | "error:<message>"
+  state: "pdhq_drive_state",      // "ok" | "error:<message>"
+  dirty: "pdhq_drive_dirty"       // "1" if local data changed since last successful backup (survives reload)
 };
 
 let _token = null;         // in-memory access token (never persisted)
@@ -41,7 +42,9 @@ export function setClientId(id) { localStorage.setItem(LS.cid, (id || "").trim()
 export function isConnected() { return localStorage.getItem(LS.conn) === "1"; }
 export function lastBackup() { return localStorage.getItem(LS.last) || null; }
 export function lastState() { return localStorage.getItem(LS.state) || null; }
-function markOk() { localStorage.setItem(LS.conn, "1"); localStorage.setItem(LS.last, new Date().toISOString()); localStorage.setItem(LS.state, "ok"); }
+export function markDirty() { localStorage.setItem(LS.dirty, "1"); }
+export function isDirty() { return localStorage.getItem(LS.dirty) === "1"; }
+function markOk() { localStorage.setItem(LS.conn, "1"); localStorage.setItem(LS.last, new Date().toISOString()); localStorage.setItem(LS.state, "ok"); localStorage.removeItem(LS.dirty); }
 function markErr(msg) { localStorage.setItem(LS.state, "error:" + (msg || "unknown")); }
 
 /* ---------- GIS load + token ---------- */
@@ -80,7 +83,9 @@ function requestToken(prompt = "") {
 async function ensureToken(silent) {
   if (_token) return _token;
   await loadGis();
-  return requestToken(silent ? "" : "");
+  // Background (silent) runs use prompt:"none" so they never surface a popup;
+  // interactive runs use "" (consent on first grant, silent afterward).
+  return requestToken(silent ? "none" : "");
 }
 function authFetch(url, opts = {}) {
   return fetch(url, Object.assign({}, opts, { headers: Object.assign({}, opts.headers || {}, { Authorization: "Bearer " + _token }) }));
@@ -140,7 +145,7 @@ export async function backupNow({ silent = false } = {}) {
     return res;
   } catch (e) {
     if (/\b(401|403|invalid|expired|auth)\b/i.test(e.message)) {
-      try { await requestToken(""); const res = await uploadJson(text); markOk(); return res; }
+      try { _token = null; await requestToken(silent ? "none" : ""); const res = await uploadJson(text); markOk(); return res; }
       catch (e2) { markErr(e2.message); throw e2; }
     }
     markErr(e.message);

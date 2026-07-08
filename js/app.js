@@ -26,7 +26,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v29";
+const BUILD = "v30";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -52,7 +52,7 @@ function thumb(p) { const ph = latestPhoto(p); return ph ? `<img src="${ph}" alt
 function pushLog(p, t, photoId) { p.log.push({ date: C.dstr(0), t, photoId: photoId || null }); }
 function needMeasureCount() { return ST.order.filter(k => (ST.plants[k].todo || []).length).length; }
 function esc(s) { return (s || "").replace(/[&<>"]/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;" }[c])); }
-function save(p) { DB.savePlant(p); }
+function save(p) { DB.savePlant(p); autoBackupSoon(); }
 function roomOf(p) { return (p.room && p.room.trim()) ? p.room.trim() : "Unassigned"; }
 function roomsList() {
   const seen = new Set();
@@ -779,7 +779,7 @@ async function askNotify() {
   if (perm === "granted") { await ST_setNotify(true); toast("Reminders on. In-app Due-now still leads on iPhone."); fireDueNotification(true); render(); }
   else toast("Reminders stay in-app. Check the Due-now list.");
 }
-async function ST_setNotify(v) { ST.notify = v; await DB.setSetting("notify", v); }
+async function ST_setNotify(v) { ST.notify = v; await DB.setSetting("notify", v); autoBackupSoon(); }
 function fireDueNotification(force) {
   if (!("Notification" in window) || Notification.permission !== "granted") return;
   const { w, f } = dueList();
@@ -836,6 +836,21 @@ async function driveRestore() {
     toast("Restored from your Drive.");
   } catch (e) { toast(e.message || "Restore failed."); }
 }
+/* Automatic backup (T4.2): debounced after a meaningful change; silent (never pops a
+   dialog) and non-blocking (failures surface only as Settings status). A device-local
+   dirty flag survives reload, so a change made right before closing backs up next open. */
+let _abT = null;
+function autoBackupSoon() {
+  Drive.markDirty();
+  if (!Drive.isConnected()) return;
+  clearTimeout(_abT);
+  _abT = setTimeout(runAutoBackup, 5000);
+}
+async function runAutoBackup() {
+  if (!Drive.isConnected() || !Drive.isDirty()) return;
+  try { await Drive.backupNow({ silent: true }); } catch (e) { /* status shows it; retried on next change/open */ }
+  if (ST.view === "settings") render();
+}
 function doImportPick() { document.getElementById("importInput").click(); }
 async function onImportFile(file) {
   if (!file) return;
@@ -848,6 +863,7 @@ async function onImportFile(file) {
     if (loaded.settings) applyUnitSettings(loaded.settings);
     ST.view = null;
     render();
+    autoBackupSoon();   // sync the imported data up to Drive if connected
     toast("Backup restored.");
   } catch (e) { toast(e.message || "That file could not be restored."); }
 }
@@ -894,7 +910,7 @@ document.addEventListener("click", e => {
     case "fed": { const q = P(); const oF = q.lastF, oLen = q.log.length; q.lastF = 0; pushLog(q, "Fed " + C.FERTS[q.fert].label); save(q); render(); toastUndo("Fed " + q.name, () => { q.lastF = oF; q.log.length = oLen; save(q); render(); }); break; }
     case "qwater": { const q = ST.plants[el.dataset.id]; if (q) { const oW = q.lastW, oLen = q.log.length; q.lastW = 0; pushLog(q, "Watered"); save(q); render(); toastUndo("Watered " + q.name, () => { q.lastW = oW; q.log.length = oLen; save(q); render(); }); } break; }
     case "qfeed": { const q = ST.plants[el.dataset.id]; if (q) { const oF = q.lastF, oLen = q.log.length; q.lastF = 0; pushLog(q, "Fed " + C.FERTS[q.fert].label); save(q); render(); toastUndo("Fed " + q.name, () => { q.lastF = oF; q.log.length = oLen; save(q); render(); }); } break; }
-    case "delplant": { const id = el.dataset.id, rec = ST.plants[id], idx = ST.order.indexOf(id); if (!rec) break; delete ST.plants[id]; ST.order.splice(idx, 1); DB.deletePlant(id); persistOrder(); ST.view = null; ST.sel = null; render(); toastUndo("Removed " + rec.name, () => { ST.plants[id] = rec; ST.order.splice(Math.min(idx, ST.order.length), 0, id); DB.savePlant(rec); persistOrder(); render(); }); break; }
+    case "delplant": { const id = el.dataset.id, rec = ST.plants[id], idx = ST.order.indexOf(id); if (!rec) break; delete ST.plants[id]; ST.order.splice(idx, 1); DB.deletePlant(id); persistOrder(); autoBackupSoon(); ST.view = null; ST.sel = null; render(); toastUndo("Removed " + rec.name, () => { ST.plants[id] = rec; ST.order.splice(Math.min(idx, ST.order.length), 0, id); DB.savePlant(rec); persistOrder(); autoBackupSoon(); render(); }); break; }
     case "undo": runUndo(); break;
     case "matchsug": P().intvMan = false; save(P()); render(); break;
     case "tplus": P().trapN++; save(P()); render(); break;
@@ -920,8 +936,8 @@ document.addEventListener("click", e => {
     case "rback": readNote(); ST.repotStep = Math.max(0, ST.repotStep-1); render(); ovScrollTop(); break;
     case "rootchip": readNote(); ST.root = ST.root===el.dataset.v?"":el.dataset.v; render(); break;
     case "finish": readNote(); if (!ST.root) { toast("Pick what the roots looked like first."); break; } finishRepot(); break;
-    case "lenunit": ST.lenUnit = el.dataset.v; DB.setSetting("lenUnit", ST.lenUnit); render(); break;
-    case "volunit": ST.volUnit = el.dataset.v; DB.setSetting("volUnit", ST.volUnit); render(); break;
+    case "lenunit": ST.lenUnit = el.dataset.v; DB.setSetting("lenUnit", ST.lenUnit); autoBackupSoon(); render(); break;
+    case "volunit": ST.volUnit = el.dataset.v; DB.setSetting("volUnit", ST.volUnit); autoBackupSoon(); render(); break;
     case "export": doExport(); break;
     case "import": doImportPick(); break;
     case "driveconnect": driveConnect(); break;
@@ -1044,7 +1060,7 @@ document.addEventListener("touchend", e => {
 /* ================= FILE INPUTS ================= */
 document.getElementById("cameraInput").addEventListener("change", e => { const f = e.target.files[0]; e.target.value = ""; onCameraFile(f); });
 document.getElementById("importInput").addEventListener("change", e => { const f = e.target.files[0]; e.target.value = ""; onImportFile(f); });
-document.addEventListener("visibilitychange", () => { if (!document.hidden) maybeNotifyOnOpen(); });
+document.addEventListener("visibilitychange", () => { if (!document.hidden) { maybeNotifyOnOpen(); if (Drive.isConnected() && Drive.isDirty()) runAutoBackup(); } });
 
 /* ================= BOOT ================= */
 (async function boot() {
@@ -1053,6 +1069,7 @@ document.addEventListener("visibilitychange", () => { if (!document.hidden) mayb
   if (loaded.settings) { applyUnitSettings(loaded.settings); if (loaded.settings.notify) ST.notify = loaded.settings.notify; }
   render();
   maybeNotifyOnOpen();
+  if (Drive.isConnected() && Drive.isDirty()) runAutoBackup();   // catch up a change made just before last close
   if ("serviceWorker" in navigator) {
     try { await navigator.serviceWorker.register("sw.js"); } catch (e) {}
   }
