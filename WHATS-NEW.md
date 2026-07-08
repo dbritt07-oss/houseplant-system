@@ -12,6 +12,11 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v20 — flip through plants with swipes
+- [ ] **Swipe left / right** on a plant's page to move to the **next / previous** plant — like flipping through specimen plates, no need to return to The Key. *(Open a plant, swipe sideways.)*
+- [ ] **Swipe down from the top** of a plant's page to **close** it. *(Open a plant, pull down while at the very top.)*
+- [ ] The ‹ › arrows stay for keyboard/accessibility; swipe is an extra. Dragging a slider or scrolling up/down is never mistaken for a swipe.
+
 ## build v19 — plate polish: uncrowd the corner + small refinements
 - [ ] **Un-crowded top corner** — the collector's seal moved **off the header and onto the specimen plate** (stamped in the drawing's corner), so the top-right is no longer cluttered with the ×, the ›, and the stamp all at once. *(Any plant page.)*
 - [ ] **Determination label** now reads "observed · [room]" (cleaner than the old "det. keeper").

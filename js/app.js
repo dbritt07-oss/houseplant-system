@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v19";
+const BUILD = "v20";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -937,6 +937,38 @@ async function reseed() {
   indexedDB.deleteDatabase("houseplant");
   setTimeout(() => location.reload(), 300);
 }
+
+/* ================= SWIPE GESTURES (plant detail only) =================
+   Enhancement over the ‹ › buttons (which stay, for keyboard/AT). We read the
+   gesture only at touchend and never call preventDefault, so native vertical
+   scrolling is untouched. Gestures that begin on a control (slider, chip, input,
+   button) are ignored, so dragging a slider never navigates. */
+let _sw = null;
+document.addEventListener("touchstart", e => {
+  _sw = null;
+  if (ST.view !== "detail") return;
+  const sheet = e.target.closest(".sheet"); if (!sheet) return;
+  // ignore gestures starting on any interactive control
+  if (e.target.closest('input,button,select,textarea,a,label,[data-act],[data-seg],[data-med],[data-mat],[data-fert],[data-root],[data-room],[data-sw],.pchip,.seg,.fbtn,[role="button"]')) return;
+  const t = e.touches[0];
+  _sw = { x: t.clientX, y: t.clientY, t: Date.now(), top: sheet.scrollTop };
+}, { passive: true });
+document.addEventListener("touchend", e => {
+  const s = _sw; _sw = null;
+  if (!s || ST.view !== "detail") return;
+  const t = e.changedTouches && e.changedTouches[0]; if (!t) return;
+  const dx = t.clientX - s.x, dy = t.clientY - s.y, ax = Math.abs(dx), ay = Math.abs(dy);
+  if (Date.now() - s.t > 700) return;                 // too slow to be a swipe
+  // clear horizontal intent → previous / next specimen
+  if (ax > 62 && ax > ay * 1.8 && ay < 50) {
+    const i = ST.order.indexOf(ST.sel);
+    ST.sel = dx < 0 ? ST.order[(i + 1) % ST.order.length]
+                    : ST.order[(i - 1 + ST.order.length) % ST.order.length];
+    render(); ovScrollTop(); return;
+  }
+  // pull down from the very top → dismiss the plate
+  if (dy > 92 && dy > ax * 1.8 && s.top <= 2) { readNote(); ST.view = null; render(); return; }
+}, { passive: true });
 
 /* ================= FILE INPUTS ================= */
 document.getElementById("cameraInput").addEventListener("change", e => { const f = e.target.files[0]; e.target.value = ""; onCameraFile(f); });
