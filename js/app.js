@@ -25,7 +25,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v22";
+const BUILD = "v23";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -272,19 +272,21 @@ function renderSettings() {
   const perm = ("Notification" in window) ? Notification.permission : "unsupported";
   return `<div class="grab"></div><div class="close" data-act="back" role="button" tabindex="0" aria-label="Close">×</div>
     <div class="pad"><p class="eyebrow">it's your data</p><h1 style="font-size:23px">Settings &amp; backup</h1></div>
+    <div class="zsec" style="margin:6px 16px 2px">Preferences</div>
     <div class="block"><h3><span class="k">Units</span></h3>
       <div class="between" style="margin-bottom:9px"><span style="font-size:13px;color:var(--muted)">Length</span>
         <div class="seg sm" style="max-width:180px">${[["cm","cm"],["in","inches"]].map(o=>`<button data-act="lenunit" data-v="${o[0]}" class="${ST.lenUnit===o[0]?'on':''}">${o[1]}</button>`).join("")}</div></div>
       <div class="between"><span style="font-size:13px;color:var(--muted)">Volume</span>
         <div class="seg sm" style="max-width:220px">${[["L","liters"],["mL","mL"],["gal","gallons"]].map(o=>`<button data-act="volunit" data-v="${o[0]}" class="${ST.volUnit===o[0]?'on':''}">${o[1]}</button>`).join("")}</div></div>
       <div class="read" style="font-size:14px">Length and volume are set separately. Soil mix always shows in cups. Remembered across sessions.</div></div>
+    <div class="block"><h3><span class="k">Reminders</span></h3>
+      <p class="muted" style="font-size:13px;line-height:1.5">Permission: <b>${perm}</b>. In-app Due-now always works. Device notifications fire when the app is open, and in the background on Android/Chrome. On iPhone they're limited.</p>
+      <button class="btn ${perm==='granted'?'ghost':'primary'}" data-act="notifask" style="width:100%;margin:12px 0 8px">${perm==='granted'?'Test a reminder now':'Turn on device reminders'}</button></div>
+    <div class="zsec" style="margin:22px 16px 2px">Your data</div>
     <div class="block"><h3><span class="k">Backup — export &amp; import</span></h3>
       <p class="muted" style="font-size:13px;line-height:1.5">Your plants, logs and photos live only on this phone. Export bundles everything into one file to save on your Google Drive. Import restores it here or on another device.</p>
       <button class="btn primary" data-act="export" style="width:100%;margin:12px 0 8px">Export a backup file</button>
       <button class="btn ghost" data-act="import" style="width:100%;margin:0">Import a backup file</button></div>
-    <div class="block"><h3><span class="k">Reminders</span></h3>
-      <p class="muted" style="font-size:13px;line-height:1.5">Permission: <b>${perm}</b>. In-app Due-now always works. Device notifications fire when the app is open, and in the background on Android/Chrome. On iPhone they're limited.</p>
-      <button class="btn ${perm==='granted'?'ghost':'primary'}" data-act="notifask" style="width:100%;margin:12px 0 8px">${perm==='granted'?'Test a reminder now':'Turn on device reminders'}</button></div>
     <div class="block"><h3><span class="k">Reset</span></h3>
       <p class="muted" style="font-size:13px;line-height:1.5">Re-seed the 24 from constants. Wipes your entered data on this device. Export first.</p>
       <button class="btn ghost" data-act="reseed" style="width:100%;margin:12px 0 0;color:var(--rust);border-color:#cf9d8b">Reset to a fresh sketchbook</button></div>

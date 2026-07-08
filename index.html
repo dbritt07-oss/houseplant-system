@@ -39,7 +39,7 @@
   html,body{margin:0;height:100%}
   body{background:var(--paper);color:var(--ink);font-family:var(--font-sans);line-height:1.45;
     -webkit-font-smoothing:antialiased;display:flex;justify-content:center}
-  #app{width:100%;max-width:440px;min-height:100vh;position:relative;padding-bottom:82px;overflow-x:hidden;
+  #app{width:100%;max-width:440px;min-height:100vh;position:relative;padding-bottom:calc(148px + env(safe-area-inset-bottom));overflow-x:hidden;
     background:var(--laid), linear-gradient(180deg,var(--paper-lite),var(--paper));
     box-shadow:0 0 50px var(--sh-app)}
   .pad{padding:16px 16px 0}
@@ -109,10 +109,12 @@
   @keyframes rise{from{transform:translateY(22px);opacity:.6}to{transform:translateY(0);opacity:1}}
   .grab{width:40px;height:4px;border-radius:9px;background:var(--line);margin:9px auto 2px}
   /* persistent close — stays reachable while the sheet scrolls (anchored to the sheet's right edge) */
-  .close{position:fixed;top:12px;right:max(14px, calc(50% - 204px));width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);color:var(--muted);font-size:18px;display:grid;place-items:center;cursor:pointer;z-index:55;box-shadow:0 2px 10px var(--sh-toast)}
+  .close{position:fixed;top:12px;right:max(14px, calc(50% - 204px));width:44px;height:44px;border-radius:50%;border:1px solid var(--line);background:var(--card);color:var(--muted);font-size:18px;display:grid;place-items:center;cursor:pointer;z-index:55;box-shadow:0 1px 4px rgba(60,45,20,.16)}
   /* plant page (ported from the finalized 24-plants page) */
   .navrow{display:flex;align-items:center;gap:10px;margin:2px 16px 9px}
-  .navb{width:44px;height:44px;border-radius:11px;border:1.5px solid var(--line);background:var(--card);font-size:20px;cursor:pointer;line-height:1;flex:0 0 auto;color:var(--pen)}
+  /* de-emphasized nav arrows — bare editorial glyphs, 44px tap target kept, labelled for AT */
+  .navb{width:44px;height:44px;border-radius:11px;border:none;background:transparent;font-size:24px;cursor:pointer;line-height:1;flex:0 0 auto;color:var(--muted)}
+  .navb:active{color:var(--ink-green)}
   .navname{flex:1;text-align:center;font-family:var(--font-serif);font-style:italic;font-weight:500;font-size:20px;color:var(--ink-green);line-height:1.1}
   .navname small{display:block;font-family:var(--font-sans);font-weight:500;font-size:11px;color:var(--muted)}
   .badges{display:flex;gap:7px;flex-wrap:wrap;margin:2px 16px 0}
