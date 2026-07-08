@@ -165,39 +165,52 @@ Format per task: **Sprint · Epic · Story · Task — Why · Deps · Effort(h) 
 
 ## Sprint plan
 
-### Sprint 0 — Foundation & de-risk
+> **Resequencing note (2026-07-07 — supersedes the original S2–S5 numbering below).**
+> Execution diverged from the original plan's sprint *labels*: the **Study specimen plate (T3.1/P1-4)** — originally scheduled in Sprint 3 — was built and frozen first, as the sprint the founder calls **"Sprint 2."** The task *catalog and IDs above are unchanged*; only the sprint groupings are re-optimized. Because P1-4 already shipped, the original Study sprint is now hollow (only the health line + schema freeze remained in it), so the four remaining plan-sprints (old S2 IA, S3 Study-tail, S4 backup, S5 QA) collapse into **three** go-forward sprints. This is a sequencing improvement, not a roadmap redesign: no task is added, removed, or rescoped. Rationale by the founder's four criteria —
+> - **Execution risk:** the high-risk backup epic keeps its *own isolated sprint* (Sprint 4) with a dedicated dogfood; nothing rides alongside it.
+> - **Dependency order:** the **schema freeze (T3.3)** now *closes the IA sprint* — immediately after the last data-shape-touching refactor (P1-2) and before any backup code — so backup is built against a frozen schema.
+> - **Founder review cadence:** three sprints = three clean demo→dogfood→subtract review points; the wipe→restore gate gets a review of its own.
+> - **Release confidence:** QA + `v1.0.0` remain a distinct final sprint, never merged into feature work.
+>
+> **Completed:** Sprint 0 ✅ · Sprint 1 ✅ · Sprint 2 (Study plate, T3.1/P1-4) ✅ — see `docs/Sprint-2-Retro.md`.
+> **Remaining:** Sprint 3 (IA + collection + foundation-finish → schema freeze) · Sprint 4 (backup, isolated) · Sprint 5 (QA + launch).
+
+### Sprint 0 — Foundation & de-risk ✅ DONE
 - **Goal:** make the codebase safe to change and prove the riskiest unknown (Drive backup) before committing to it.
 - **Deliverables:** care-math assertion script; clean repo + npm scripts; tokenized light-mode styles; Drive OAuth spike findings note.
 - **Exit criteria:** `npm test` green; app renders pixel-identical on tokens; spike has a documented, working auth+round-trip path (or a fallback decision).
 - **Demo milestone:** "Run `npm test`; show the app unchanged on the new token layer; show a JSON blob written to and read from my Drive from the installed PWA."
 
-### Sprint 1 — Accessibility gate + quick wins
+### Sprint 1 — Accessibility gate + quick wins ✅ DONE
 - **Goal:** clear the AA release gate and land the cheap, high-trust fixes.
 - **Deliverables:** full accessibility pass; FAB fix; honest Today CTA; renamed add-by-photo.
 - **Exit criteria:** AA verified (contrast/targets/labels/focus/reduced-motion); FAB/CTA/label correct.
 - **Demo milestone:** "VoiceOver reads the app; contrast checker passes; the FAB and CTA behave; add-by-photo is honestly labeled."
 
-### Sprint 2 — IA consolidation + collection
-- **Goal:** three coherent tabs and a findable collection.
-- **Deliverables:** Home/Plants/Care nav; Care hub (soil + supplies + repot entry); Build removed; sort (3 modes); plain-language filters; repot abandon-guard.
-- **Exit criteria:** 3 tabs, no `build` route, all prior actions work; sort+filter+group compose; abandon-guard fires; `npm test` green.
-- **Demo milestone:** "Tour the 3 tabs; sort and filter the collection; start a repot run from Care and get guarded on close."
+### Sprint 2 — Study specimen plate (P1-4) ✅ DONE
+- **Goal:** make the heart a botanical artifact (built ahead of IA; the divergence that drove the resequencing above).
+- **Delivered:** T3.1/P1-4 in full (v15→v23) — Cormorant + laid paper; `detailRefresh` in-place updates; one photo path; the specimen-plate `renderDetail`; and the friction-reduction polish (swipe nav, museum treatment, Soil hierarchy, compact Add, Settings grouping, lighter plate top-nav, FAB clearance).
+- **Result:** Design Review **PASS WITH POLISH**; retro in `docs/Sprint-2-Retro.md`. **Open gate:** v23 on-device dogfood (responsive/console) closes the DoD — first act of Sprint 3.
 
-### Sprint 3 — Study page + Home + stabilize
-- **Goal:** make the heart legible and freeze the data model for backup.
-- **Deliverables:** Study reordered to Reference/Ritual/Record with smooth chip updates; collection-health line on Home; documented, frozen data schema; regression pass.
-- **Exit criteria:** Study reads R/R/R with no re-render jumps; health line live; schema documented; full regression green.
-- **Demo milestone:** "Scroll the new Study page, change chips with no jump; see the health line on Home."
+--- *remaining sprints* ---
 
-### Sprint 4 — Automatic backup (the P0 gate)
-- **Goal:** make data unloseable.
-- **Deliverables:** Drive connect UI; automatic backup + status; restore with zero-data-loss verification.
+### Sprint 3 — IA consolidation + collection + foundation-finish → schema freeze
+- **Goal:** three coherent tabs, a findable collection, the tokenize tail closed, and the data model frozen for backup.
+- **Deliverables:** **open the sprint by closing Sprint 2's DoD** (v23 device pass) and the one approved Founder-Review follow-up (to-do-card affordance fix); then P1-1 tail (radius/spacing tokens + inline SVG literals); **P1-2** Home/Plants/Care nav + Care hub (soil + supplies + repot entry) + Build removed; **P1-3** sort (3 modes); **P2-1** plain-language filters; **P2-2** repot abandon-guard; **P2-3** Home collection-health line; then **T3.3** documented, frozen data schema + full regression.
+- **Exit criteria:** 3 tabs, no `build` route, all prior actions work; sort+filter+group compose; abandon-guard fires; health line live; **schema documented & frozen**; `npm test` green.
+- **Drop order if hot (P2 tier, per program analysis):** P2-1, then P2-3, then P2-2. Do not drop P1-2/P1-3 or the schema freeze.
+- **Demo milestone:** "Tour the 3 tabs; sort and filter the collection; start a repot run from Care and get guarded on close; show the frozen schema JSON."
+
+### Sprint 4 — Automatic backup (the P0 gate, isolated)
+- **Goal:** make data unloseable — the highest-risk epic, alone, with its own dogfood.
+- **Deliverables:** T4.1 Drive connect UI; T4.2 automatic backup + status; T4.3 restore with zero-data-loss verification.
+- **Entry gate:** T3.3 schema frozen (from Sprint 3). No backup code begins against a moving schema.
 - **Exit criteria:** wipe→restore round-trip loses nothing on a real device; auto-backup + status work; disconnect stays local.
 - **Demo milestone:** "Wipe the app, restore from Drive, everything returns — plants, logs, photos."
 
 ### Sprint 5 — Hardening, QA & launch
 - **Goal:** ship a trustworthy V1.
-- **Deliverables:** full QA pass; bug fixes; v1.0.0 tagged and deployed.
+- **Deliverables:** T5.1 full QA pass; T5.2 bug fixes; T5.3 v1.0.0 tagged and deployed.
 - **Exit criteria:** launch QA checklist green; no P0/P1 defects; live and installable.
 - **Demo milestone:** "Install v1.0.0 from the live URL on a fresh phone; run the end-to-end slice."
 
@@ -226,8 +239,9 @@ Backup is the long pole; it cannot be shortened by parallelism (solo dev) and de
 ## Totals, timeline, risk, and process
 
 **Total estimated development hours:**
-- Sprint 0: 25h · Sprint 1: 20h · Sprint 2: 26h · Sprint 3: 21h · Sprint 4: 24h · Sprint 5: 24h
-- **≈ 140 dev-hours** (excludes founder non-eng time).
+- Original per-task estimate: **≈ 140 dev-hours** (excludes founder non-eng time).
+- **Completed:** Sprint 0 (~25h) · Sprint 1 (~20h) · Sprint 2 / Study plate (~26h incl. polish) — **≈ 71h done.**
+- **Remaining (resequenced into 3 sprints):** Sprint 3 IA + collection + P1-1 tail + P2s + schema freeze (**≈ 34h**) · Sprint 4 backup, isolated (**≈ 24h**) · Sprint 5 QA + launch (**≈ 24h**) — **≈ 82 dev-hours left.**
 
 **Calendar for one full-time developer:** at ~25–30 dev-hours/week, **6 sprints ≈ 6 weeks of focused build; plan 7–8 calendar weeks** with real-life slippage and the high-risk backup work. If the T0.4 spike surfaces an iOS auth blocker, add up to a week.
 
