@@ -19,7 +19,7 @@
    ============================================================ */
 
 import * as C from "../js/care.js";
-import { buildSeed } from "../js/seed.js";
+import { buildSeed, newPlant } from "../js/seed.js";
 
 /* ---- tiny zero-dependency assert harness ---- */
 let pass = 0;
@@ -109,6 +109,31 @@ eq("January is dormant", C.season(new Date(2026, 0, 15)), false);
 /* 11) HEALTH scale integrity. Protects: the 4-step health model the art + status use. */
 eq("Health scale has 4 steps", C.HEALTH.length, 4);
 eq("Health value multipliers align to 4 steps", C.HVAL.length, 4);
+
+/* 12) SCHEMA FREEZE (Sprint 3, T3.3). Locks the persisted plant-record field set so the
+   Sprint 4 backup build serializes/restores a stable shape. Mirror of docs/DATA-SCHEMA.md.
+   If this fails after a change it IS a schema change: bump the export `version`, write a
+   migration, and update docs/DATA-SCHEMA.md — do NOT just edit the list to make it green. */
+const REQUIRED = ["name","latin","art","pace","thirst","matureCm","med","hCm","hi","light","water","wsens","tox","drain","intv","intvMan","fert","lastW","lastF","snug","rootcond","trapN","trapL","top","bot","ph","mat","shape","loc","room","repotDate","photos","todo","log"].sort();
+eq("Schema: seed holds the locked 24 plants", Object.keys(seed).length, 24);
+let seedShapeOk = true, seedDetail = "";
+Object.keys(seed).forEach(k => {
+  const got = Object.keys(seed[k]).sort();
+  if (JSON.stringify(got) !== JSON.stringify(REQUIRED)) {
+    seedShapeOk = false;
+    if (!seedDetail) seedDetail = `${k}: missing [${REQUIRED.filter(f => !got.includes(f))}] extra [${got.filter(f => !REQUIRED.includes(f))}]`;
+  }
+});
+ok("Schema: every seed plant matches the frozen 34-field shape (excl. id)", seedShapeOk, seedDetail);
+const np = newPlant({ name: "Test", latin: "", type: "aroid", room: "Office", tox: true, photoDataUrl: "data:image/jpeg;base64,AAAA" });
+const npKeys = Object.keys(np).sort(), REQUIRED_ID = [...REQUIRED, "id"].sort();
+ok("Schema: newPlant() matches the frozen shape + id", JSON.stringify(npKeys) === JSON.stringify(REQUIRED_ID),
+   `missing [${REQUIRED_ID.filter(f => !npKeys.includes(f))}] extra [${npKeys.filter(f => !REQUIRED_ID.includes(f))}]`);
+const phKeys = np.photos[0] && Object.keys(np.photos[0]).sort();
+ok("Schema: photo record shape { id, date, dataUrl }", JSON.stringify(phKeys) === JSON.stringify(["dataUrl","date","id"]));
+const le = seed.mon.log[0];
+ok("Schema: log entry carries a date + text", !!(le && le.date && typeof le.t === "string"));
+ok("Schema: rootcond defaults to null (unchecked)", newPlant({ name: "x", type: "ficus" }).rootcond === null);
 
 /* ---- summary ---- */
 console.log(`\n${pass} passed, ${fails.length} failed.`);

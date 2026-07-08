@@ -172,8 +172,8 @@ Format per task: **Sprint · Epic · Story · Task — Why · Deps · Effort(h) 
 > - **Founder review cadence:** three sprints = three clean demo→dogfood→subtract review points; the wipe→restore gate gets a review of its own.
 > - **Release confidence:** QA + `v1.0.0` remain a distinct final sprint, never merged into feature work.
 >
-> **Completed:** Sprint 0 ✅ · Sprint 1 ✅ · Sprint 2 (Study plate, T3.1/P1-4) ✅ — see `docs/Sprint-2-Retro.md`.
-> **Remaining:** Sprint 3 (IA + collection + foundation-finish → schema freeze) · Sprint 4 (backup, isolated) · Sprint 5 (QA + launch).
+> **Completed:** Sprint 0 ✅ · Sprint 1 ✅ · Sprint 2 (Study plate, T3.1/P1-4) ✅ · Sprint 3 (IA + collection → schema freeze) ✅ — see `docs/Sprint-2-Retro.md` and `docs/DATA-SCHEMA.md`.
+> **Remaining:** Sprint 4 (backup, isolated — schema now frozen) · Sprint 5 (QA + launch, incl. P1-1 token tail cleanup).
 
 ### Sprint 0 — Foundation & de-risk ✅ DONE
 - **Goal:** make the codebase safe to change and prove the riskiest unknown (Drive backup) before committing to it.
@@ -194,7 +194,8 @@ Format per task: **Sprint · Epic · Story · Task — Why · Deps · Effort(h) 
 
 --- *remaining sprints* ---
 
-### Sprint 3 — IA consolidation + collection + foundation-finish → schema freeze
+### Sprint 3 — IA consolidation + collection + foundation-finish → schema freeze ✅ DONE
+- **Completed (v24–v28):** P1-2 IA→3 tabs + Care hub (v24) · P1-3 sort (v25) · P2-1 plain-language filters (v26) · P2-2 repot abandon-guard (v27) · P2-3 Home health line (v28) · **T3.3 schema freeze** — `docs/DATA-SCHEMA.md` (frozen shape of record) + a schema-lock regression test (`tests/care.test.js`, now 36/36). **Carried out of this sprint by decision:** the **P1-1 token tail** (radius/spacing tokens + inline SVG color literals) → **Sprint 5 / release cleanup** — it is schema-neutral and has **no functional dependency on the freeze or backup**, so it is *not* a V1 functional blocker; it is polish/hygiene to fold into the release pass. The **to-do-card affordance fix** also sits in Sprint 5 (per the admission rule).
 - **Goal:** three coherent tabs, a findable collection, the tokenize tail closed, and the data model frozen for backup. **T3.3 Schema Freeze is the primary milestone of this sprint; everything else serves it or is subordinate to it.**
 
 - **Admission rule (schema-freeze protection — governs every candidate before it enters this sprint).** Before implementing any work, evaluate whether it: (a) **changes navigation or information architecture**, (b) **changes the data model or persistent state**, or (c) **is required to safely complete the schema freeze.** If **yes** to any → it belongs in Sprint 3. If **no** to all three → **defer to Sprint 4 (Backup) or Sprint 5 (QA/Release)**, *unless it is already explicitly approved V1 scope* (a P0/P1/P2 epic in `BACKLOG.md`), in which case it may stay as schema-neutral fill but must never delay the freeze. **Polish, convenience features, and newly discovered ideas do not delay the freeze** — they defer by default.
@@ -203,7 +204,7 @@ Format per task: **Sprint · Epic · Story · Task — Why · Deps · Effort(h) 
   - **Open by closing Sprint 2's DoD** — v23 on-device device pass. *(Verification of prior work, not new implementation; zero schema surface. Admitted as the opening gate.)*
   - **P1-2 — Home/Plants/Care nav + Care hub (soil + supplies + repot entry) + Build removed.** *(Changes nav/IA → **core of the sprint**.)*
   - **P1-3 — sort (3 modes).** *(Approved V1 P1; session-scoped view state. Admitted as approved scope.)*
-  - **P1-1 tail — radius/spacing tokens + inline SVG literals.** *(Approved V1 P1; schema-neutral. Admitted as fill; droppable to S5 if the sprint runs hot.)*
+  - **P1-1 tail — radius/spacing tokens + inline SVG literals.** *(Approved V1 P1; schema-neutral. **Carried to Sprint 5 / release cleanup** — pure CSS/token hygiene with zero user-visible payoff and no dependency on the freeze; not a functional blocker.)*
   - **P2-1 plain-language filters · P2-2 repot abandon-guard · P2-3 Home health line.** *(Approved V1 P2; schema-neutral. Admitted as fill only.)*
   - **T3.3 — documented, frozen data schema + full regression.** *(The milestone. Closes the sprint.)*
 - **Deferred by the admission rule (NOT in this sprint):**
@@ -221,7 +222,7 @@ Format per task: **Sprint · Epic · Story · Task — Why · Deps · Effort(h) 
 
 ### Sprint 5 — Hardening, QA & launch
 - **Goal:** ship a trustworthy V1.
-- **Deliverables:** T5.1 full QA pass; T5.2 bug fixes; T5.3 v1.0.0 tagged and deployed.
+- **Deliverables:** T5.1 full QA pass; T5.2 bug fixes; T5.3 v1.0.0 tagged and deployed. **Release cleanup carried in:** the **P1-1 token tail** (radius/spacing tokens + inline SVG color literals — schema-neutral, verify pixel-identical) and the **to-do-card affordance fix**. Neither is a functional blocker; both are polish folded into the release pass.
 - **Exit criteria:** launch QA checklist green; no P0/P1 defects; live and installable.
 - **Demo milestone:** "Install v1.0.0 from the live URL on a fresh phone; run the end-to-end slice."
 
