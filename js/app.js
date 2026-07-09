@@ -6,7 +6,7 @@
    ============================================================ */
 import * as C from "./care.js";
 import { ART } from "./art.js";
-import { DB, compressImage } from "./db.js";
+import { DB, compressImage, validateBackup } from "./db.js";
 import { ARCHETYPES, newPlant } from "./seed.js";
 import * as Drive from "./drive.js";
 
@@ -26,7 +26,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v30";
+const BUILD = "v31";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -299,7 +299,8 @@ function renderSettings() {
     <div class="block"><h3><span class="k">Back up to Google Drive</span></h3>
       <p class="muted" style="font-size:13px;line-height:1.5">Automatic backup to <b>your own</b> Google Drive, so a lost or reset phone loses nothing. Your plants, logs and photos go only to your Drive — never to our servers or the app maker.</p>
       ${dConn ? `
-      <div class="read" style="font-size:14px;margin:10px 0 0">Connected · last backup <b>${dLast}</b>${dFail ? ` · <span style="color:var(--rust)">last attempt failed</span>` : ``}</div>
+      <div class="read" style="font-size:14px;margin:10px 0 0">Connected · last backup <b>${dLast}</b></div>
+      ${dFail ? `<div class="fac" style="color:var(--rust);margin-top:4px">Last attempt: ${esc(dState.slice(6))} It will retry on your next change.</div>` : ``}
       <button class="btn primary" data-act="drivebackup" style="width:100%;margin:12px 0 8px">Back up now</button>
       <button class="btn ghost" data-act="driverestore" style="width:100%;margin:0 0 8px">Restore from Drive</button>
       <button class="btn ghost" data-act="drivedisconnect" style="width:100%;margin:0;color:var(--rust);border-color:#cf9d8b">Disconnect Drive</button>`
@@ -823,18 +824,30 @@ async function driveBackup() {
   try { await Drive.backupNow(); render(); toast("Backed up to your Drive."); }
   catch (e) { render(); toast(e.message || "Backup failed. Check your connection."); }
 }
+/* Restore is the one destructive action. It fetches + validates FIRST, then shows the
+   user exactly what they are about to overwrite, and warns loudly if the backup looks
+   older/smaller than what's on the device. Nothing local changes until they confirm. */
 async function driveRestore() {
-  if (!confirm("Restore from Drive? This replaces the plants and settings on this device with your latest Drive backup.")) return;
+  toast("Checking your Drive backup…");
+  let obj, stats;
+  try { obj = await Drive.fetchBackup(); stats = validateBackup(obj); }
+  catch (e) { toast(e.message || "Could not read the Drive backup."); return; }
+  const localCount = ST.order.length;
+  const when = stats.exportedAt ? new Date(stats.exportedAt).toLocaleString() : "an unknown date";
+  let msg = `Restore from Drive?\n\nBackup: ${stats.plants} plants · ${stats.photos} photos\nSaved: ${when}\nThis device: ${localCount} plants\n\nThis REPLACES the plants and settings on this device.`;
+  if (stats.plants < localCount) {
+    msg = `⚠️ The Drive backup has FEWER plants (${stats.plants}) than this device (${localCount}).\nYou may be about to restore an OLDER backup over newer data.\n\n` + msg;
+  }
+  if (!confirm(msg)) return;
   toast("Restoring from Drive…");
   try {
-    const obj = await Drive.fetchBackup();
-    await DB.importAll(obj);
+    await DB.importAll(obj);                 // atomic: rolls back if interrupted
     const loaded = await DB.init();
     ST.plants = loaded.plants; ST.order = loaded.order;
     if (loaded.settings) applyUnitSettings(loaded.settings);
     ST.view = null; render();
-    toast("Restored from your Drive.");
-  } catch (e) { toast(e.message || "Restore failed."); }
+    toast(`Restored ${stats.plants} plants · ${stats.photos} photos.`);
+  } catch (e) { toast(e.message || "Restore failed. Nothing on this device was changed."); }
 }
 /* Automatic backup (T4.2): debounced after a meaningful change; silent (never pops a
    dialog) and non-blocking (failures surface only as Settings status). A device-local

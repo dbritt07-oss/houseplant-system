@@ -38,7 +38,9 @@ reskin, built screen by screen. **Governing docs: `docs/VISUAL-CONSTITUTION.md` 
 
 ## P0 — release gates (V1 cannot ship without these)
 
-### Epic P0-1 · Automatic cloud backup ⬜  *(effort: L · risk: ~~High~~ → Medium after spike)*
+### Epic P0-1 · Automatic cloud backup 🔨 *(T4.1–T4.3 built, v29–v31 · effort: L · risk: ~~High~~ → Medium after spike)*
+
+> **Status:** connect + manual backup/restore (T4.1 ✅ on-device), automatic silent backup + on-open catch-up (T4.2 ✅ on-device), restore hardening + validation + atomic import + regression coverage (T4.3, 53/53 local). **Epic stays open until:** (a) the **wipe → restore zero-data-loss launch gate** passes on-device, and (b) **Risk #1 — the 5 MB Drive multipart upload limit — is fixed via `uploadType=resumable`**, without which automatic backup will stop once photos accumulate. Full risk register: `docs/BACKUP-VERIFICATION.md`.
 The one non-negotiable: years of records must survive a lost phone or iOS storage eviction. One-way
 automatic backup to the owner's **own Google Drive**, plus restore. Manual export/import stays as the
 offline/portable path.

@@ -20,6 +20,7 @@
 
 import * as C from "../js/care.js";
 import { buildSeed, newPlant } from "../js/seed.js";
+import { validateBackup, BACKUP_VERSION } from "../js/db.js";
 
 /* ---- tiny zero-dependency assert harness ---- */
 let pass = 0;
@@ -33,6 +34,11 @@ function eq(name, actual, expected) {
 }
 function near(name, actual, expected, tol = 1e-6) {
   ok(name, Math.abs(actual - expected) <= tol, `expected ≈${expected} (±${tol}), got ${actual}`);
+}
+/* asserts fn() throws; if `match` is given, the message must contain it */
+function throws(name, fn, match) {
+  try { fn(); ok(name, false, "expected it to throw, but it returned"); }
+  catch (e) { ok(name, !match || (e.message || "").includes(match), `threw "${e.message}" (wanted it to contain "${match}")`); }
 }
 
 const seed = buildSeed();
@@ -134,6 +140,40 @@ ok("Schema: photo record shape { id, date, dataUrl }", JSON.stringify(phKeys) ==
 const le = seed.mon.log[0];
 ok("Schema: log entry carries a date + text", !!(le && le.date && typeof le.t === "string"));
 ok("Schema: rootcond defaults to null (unchecked)", newPlant({ name: "x", type: "ficus" }).rootcond === null);
+
+/* 13) BACKUP ENVELOPE VALIDATION (Sprint 4, T4.3). Locks the guard that stands between
+   a corrupt/foreign/newer file and the user's data. Every rejection below is a data-loss
+   scenario that must fail LOUDLY and leave local data untouched. Mirrors docs/DATA-SCHEMA.md §5. */
+const seedPlants = Object.entries(seed).map(([id, p]) => Object.assign({ id }, p));
+const goodBackup = () => ({
+  app: "Plant Daddy HQ", format: "hps-backup", version: BACKUP_VERSION,
+  exportedAt: new Date().toISOString(),
+  settings: { order: Object.keys(seed), lenUnit: "in" },
+  plants: JSON.parse(JSON.stringify(seedPlants))
+});
+const okStats = validateBackup(goodBackup());
+eq("Backup: a valid envelope reports 24 plants", okStats.plants, 24);
+ok("Backup: counts log entries across plants", okStats.logs > 0, `logs=${okStats.logs}`);
+eq("Backup: seeded collection has no photos yet", okStats.photos, 0);
+ok("Backup: photo + log counts are tallied", (() => {
+  const b = goodBackup();
+  b.plants[0].photos = [{ id: "ph_1", date: "2026-07-01", dataUrl: "data:image/jpeg;base64,AA" }];
+  return validateBackup(b).photos === 1;
+})());
+ok("Backup: settings may be absent", (() => { const b = goodBackup(); delete b.settings; return validateBackup(b).plants === 24; })());
+
+throws("Backup: rejects null", () => validateBackup(null), "unreadable");
+throws("Backup: rejects a bare array", () => validateBackup([]), "unreadable");
+throws("Backup: rejects a foreign file (wrong format)", () => { const b = goodBackup(); b.format = "something-else"; validateBackup(b); }, "Not a Plant Daddy HQ backup");
+throws("Backup: rejects a missing version", () => { const b = goodBackup(); delete b.version; validateBackup(b); }, "missing its version");
+throws("Backup: rejects a NEWER version (forward-compat guard)", () => { const b = goodBackup(); b.version = BACKUP_VERSION + 1; validateBackup(b); }, "newer version");
+throws("Backup: rejects a missing plants list", () => { const b = goodBackup(); delete b.plants; validateBackup(b); }, "no plants list");
+throws("Backup: rejects a non-array plants list", () => { const b = goodBackup(); b.plants = {}; validateBackup(b); }, "no plants list");
+throws("Backup: rejects a plant with no id", () => { const b = goodBackup(); delete b.plants[3].id; validateBackup(b); }, "missing its id");
+throws("Backup: rejects duplicate plant ids", () => { const b = goodBackup(); b.plants[1].id = b.plants[0].id; validateBackup(b); }, "sharing the id");
+throws("Backup: rejects a corrupted photo list", () => { const b = goodBackup(); b.plants[0].photos = "oops"; validateBackup(b); }, "unreadable photo list");
+throws("Backup: rejects a corrupted timeline", () => { const b = goodBackup(); b.plants[0].log = 42; validateBackup(b); }, "unreadable timeline");
+throws("Backup: rejects unreadable settings", () => { const b = goodBackup(); b.settings = []; validateBackup(b); }, "unreadable settings");
 
 /* ---- summary ---- */
 console.log(`\n${pass} passed, ${fails.length} failed.`);

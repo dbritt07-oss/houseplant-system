@@ -12,6 +12,15 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v31 — Sprint 4: proving the backup can be trusted (no new features)
+- [ ] **Restore now shows you what it will overwrite** — before replacing anything it says *"Backup: N plants · M photos, saved <date>. This device: N plants."* and makes you confirm. *(Settings → Restore from Drive.)*
+- [ ] **Loud warning on an older backup** — if the Drive backup has **fewer plants** than your device, it warns you may be restoring an older backup over newer data before you confirm.
+- [ ] **Corrupt or foreign files are refused** — a damaged backup, someone else's file, or one made by a *newer* app version is rejected with a plain-English reason, and **your device data is never touched.**
+- [ ] **An interrupted restore no longer half-empties your collection** — the wipe-and-rewrite now happens in one atomic step that rolls back if it fails.
+- [ ] **Empty-collection guard** — an automatic backup will never overwrite your good Drive backup with an empty one (e.g. if the database fails to open).
+- [ ] **Clearer failures** — Settings now tells you *why* the last attempt failed, and that it will retry.
+- [ ] **Verify on device (the launch gate):** with data on the phone, back up → delete the app / reset the browser data → reinstall → Connect → **Restore** → confirm every plant, log entry, and photo returns.
+
 ## build v30 — Sprint 4: backups now happen automatically
 - [ ] **Automatic backup** — once Drive is connected, the app backs itself up **on its own** a few seconds after you change something (water, feed, repot, edit a plant, add/remove, change units), and again when you reopen the app if anything changed while it was closed. No button needed. *(Runs quietly in the background.)*
 - [ ] **Silent + non-blocking** — automatic backups never pop up a sign-in and never interrupt you; if one can't run (offline, sign-in expired), **nothing is lost** — Settings shows "last attempt failed" and it simply retries on the next change or reopen.

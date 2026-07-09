@@ -11,6 +11,37 @@ const DB_NAME = "houseplant";
 const DB_VER = 1;
 let _db = null;
 
+/* Version of the portable backup envelope (`hps-backup`). Frozen at 1 — see
+   docs/DATA-SCHEMA.md. Bumping this requires a migration path for older files. */
+export const BACKUP_VERSION = 1;
+
+/* Validate a backup envelope BEFORE it is written to Drive or restored over local
+   data. Pure + synchronous so it is unit-tested (tests/care.test.js). It only checks
+   the frozen contract — it never changes it. Throws a plain-language Error on
+   anything unusable; returns counts so callers can show the user what they're about
+   to overwrite. */
+export function validateBackup(obj) {
+  if (!obj || typeof obj !== "object" || Array.isArray(obj)) throw new Error("That backup file is unreadable.");
+  if (obj.format !== "hps-backup") throw new Error("Not a Plant Daddy HQ backup file.");
+  if (typeof obj.version !== "number" || !Number.isFinite(obj.version)) throw new Error("That backup file is missing its version.");
+  if (obj.version > BACKUP_VERSION) throw new Error("That backup was made by a newer version of Plant Daddy HQ. Update the app, then restore.");
+  if (!Array.isArray(obj.plants)) throw new Error("That backup file has no plants list.");
+  if (obj.settings != null && (typeof obj.settings !== "object" || Array.isArray(obj.settings))) throw new Error("That backup file has unreadable settings.");
+  let photos = 0, logs = 0;
+  const seen = new Set();
+  obj.plants.forEach((p, i) => {
+    if (!p || typeof p !== "object" || Array.isArray(p)) throw new Error(`Backup entry ${i + 1} is not a plant record.`);
+    if (typeof p.id !== "string" || !p.id) throw new Error(`Backup entry ${i + 1} is missing its id.`);
+    if (seen.has(p.id)) throw new Error(`This backup has two plants sharing the id "${p.id}".`);
+    seen.add(p.id);
+    if (p.photos != null && !Array.isArray(p.photos)) throw new Error(`Plant "${p.id}" has an unreadable photo list.`);
+    if (p.log != null && !Array.isArray(p.log)) throw new Error(`Plant "${p.id}" has an unreadable timeline.`);
+    photos += (p.photos || []).length;
+    logs += (p.log || []).length;
+  });
+  return { plants: obj.plants.length, photos, logs, exportedAt: obj.exportedAt || null };
+}
+
 function open() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VER);
@@ -75,21 +106,20 @@ export const DB = {
     return {
       app: "Plant Daddy HQ",
       format: "hps-backup",
-      version: 1,
+      version: BACKUP_VERSION,
       exportedAt: new Date().toISOString(),
       settings,
       plants
     };
   },
 
-  /* Restore from an export object. Replaces all plant records + settings. */
+  /* Restore from an export object. Replaces all plant records + settings.
+     Validated first, then written in a SINGLE transaction: clear + puts are atomic,
+     so an interrupted restore rolls back rather than leaving a half-empty collection. */
   async importAll(obj) {
-    if (!obj || obj.format !== "hps-backup" || !Array.isArray(obj.plants)) {
-      throw new Error("Not a Plant Daddy HQ backup file.");
-    }
-    // wipe plants
-    const clr = tx("plants", "readwrite"); clr.clear(); await done(clr);
+    const stats = validateBackup(obj);           // throws a plain-language error; nothing is touched
     const st = tx("plants", "readwrite");
+    st.clear();                                   // same transaction as the puts below → atomic
     obj.plants.forEach(p => st.put(p));
     await done(st);
     if (obj.settings) {
@@ -97,7 +127,7 @@ export const DB = {
       Object.entries(obj.settings).forEach(([k, v]) => ss.put({ k, v }));
       await done(ss);
     }
-    return true;
+    return stats;
   }
 };
 

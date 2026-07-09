@@ -82,6 +82,20 @@ Rows are `{ k, v }`. Known keys:
 | `volUnit` | string | `"gal" \| "L" \| "mL"`. |
 | `notify` | boolean | device-notification opt-in. |
 
+## 3b. Drive backup state — device-local, NOT part of the schema
+
+Google Drive backup keeps its state in **`localStorage`**, deliberately *outside* the IndexedDB `settings` store, so it never travels inside a backup and the frozen schema stays unchanged:
+
+| localStorage key | meaning |
+|---|---|
+| `pdhq_drive_cid` | the **public** OAuth Client ID (never a secret; never in the repo) |
+| `pdhq_drive_connected` | `"1"` once Drive has been connected |
+| `pdhq_drive_last` | ISO time of the last **successful** backup |
+| `pdhq_drive_state` | `"ok"` or `"error:<message>"` for the last attempt |
+| `pdhq_drive_dirty` | `"1"` if local data changed since the last successful backup (survives reload) |
+
+The OAuth **access token is held in memory only** and is never persisted. Backup adds **no new IndexedDB settings keys** and **no new envelope fields** — the contract in §5 is untouched.
+
 ## 4. NOT persisted (session-only UI state)
 
 The following live only in the in-memory `ST` object in `js/app.js` and are **deliberately not stored** — they reset on reload and are **out of scope for backup**: `tab`, `view`, `sel`, `q` (search), `filter`, `sortMode`, `groupByRoom`, `calcBucket`, `calcSize`, `soilRecipes`, `soilGnat`, and all transient repot-run state (`repotStep`, `repotChecks`, `root`, `note`, `potUsed`, `repotNewPot`, `repotPot`), plus `addDraft` / `checkinDraft`. (The sort and filter added in Sprint 3 are here by design — presentation, not data.)
@@ -102,7 +116,9 @@ The portable backup file — and the shape Drive backup (Sprint 4) will read and
 ```
 
 - `settings` is an **object** (keyed by `k`); `plants` is an **array** of full plant records.
-- **Import validation:** `importAll` rejects anything whose `format !== "hps-backup"` or whose `plants` is not an array; it then **clears** the `plants` store and replaces it, and overlays `settings`.
+- **Validation (`validateBackup`, `js/db.js`)** runs before *any* write or restore and is unit-tested (`tests/care.test.js`). It rejects: a non-object/array root, a wrong `format`, a missing/non-numeric `version`, a **newer** `version` than this app understands, a missing/non-array `plants`, a plant without a string `id`, **duplicate plant ids**, a non-array `photos` or `log`, and non-object `settings`. It returns `{plants, photos, logs, exportedAt}` counts so the UI can show what is about to be overwritten.
+- **Import is atomic:** `importAll` validates first (nothing is touched if it throws), then performs `clear()` + all `put()`s in a **single IndexedDB transaction**, so an interrupted restore **rolls back** rather than leaving a half-empty collection.
+- **Backup is guarded:** an *automatic* backup of a **zero-plant** collection is refused, so a failed DB open can never overwrite a good Drive backup with an empty one. An explicit "Back up now" may still proceed.
 - **Restore contract (the P0 launch gate):** a fresh install → import must reproduce every plant, log entry, and photo **byte-for-byte**, and a full IndexedDB wipe → restore must yield **zero data loss**.
 
 ## 6. What "frozen" means for Sprint 4

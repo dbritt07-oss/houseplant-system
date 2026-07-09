@@ -14,10 +14,16 @@
    - Plant data goes only to the user's Drive; nothing to our servers
      or the repo.
    ============================================================ */
-import { DB } from "./db.js";
+import { DB, validateBackup } from "./db.js";
 
 const SCOPE = "https://www.googleapis.com/auth/drive.appdata";
 const FILENAME = "plant-daddy-hq-backup.json";
+
+/* Google Drive's `uploadType=multipart` is capped at 5 MB. Our backup embeds photos as
+   base64, so a photo-heavy collection will cross it. We refuse loudly rather than let
+   Drive fail opaquely. Lifting this needs `uploadType=resumable` — see
+   docs/BACKUP-VERIFICATION.md → Remaining Data-Loss Risks. */
+const MULTIPART_LIMIT = 5 * 1024 * 1024;
 
 /* Optional: hard-code the PUBLIC OAuth Client ID here once you have it.
    If left blank, the owner pastes it once in Settings (stored device-local). */
@@ -137,8 +143,23 @@ export function disconnect() {
 /* Serialize the frozen export shape and write it to Drive. One silent token
    retry on an auth error. `silent` avoids surfacing a popup for background runs. */
 export async function backupNow({ silent = false } = {}) {
+  // Build + self-check the payload BEFORE authenticating, so a malformed export can
+  // never reach Drive. (Cheap, offline, and no token needed to fail fast.)
+  const data = await DB.exportAll();
+  const stats = validateBackup(data);
+  // Integrity guard: an automatic run must NEVER overwrite a good Drive backup with an
+  // empty collection (e.g. a failed DB open). An explicit "Back up now" may still do it.
+  if (stats.plants === 0 && silent) {
+    markErr("Collection is empty — automatic backup skipped to protect your Drive backup.");
+    return { skipped: true, reason: "empty" };
+  }
+  const text = JSON.stringify(data);
+  if (text.length > MULTIPART_LIMIT) {
+    const mb = (text.length / 1048576).toFixed(1);
+    markErr(`Backup is ${mb} MB — past the 5 MB upload limit (mostly photos). Export a file for now.`);
+    throw new Error(`Your backup has grown to ${mb} MB, past the 5 MB limit of the current upload method (photos take the space). Your data is safe on this device — use “Export a backup file” until this is lifted.`);
+  }
   await ensureToken(silent);
-  const text = JSON.stringify(await DB.exportAll());
   try {
     const res = await uploadJson(text);
     markOk();
@@ -163,6 +184,7 @@ export async function fetchBackup() {
   const txt = await r.text();
   if (!r.ok) throw new Error("Drive download failed: " + r.status);
   let obj;
-  try { obj = JSON.parse(txt); } catch (e) { throw new Error("The backup file is unreadable."); }
+  try { obj = JSON.parse(txt); } catch (e) { throw new Error("The Drive backup file is corrupted and can’t be read. Your device data was not touched."); }
+  validateBackup(obj);   // fail fast on a corrupt/foreign/newer file — before anything local changes
   return obj;
 }

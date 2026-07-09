@@ -6,6 +6,6 @@
   "description": "Plant Daddy HQ — local-first houseplant care journal (PWA). No runtime deps; this manifest only powers the dev test harness.",
   "scripts": {
     "test": "node tests/care.test.js",
-    "check": "node --check js/care.js && node --check js/seed.js && node --check js/art.js && node --check js/db.js && node --check js/app.js"
+    "check": "node --check js/care.js && node --check js/seed.js && node --check js/art.js && node --check js/db.js && node --check js/drive.js && node --check js/app.js"
   }
 }
