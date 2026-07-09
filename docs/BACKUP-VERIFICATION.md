@@ -56,7 +56,7 @@ Every realistic path to losing data or losing backup coverage. "Mitigation" = wh
 
 | # | Scenario | Current behavior | User impact | Mitigation implemented | Additional work |
 |---|---|---|---|---|---|
-| 1 | **Backup exceeds 5 MB** (photos) | Refused before upload with a clear message; status explains; local data safe | **Backups silently stop working** as the collection grows — the single most likely real failure | Explicit size guard + plain-language error + manual-export fallback | **REQUIRED BEFORE V1** — implement `uploadType=resumable` (or thin the payload). This is the one risk I would not ship with. |
+| 1 | ~~**Backup exceeds 5 MB** (photos)~~ **RESOLVED (T4.4, v32)** | Uploads use `uploadType=resumable` — no practical size ceiling | None. Photo-heavy collections back up normally | Multipart (5 MB cap) replaced by a resumable session upload | **None.** Verify once on-device with a photo-heavy backup. |
 | 2 | **Google authorization revoked** | Token requests fail; silent backup fails; Settings shows the reason; retries on next change/open | Backups stop; user may not notice for weeks | Settings status + retry + manual export | **Recommended V1:** a passive "backup hasn't run in N days" notice somewhere the user actually looks. Can technically wait Post-V1. |
 | 3 | **Expired Google session / test-user grant lapses** | Silent (`prompt:"none"`) refresh fails; status shows it; next interactive backup re-grants | Gap in coverage until the user opens the app and taps Back up now | Retry on change/open; honest status | Same as #2. Publishing the consent screen removes test-user expiry (Post-V1). |
 | 4 | **Backup interrupted during upload** | Request never completes; previous good file assumed intact; dirty flag retained → retried | None expected — last good backup survives | Dirty flag survives reload; automatic retry | Verify assumption #1 on device. No code change expected. |
@@ -77,8 +77,8 @@ Every realistic path to losing data or losing backup coverage. "Mitigation" = wh
 
 ### Honest summary
 
-The backup system is **correct, validated, atomic on restore, and honest about failure** — but it is **not yet complete for release**. One risk is disqualifying:
+The backup system is **correct, validated, atomic on restore, and honest about failure.** The one disqualifying defect — Risk #1, the 5 MB multipart upload cap — was **fixed in T4.4 (v32)** by switching to `uploadType=resumable`. No remaining risk blocks V1 on code grounds.
 
-> **Risk #1 (5 MB multipart limit) must be fixed before V1 ships.** As soon as the founder photographs a meaningful number of plants, automatic backup will stop — loudly now, but stop. `uploadType=resumable` is the fix.
+**One thing still stands between this and a trustworthy release: the launch gate.** A real wipe → restore, with photos, diffed against a pre-wipe manual export. Until that passes on-device, P0-1 is not done.
 
-Two risks are *recommended* (not strictly required) for V1: a visible "backups have stopped" signal (#2/#3), and documenting the single-device and single-Client-ID assumptions (#7/#17). Everything else can safely wait until Post-V1.
+Two risks are *recommended* (not required) for V1: a visible "backups have stopped" signal (#2/#3 — today a revoked grant fails only into a Settings line the user may never open), and documenting the **single-device** (#7) and **single-Client-ID** (#17) assumptions. Everything else can safely wait until Post-V1 — including the largest structural gap, **no backup rotation** (#6): there is exactly one file, so a corrupt backup has no history to fall back on. Occasional manual exports remain the real safety net.

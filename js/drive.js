@@ -19,11 +19,10 @@ import { DB, validateBackup } from "./db.js";
 const SCOPE = "https://www.googleapis.com/auth/drive.appdata";
 const FILENAME = "plant-daddy-hq-backup.json";
 
-/* Google Drive's `uploadType=multipart` is capped at 5 MB. Our backup embeds photos as
-   base64, so a photo-heavy collection will cross it. We refuse loudly rather than let
-   Drive fail opaquely. Lifting this needs `uploadType=resumable` — see
-   docs/BACKUP-VERIFICATION.md → Remaining Data-Loss Risks. */
-const MULTIPART_LIMIT = 5 * 1024 * 1024;
+/* Uploads use `uploadType=resumable`, NOT `multipart` — multipart is capped at 5 MB and
+   our backup embeds photos as base64, so a photo-heavy collection would silently stop
+   backing up. Resumable has no practical size ceiling. (T4.4 — closes Risk #1 in
+   docs/BACKUP-VERIFICATION.md.) */
 
 /* Optional: hard-code the PUBLIC OAuth Client ID here once you have it.
    If left blank, the owner pastes it once in Settings (stored device-local). */
@@ -105,23 +104,41 @@ async function findFileId() {
   if (!r.ok) throw new Error("Drive list failed: " + (j.error && j.error.message || r.status));
   return (j.files && j.files[0]) ? j.files[0].id : null;
 }
+async function errMessage(res, fallback) {
+  try { const j = await res.json(); return (j.error && j.error.message) || fallback; }
+  catch (e) { return fallback; }
+}
+/* Two-step resumable upload:
+   1) open a session (metadata only) → Drive returns a session URI in the Location header
+   2) PUT the whole body to that URI
+   Sending the payload in one PUT keeps this simple; if it fails we retry the whole
+   backup on the next change (the dirty flag persists), so nothing is lost. */
 async function uploadJson(text) {
   const existing = await findFileId();
-  const meta = { name: FILENAME, parents: ["appDataFolder"] };
-  const boundary = "pdhq" + Date.now();
-  const body =
-    `--${boundary}\r\nContent-Type: application/json; charset=UTF-8\r\n\r\n` +
-    JSON.stringify(existing ? {} : meta) +
-    `\r\n--${boundary}\r\nContent-Type: application/json\r\n\r\n` +
-    text +
-    `\r\n--${boundary}--`;
-  const url = existing
-    ? `https://www.googleapis.com/upload/drive/v3/files/${existing}?uploadType=multipart`
-    : `https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart`;
-  const r = await authFetch(url, { method: existing ? "PATCH" : "POST", headers: { "Content-Type": `multipart/related; boundary=${boundary}` }, body });
-  const j = await r.json();
-  if (!r.ok) throw new Error(j.error && j.error.message || ("upload failed " + r.status));
-  return { id: j.id, updated: !!existing };
+  const bytes = new TextEncoder().encode(text);          // byte length, not char length
+  const initUrl = existing
+    ? `https://www.googleapis.com/upload/drive/v3/files/${existing}?uploadType=resumable`
+    : `https://www.googleapis.com/upload/drive/v3/files?uploadType=resumable`;
+  const meta = existing ? {} : { name: FILENAME, parents: ["appDataFolder"] };
+
+  const init = await authFetch(initUrl, {
+    method: existing ? "PATCH" : "POST",
+    headers: {
+      "Content-Type": "application/json; charset=UTF-8",
+      "X-Upload-Content-Type": "application/json",
+      "X-Upload-Content-Length": String(bytes.byteLength)
+    },
+    body: JSON.stringify(meta)
+  });
+  if (!init.ok) throw new Error("Could not start the upload: " + await errMessage(init, "HTTP " + init.status));
+  const session = init.headers.get("Location") || init.headers.get("location");
+  if (!session) throw new Error("Drive didn’t return an upload session. Try again.");
+
+  // Content-Length is set by the browser; we must not set it ourselves.
+  const put = await authFetch(session, { method: "PUT", headers: { "Content-Type": "application/json" }, body: bytes });
+  if (!put.ok) throw new Error("Upload failed: " + await errMessage(put, "HTTP " + put.status));
+  const j = await put.json();
+  return { id: j.id, updated: !!existing, bytes: bytes.byteLength };
 }
 
 /* ---------- public API ---------- */
@@ -154,11 +171,6 @@ export async function backupNow({ silent = false } = {}) {
     return { skipped: true, reason: "empty" };
   }
   const text = JSON.stringify(data);
-  if (text.length > MULTIPART_LIMIT) {
-    const mb = (text.length / 1048576).toFixed(1);
-    markErr(`Backup is ${mb} MB — past the 5 MB upload limit (mostly photos). Export a file for now.`);
-    throw new Error(`Your backup has grown to ${mb} MB, past the 5 MB limit of the current upload method (photos take the space). Your data is safe on this device — use “Export a backup file” until this is lifted.`);
-  }
   await ensureToken(silent);
   try {
     const res = await uploadJson(text);

@@ -12,6 +12,11 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v32 — Sprint 4: photo-heavy backups now upload (the 5 MB wall is gone)
+- [ ] **Backups are no longer capped at 5 MB.** The app now uses Google Drive's *resumable* upload instead of the small-file method, so a collection full of photos backs up normally. Previously, once your photos pushed the backup past 5 MB, automatic backup would have stopped. *(Nothing to do — it just works.)*
+- [ ] No change to what's stored or to your backup file's format. Restore is unaffected.
+- [ ] **Verify on device:** add several photos to a few plants → Settings → **Back up now** → it succeeds and "last backup" updates. (Before this build, a large backup would have been refused.)
+
 ## build v31 — Sprint 4: proving the backup can be trusted (no new features)
 - [ ] **Restore now shows you what it will overwrite** — before replacing anything it says *"Backup: N plants · M photos, saved <date>. This device: N plants."* and makes you confirm. *(Settings → Restore from Drive.)*
 - [ ] **Loud warning on an older backup** — if the Drive backup has **fewer plants** than your device, it warns you may be restoring an older backup over newer data before you confirm.
