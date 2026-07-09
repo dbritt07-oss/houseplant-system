@@ -45,7 +45,7 @@ The one non-negotiable: years of records must survive a lost phone or iOS storag
 automatic backup to the owner's **own Google Drive**, plus restore. Manual export/import stays as the
 offline/portable path.
 
-**Spike result (T0.4 ✅ PASS):** client-side **Google Identity Services token flow** + Drive REST `appDataFolder` works end-to-end **from an installed iOS PWA** (verified on device: connect → back up → restore round-trip, no secret in client). **Decision: build on this; no serverless proxy needed** (Plan B retired → epic risk drops High→Medium; no extra week). Carry-forward for the build: verify silent token refresh (`prompt:''`) for unattended backups; decide `appDataFolder` (private) vs a visible `drive.file` folder; keep the OAuth app in Testing for now. See `spike/README.md`.
+**Spike result (T0.4 ✅ PASS):** client-side **Google Identity Services token flow** + Drive REST `appDataFolder` works end-to-end **from an installed iOS PWA** (verified on device: connect → back up → restore round-trip, no secret in client). **Decision: build on this; no serverless proxy needed** (Plan B retired → epic risk drops High→Medium; no extra week). Carry-forwards are now **resolved in the build**: silent token refresh uses `prompt:"none"` for background runs; `appDataFolder` (private) was chosen; the OAuth app stays in Testing. The throwaway `spike/` has been retired — its setup steps live in `docs/BACKUP-SETUP.md` and its findings in `docs/BACKUP-VERIFICATION.md`.
 
 **Stories**
 - As an owner, I connect my Google Drive once so backups happen without me thinking about it.
