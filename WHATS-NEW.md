@@ -12,6 +12,11 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v33 — Sprint 4: fixes “failed to open popup” when backing up
+- [ ] **Backing up works again.** Tapping **Connect** or **Back up now** could fail with *“failed to open popup”* — Safari blocks the Google sign-in window unless it opens immediately from your tap, and the app was reading your collection from storage first, which used up that moment. It now asks Google for permission **first**, then reads your data. *(Settings → Back up to Google Drive.)*
+- [ ] Nothing else changed: same backup file, same format, restore untouched, and your data is still checked for problems before anything is uploaded.
+- [ ] **Verify on device:** Settings → **Back up now** → the Google window opens (or it just backs up silently if you're already signed in) → “last backup **just now**.”
+
 ## build v32 — Sprint 4: photo-heavy backups now upload (the 5 MB wall is gone)
 - [ ] **Backups are no longer capped at 5 MB.** The app now uses Google Drive's *resumable* upload instead of the small-file method, so a collection full of photos backs up normally. Previously, once your photos pushed the backup past 5 MB, automatic backup would have stopped. *(Nothing to do — it just works.)*
 - [ ] No change to what's stored or to your backup file's format. Restore is unaffected.

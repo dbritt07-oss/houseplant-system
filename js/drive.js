@@ -85,9 +85,12 @@ function requestToken(prompt = "") {
     try { tc.requestAccessToken({ prompt }); } catch (e) { reject(e); }
   });
 }
+function gisReady() { return !!(window.google && google.accounts && google.accounts.oauth2); }
 async function ensureToken(silent) {
   if (_token) return _token;
-  await loadGis();
+  // Only await if the script genuinely isn't up yet — awaiting when it IS ready would
+  // needlessly push the popup out of the user-gesture chain (see backupNow).
+  if (!gisReady()) await loadGis();
   // Background (silent) runs use prompt:"none" so they never surface a popup;
   // interactive runs use "" (consent on first grant, silent afterward).
   return requestToken(silent ? "none" : "");
@@ -143,8 +146,8 @@ async function uploadJson(text) {
 
 /* ---------- public API ---------- */
 export async function connect() {
-  await loadGis();
-  await requestToken("");     // shows the Google consent screen on first grant
+  if (!gisReady()) await loadGis();   // same gesture-chain rule as ensureToken()
+  await requestToken("");             // shows the Google consent screen on first grant
   localStorage.setItem(LS.conn, "1");
   return true;
 }
@@ -160,8 +163,13 @@ export function disconnect() {
 /* Serialize the frozen export shape and write it to Drive. One silent token
    retry on an auth error. `silent` avoids surfacing a popup for background runs. */
 export async function backupNow({ silent = false } = {}) {
-  // Build + self-check the payload BEFORE authenticating, so a malformed export can
-  // never reach Drive. (Cheap, offline, and no token needed to fail fast.)
+  // ORDER MATTERS — DO NOT MOVE ensureToken() BELOW AN await.
+  // Safari only opens the Google popup from inside the user-gesture chain. Any real
+  // async work first (e.g. reading IndexedDB) breaks that chain and the popup is
+  // blocked ("failed to open popup"). So: acquire the token FIRST, while the tap is
+  // still live, then read + validate. Validation still runs before uploadJson(), so a
+  // malformed payload can never reach Drive — we only gave up failing-fast on auth.
+  await ensureToken(silent);
   const data = await DB.exportAll();
   const stats = validateBackup(data);
   // Integrity guard: an automatic run must NEVER overwrite a good Drive backup with an
@@ -171,7 +179,6 @@ export async function backupNow({ silent = false } = {}) {
     return { skipped: true, reason: "empty" };
   }
   const text = JSON.stringify(data);
-  await ensureToken(silent);
   try {
     const res = await uploadJson(text);
     markOk();
