@@ -220,6 +220,23 @@ A tiny script asserting known care-math outputs, protecting the moat during the 
 
 ---
 
+## Sprint 5 · QA — July 10 medium corrections ⬜ *(logged, NOT scheduled into any current work)*
+
+Founder-directed content/QA corrections to apply **during the Sprint 5 QA pass**. **Do not implement now. Do not touch during the P0-1 launch gate.** These are data/copy corrections, not new features — verify each against the source of truth before changing anything.
+
+> ⚠️ **Source doc not yet in the workspace.** The instruction references **`Build-Update-Prompt-July10.md`** as "in the project files," but it is **not present** in the repo or the session uploads as of logging (2026-07-10). **First QA step: locate and read that file**, and treat it — not this summary — as the authoritative spec. This entry is a placeholder so the intent isn't lost.
+
+**Scope (per founder, to be reconciled with the source doc):**
+- **Enforce per-plant growing medium** — each plant is on exactly one medium (e.g. **soil vs LECA**); no plant should read as both. Audit the 24 seed records + the medium picker.
+- **Keep *growing medium* and *top-dressing* distinct in the repot copy** — the repot flow must not conflate the potting medium with the dry top-dress layer (they are separate steps in the kill-layer sequence). Copy-only.
+- **Verify the 24-count including the snake family** — confirm the collection is exactly 24 and that **snake, vsnake (variegated snake), and bella are all `gritty`**.
+- **Confirm Foliage-Pro is a fertilizer option** — verify it exists in the fertilizer (`FERTS`) choices.
+
+**Acceptance** — after the QA pass: every plant has a single, correct medium; repot copy distinguishes medium vs top-dressing; count = 24 with the three snakes on gritty; Foliage-Pro selectable. **`npm test` (incl. schema-lock + care-math) stays green**, and any seed-data change respects the frozen schema (`docs/DATA-SCHEMA.md`) — a *value* correction, not a shape change.
+**Dependencies** — Sprint 5 QA (T5.1). Must come **after** the P0-1 launch gate passes.
+
+---
+
 # V2 — earned after V1's gate
 
 *All V2 UI work (Nightfall dark mode, the living dashboard, analytics surface, AI portrait plates) is bound by `docs/VISUAL-CONSTITUTION.md` — especially §6 (Nightfall is a deep-forest twilight, not an inverted gray dashboard), §5 (AI makes the drawing only), and §10 (never a busy dashboard).*
