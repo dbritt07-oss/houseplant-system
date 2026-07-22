@@ -134,6 +134,7 @@ Plant Daddy HQ is **one artifact doing three jobs**. Keeping these distinct is t
 - **Constants ship; variables are entered.** Species facts (mature ceiling, thirst tier, bucket, toxicity, sensitivity) are seeded. The owner only fills what's real about *their* plant.
 - **The system remembers so you don't re-guess.** A root condition captured once at a repot keeps shaping care until the next repot overwrites it.
 - **The collection is curated, not accumulated.** The product gently steers acquisitions toward what fits the owner's aesthetic and conditions.
+- **Progressive disclosure.** *(Added 2026-07-16.)* Show what is needed now; keep depth one deliberate step away. Every surface opens at the level of detail the moment requires — the daily loop stays calm and shallow, while the full record, the reference tables, and the deeper controls remain reachable for the keeper who wants them. Depth is **never deleted to achieve simplicity, and never surfaced by default to prove sophistication.** Reference recedes until consulted; Ritual expands only while hands are dirty; Record accrues quietly and opens on request. In practice this means defaulting to the summary and letting the keeper ask for more — a collapsed section, a tucked-away list, a detail view — rather than paying for completeness with everyday clarity. When a screen feels crowded, the first question is not *what should we cut* but *what should be one step deeper*.
 
 ---
 
