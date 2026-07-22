@@ -172,8 +172,8 @@ Format per task: **Sprint · Epic · Story · Task — Why · Deps · Effort(h) 
 > - **Founder review cadence:** three sprints = three clean demo→dogfood→subtract review points; the wipe→restore gate gets a review of its own.
 > - **Release confidence:** QA + `v1.0.0` remain a distinct final sprint, never merged into feature work.
 >
-> **Completed:** Sprint 0 ✅ · Sprint 1 ✅ · Sprint 2 (Study plate, T3.1/P1-4) ✅ · Sprint 3 (IA + collection → schema freeze) ✅ — see `docs/Sprint-2-Retro.md` and `docs/DATA-SCHEMA.md`.
-> **Remaining:** Sprint 4 (backup, isolated — schema now frozen) · Sprint 5 (QA + launch, incl. P1-1 token tail cleanup).
+> **Completed:** Sprint 0 ✅ · Sprint 1 ✅ · Sprint 2 (Study plate) ✅ · Sprint 3 (IA → schema freeze) ✅ · **Sprint 4 (automatic backup — P0-1 closed, launch gate passed) ✅** — see the sprint retros and `docs/BACKUP-VERIFICATION.md`.
+> **Remaining:** **Sprint 5 only** (hardening, QA & launch → `v1.0.0`), carrying the P1-1 token tail, the to-do affordance fix, the Home-Supplies subtraction, and the July 10 medium corrections.
 
 ### Sprint 0 — Foundation & de-risk ✅ DONE
 - **Goal:** make the codebase safe to change and prove the riskiest unknown (Drive backup) before committing to it.
@@ -213,7 +213,8 @@ Format per task: **Sprint · Epic · Story · Task — Why · Deps · Effort(h) 
 - **Drop order if hot (P2/fill tier):** P2-1, then P2-3, then P2-2, then P1-1 tail. **Never drop or delay:** P1-2, P1-3, or the T3.3 schema freeze.
 - **Demo milestone:** "Tour the 3 tabs; sort and filter the collection; start a repot run from Care and get guarded on close; show the frozen schema JSON."
 
-### Sprint 4 — Automatic backup (the P0 gate, isolated)
+### Sprint 4 — Automatic backup (the P0 gate, isolated) ✅ DONE
+- **Completed (v29–v33):** T4.1 connect + manual backup/restore · T4.2 automatic silent backup + on-open catch-up · T4.3 restore hardening, validation, atomic import, +17 regression assertions · T4.4 resumable upload (5 MB ceiling removed) · v33 popup user-gesture fix. **LAUNCH GATE PASSED on-device** — wipe → restore returned plant count, photos, timelines, rooms, units, and repot dates with no duplicates and nothing missing. **P0-1 closed; "a phone reset loses zero data" is proven.** See `docs/Sprint-4-Retro.md` and `docs/BACKUP-VERIFICATION.md`.
 - **Goal:** make data unloseable — the highest-risk epic, alone, with its own dogfood.
 - **Deliverables:** T4.1 Drive connect UI; T4.2 automatic backup + status; T4.3 restore with zero-data-loss verification.
 - **Entry gate:** T3.3 schema frozen (from Sprint 3). No backup code begins against a moving schema.

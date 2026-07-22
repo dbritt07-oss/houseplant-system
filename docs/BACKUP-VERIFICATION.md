@@ -27,7 +27,8 @@
 
 - **T4.1 — PASS.** Full connect → backup → restore flow succeeded on the real installed PWA.
 - **T4.2 — PASS.** Automatic backup on change; on-open catch-up after a change made before closing; offline attempt surfaces a failed status and recovers on reconnect.
-- **T4.3 — PENDING.** The launch-gate test (below) has not yet been run.
+- **T4.3/T4.4 — PASS (v33). THE LAUNCH GATE PASSED.** App deleted, site data cleared, reinstalled, Drive reconnected, restored from Drive. Verified returned: **plant count matched · photos · timeline entries · room assignments · units · repot dates**. No duplicate plants; no missing data observed. The **resumable upload path completed with the larger photo payload** — Risk #1's fix is now proven in use, not just in code.
+- **Popup regression (v32 → v33) — FOUND AND FIXED ON-DEVICE.** "Failed to open popup" on Connect/Back-up-now. Cause: `backupNow()` read IndexedDB before requesting the token, breaking Safari's user-gesture chain. Invisible to 53 passing tests and to code review; surfaced only because a fresh deploy cleared the in-memory token and a human tapped a real button. **This is the strongest evidence in this document for why the on-device gate exists.**
 
 ## 4. What assumptions remain
 
@@ -39,14 +40,16 @@ These are believed true but **not empirically verified in this environment**:
 4. **IndexedDB is not evicted on an installed iOS PWA** in normal use. This is the risk the whole epic exists to defend against, and it is precisely what we cannot prove.
 5. **Google keeps the consent grant valid** while the app stays in "Testing" with the founder as a test user. Test-user grants can expire (historically ~7 days for unverified apps in some flows).
 
-## 5. Scenarios still requiring real-world validation before V1 release
+## 5. Scenarios still requiring real-world validation
 
-1. **The launch gate — wipe → restore, zero data loss.** Back up a populated collection (with photos), delete/reset the app, reinstall, connect, restore, and **diff against a pre-wipe manual export**. Confirm every plant, log entry, and photo returns.
-2. **A photo-heavy backup.** Add enough photos to approach/exceed 5 MB and confirm the new size guard fires with a clear message (rather than an opaque Drive error). This determines whether **resumable upload is required before ship** (see risks).
-3. **Kill the app mid-restore** and confirm the collection is intact (atomic rollback).
-4. **Revoke access** in the Google account, then confirm the app degrades honestly (status shows the failure; local data untouched; manual export still works).
-5. **Long-offline period** (airplane mode, several days of edits) → reconnect → confirm the catch-up backup runs and contains all edits.
-6. **Restore an intentionally older backup** and confirm the "fewer plants" warning fires.
+**✅ CLEARED — the launch gate.** Wipe → restore with zero data loss **passed on-device (v33)**; the photo-heavy resumable upload passed with it. Items 1 and 2 of the original list are closed.
+
+**Remaining — none block V1.** These are robustness probes worth running opportunistically, not release gates:
+
+1. **Kill the app mid-restore** → confirm atomic rollback leaves the collection intact. *(Argued from the single-transaction import; not force-tested.)*
+2. **Revoke access** in the Google account → confirm honest degradation (status shows it, local data untouched, manual export still works).
+3. **Long-offline period** (several days of edits) → reconnect → confirm the catch-up backup contains every edit.
+4. **Restore an intentionally older backup** → confirm the "fewer plants" warning fires.
 
 ---
 
@@ -78,8 +81,8 @@ Every realistic path to losing data or losing backup coverage. "Mitigation" = wh
 
 ### Honest summary
 
-The backup system is **correct, validated, atomic on restore, and honest about failure.** The one disqualifying defect — Risk #1, the 5 MB multipart upload cap — was **fixed in T4.4 (v32)** by switching to `uploadType=resumable`. No remaining risk blocks V1 on code grounds.
+The backup system is **correct, validated, atomic on restore, and honest about failure** — and, as of **v33, proven end-to-end on a real device.** The launch gate passed: a wiped phone restored its entire collection, photos included. The one disqualifying defect (Risk #1, the 5 MB cap) was fixed in T4.4 and exercised for real during the gate. **P0-1 is closed.**
 
-**One thing still stands between this and a trustworthy release: the launch gate.** A real wipe → restore, with photos, diffed against a pre-wipe manual export. Until that passes on-device, P0-1 is not done.
+**What the gate actually bought us.** It caught a bug nothing else could: the v32 popup regression was invisible to 53 passing tests and to review, and only appeared when a human tapped a button on a freshly deployed build. Automated tests proved the *contract*; only the device proved the *product*. That asymmetry is the argument for keeping a human-run gate in front of anything data-critical.
 
 Two risks are *recommended* (not required) for V1: a visible "backups have stopped" signal (#2/#3 — today a revoked grant fails only into a Settings line the user may never open), and documenting the **single-device** (#7) and **single-Client-ID** (#17) assumptions. Everything else can safely wait until Post-V1 — including the largest structural gap, **no backup rotation** (#6): there is exactly one file, so a corrupt backup has no history to fall back on. Occasional manual exports remain the real safety net.

@@ -38,9 +38,10 @@ reskin, built screen by screen. **Governing docs: `docs/VISUAL-CONSTITUTION.md` 
 
 ## P0 — release gates (V1 cannot ship without these)
 
-### Epic P0-1 · Automatic cloud backup 🔨 *(T4.1–T4.3 built, v29–v31 · effort: L · risk: ~~High~~ → Medium after spike)*
+### Epic P0-1 · Automatic cloud backup ✅ *(shipped v29–v33 · launch gate PASSED on-device · effort: L · risk: ~~High~~ → closed)*
 
-> **Status:** connect + manual backup/restore (T4.1 ✅ on-device), automatic silent backup + on-open catch-up (T4.2 ✅ on-device), restore hardening + validation + atomic import + regression coverage (T4.3, 53/53 local), resumable upload — 5 MB cap removed (T4.4, v32). **Epic stays open until the wipe → restore zero-data-loss launch gate passes on-device** (with photos, diffed against a pre-wipe manual export). No known code defect blocks V1. Full risk register: `docs/BACKUP-VERIFICATION.md`.
+> **Status: COMPLETE.** T4.1 connect + manual backup/restore (v29) · T4.2 automatic silent backup + on-open catch-up (v30) · T4.3 restore hardening, validation, atomic import, regression coverage (v31) · T4.4 resumable upload, 5 MB cap removed (v32) · popup user-gesture fix (v33).
+> **Launch gate PASSED on-device:** app deleted, site data cleared, reinstalled, Drive reconnected, restored — plant count, photos, timeline entries, room assignments, units, and repot dates all returned; no duplicates, no missing data. The resumable path completed with a large photo payload. **"A phone reset loses zero data" is now proven, not assumed.** Full risk register: `docs/BACKUP-VERIFICATION.md`.
 The one non-negotiable: years of records must survive a lost phone or iOS storage eviction. One-way
 automatic backup to the owner's **own Google Drive**, plus restore. Manual export/import stays as the
 offline/portable path.
