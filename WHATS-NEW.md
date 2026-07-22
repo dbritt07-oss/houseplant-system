@@ -12,6 +12,13 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v34 — Sprint 5: the app tells you if backup needs attention
+- [ ] **A calm amber banner on Home** — appears **only** when all three are true: Drive is connected, you've made changes since the last successful backup, **and** a backup attempt actually failed. It reads *"Backup needs attention — recent changes aren't backed up yet"* and tapping it opens Settings. *(Home, below the banners.)*
+- [ ] **Settings explains why, in plain words** — e.g. *"Google needs you to sign in again."* — and the button becomes **Try again now**. *(Settings → Back up to Google Drive.)*
+- [ ] **It clears itself** the moment any backup succeeds — no dismissing, no lingering warning. A failed *retry* does not clear it; only a real success does.
+- [ ] **You'll never see it if:** you never connected Drive, everything is backed up, a quiet backup simply hasn't been needed, or an old failure left nothing at risk. Backup age alone is never treated as a problem.
+- [ ] **Verify on device:** healthy → no banner anywhere. Then revoke the app's access (Google Account → Security → Third-party access), change something in the app → banner appears on Home → tap it → Settings explains + "Try again now" → reconnect and back up → banner disappears on its own.
+
 ## build v33 — Sprint 4: fixes “failed to open popup” when backing up
 - [ ] **Backing up works again.** Tapping **Connect** or **Back up now** could fail with *“failed to open popup”* — Safari blocks the Google sign-in window unless it opens immediately from your tap, and the app was reading your collection from storage first, which used up that moment. It now asks Google for permission **first**, then reads your data. *(Settings → Back up to Google Drive.)*
 - [ ] Nothing else changed: same backup file, same format, restore untouched, and your data is still checked for problems before anything is uploaded.

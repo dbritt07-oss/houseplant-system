@@ -26,7 +26,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v33";
+const BUILD = "v34";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -41,7 +41,8 @@ const ICON = {
   bug:'<svg viewBox="0 0 24 24" fill="none" stroke="#5f7a4c" stroke-width="1.6"><circle cx="12" cy="13" r="5"/><path d="M12 8V5M8.5 9 6.5 7M15.5 9l2-2M7 13H4M20 13h-3M8.5 17l-2 2M15.5 17l2 2" stroke-linecap="round"/></svg>',
   check:'<svg viewBox="0 0 24 24" fill="none" stroke="#f4ecd6" stroke-width="3"><path d="M5 13l4 4L19 7" stroke-linecap="round" stroke-linejoin="round"/></svg>',
   gear:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M5 8h9M18 8h1M5 16h1M10 16h9"/><circle cx="16" cy="8" r="2.3"/><circle cx="8" cy="16" r="2.3"/></svg>',
-  camera:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h3l2-2h6l2 2h3v11H4z" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5"/></svg>'
+  camera:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M4 8h3l2-2h6l2 2h3v11H4z" stroke-linejoin="round"/><circle cx="12" cy="13" r="3.5"/></svg>',
+  cloud:'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><path d="M7 18a4 4 0 0 1-.6-7.95A5.5 5.5 0 0 1 17.2 8.6 4.2 4.2 0 0 1 17 17.9" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 12v6M12 12l-2.2 2.2M12 12l2.2 2.2" stroke-linecap="round"/></svg>'
 };
 
 /* ---------- helpers ---------- */
@@ -88,6 +89,21 @@ function runUndo() {
   if (fn) fn();
 }
 
+/* S5-5 · backup attention state. Attention = connected && dirty && failed — all three,
+   so age alone never triggers it, quiet periods stay silent, a failure with nothing
+   pending stays silent, and never-connected users never see backup UI at all.
+   Cleared only by markOk() (a verified successful backup wipes dirty + error). */
+function backupAttention() {
+  return Drive.isConnected() && Drive.isDirty() && (Drive.lastState() || "").indexOf("error:") === 0;
+}
+/* Translate the stored raw failure into calm, user-facing language (Settings only). */
+function calmBackupReason() {
+  const raw = ((Drive.lastState() || "").slice(6)).toLowerCase();
+  if (/auth|token|sign|grant|revok|expir|consent|popup|permission/.test(raw)) return "Google needs you to sign in again.";
+  if (/network|fetch|offline|reach|connection|timeout|load/.test(raw)) return "The last attempt couldn’t reach Google Drive.";
+  return "The last backup attempt didn’t finish.";
+}
+
 /* Due-state computation (drives in-app badges and notifications). */
 function waterDue(p) { return (p.intvMan ? p.intv : C.suggestIntv(p)) - p.lastW <= 0; }
 function feedDue(p) {
@@ -123,6 +139,7 @@ function renderToday() {
     <div class="cta" data-act="openrun">Find a plant to repot <span class="arw">&rarr;</span></div>
     <div class="banner" style="margin-top:14px" data-act="supplies"><div class="ic">${ICON.bug}</div><div><div class="bt">Supplies &amp; gnat war</div><div class="bs">Totals for fertilizer, mix, BTI and nematodes from your logs.</div></div></div>
     ${needM ? `<div class="banner" style="margin-top:10px"><div class="ic">✎</div><div><div class="bt">${needM} of ${ST.order.length} still need measurements</div><div class="bs">Open a plant and fill height, pot, medium, dates.</div></div></div>` : ""}
+    ${backupAttention() ? `<div class="banner" style="margin-top:10px;border-color:var(--border-warn)" data-act="settings" role="button" tabindex="0" aria-label="Backup needs attention. Recent changes aren't backed up yet. Open Settings to reconnect."><div class="ic" style="color:var(--warn)">${ICON.cloud}</div><div><div class="bt">Backup needs attention</div><div class="bs">Recent changes aren’t backed up yet. Open Settings to reconnect.</div></div></div>` : ""}
     <div class="section-h"><h2>Due now</h2></div>
     ${dueCards.length ? dueCards.map(p => queueCard(p, [waterDue(p) ? "water" : "", feedDue(p) ? "feed" : ""].filter(Boolean).join(" + ") + " due", true)).join("")
       : `<p class="hand" style="font-size:18px;color:var(--sage)">All watered and fed. Nice.</p>`}
@@ -281,8 +298,8 @@ function relTime(iso) {
 function renderSettings() {
   const perm = ("Notification" in window) ? Notification.permission : "unsupported";
   const dConn = Drive.isConnected(), dHasCid = Drive.hasClientId();
-  const dState = Drive.lastState(), dLast = relTime(Drive.lastBackup());
-  const dFail = dState && dState.indexOf("error:") === 0;
+  const dLast = relTime(Drive.lastBackup());
+  const dAttention = backupAttention();   // connected && dirty && failed — the only warning state
   return `<div class="grab"></div><div class="close" data-act="back" role="button" tabindex="0" aria-label="Close">×</div>
     <div class="pad"><p class="eyebrow">it's your data</p><h1 style="font-size:23px">Settings &amp; backup</h1></div>
     <div class="zsec" style="margin:6px 16px 2px">Preferences</div>
@@ -300,8 +317,8 @@ function renderSettings() {
       <p class="muted" style="font-size:13px;line-height:1.5">Automatic backup to <b>your own</b> Google Drive, so a lost or reset phone loses nothing. Your plants, logs and photos go only to your Drive — never to our servers or the app maker.</p>
       ${dConn ? `
       <div class="read" style="font-size:14px;margin:10px 0 0">Connected · last backup <b>${dLast}</b></div>
-      ${dFail ? `<div class="fac" style="color:var(--rust);margin-top:4px">Last attempt: ${esc(dState.slice(6))} It will retry on your next change.</div>` : ``}
-      <button class="btn primary" data-act="drivebackup" style="width:100%;margin:12px 0 8px">Back up now</button>
+      ${dAttention ? `<div class="fac" style="color:var(--warn);margin-top:4px">Recent changes aren’t backed up yet. ${calmBackupReason()}</div>` : ``}
+      <button class="btn primary" data-act="drivebackup" style="width:100%;margin:12px 0 8px">${dAttention ? "Try again now" : "Back up now"}</button>
       <button class="btn ghost" data-act="driverestore" style="width:100%;margin:0 0 8px">Restore from Drive</button>
       <button class="btn ghost" data-act="drivedisconnect" style="width:100%;margin:0;color:var(--rust);border-color:#cf9d8b">Disconnect Drive</button>`
       : `
@@ -862,7 +879,12 @@ function autoBackupSoon() {
 async function runAutoBackup() {
   if (!Drive.isConnected() || !Drive.isDirty()) return;
   try { await Drive.backupNow({ silent: true }); } catch (e) { /* status shows it; retried on next change/open */ }
-  if (ST.view === "settings") render();
+  // S5-5 · visible self-clearing (and prompt appearance): re-render only the surfaces
+  // that can show the attention state — the Settings sheet, or Home with no overlay
+  // open. Home has no text inputs, so a re-render there can't steal focus or drop
+  // typing; other tabs/overlays don't render the banner, so they're left untouched.
+  // This is a UI refresh only — it can never schedule another backup (no markDirty).
+  if (ST.view === "settings" || (ST.view === null && ST.tab === "today")) render();
 }
 function doImportPick() { document.getElementById("importInput").click(); }
 async function onImportFile(file) {
