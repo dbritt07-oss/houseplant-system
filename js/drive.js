@@ -59,7 +59,7 @@ function loadGis() {
     let tries = 0;
     const iv = setInterval(() => {
       if (window.google && google.accounts && google.accounts.oauth2) { clearInterval(iv); resolve(); }
-      else if (++tries > 60) { clearInterval(iv); reject(new Error("Google sign-in didn’t load. Check your connection and try again.")); }
+      else if (++tries > 60) { clearInterval(iv); reject(new Error("Couldn’t reach Google. Check your internet connection and try again.")); }
     }, 100);
   });
 }
@@ -169,16 +169,31 @@ export async function backupNow({ silent = false } = {}) {
   // blocked ("failed to open popup"). So: acquire the token FIRST, while the tap is
   // still live, then read + validate. Validation still runs before uploadJson(), so a
   // malformed payload can never reach Drive — we only gave up failing-fast on auth.
-  await ensureToken(silent);
-  const data = await DB.exportAll();
-  const stats = validateBackup(data);
+  // EVERY failure below must call markErr() before rethrowing — the S5-5 attention
+  // state keys off the stored error, so an unmarked failure is an invisible one.
+  // (Found on-device: airplane-mode and revoked-grant failures threw here, before
+  // the upload try/catch, and were never recorded — so the banner never fired.)
+  try {
+    await ensureToken(silent);               // no await precedes this — gesture chain intact
+  } catch (e) {
+    markErr(e.message || "Couldn’t reach Google sign-in.");
+    throw e;
+  }
+  let data, stats, text;
+  try {
+    data = await DB.exportAll();
+    stats = validateBackup(data);
+    text = JSON.stringify(data);
+  } catch (e) {
+    markErr(e.message || "Couldn’t read the collection for backup.");
+    throw e;
+  }
   // Integrity guard: an automatic run must NEVER overwrite a good Drive backup with an
   // empty collection (e.g. a failed DB open). An explicit "Back up now" may still do it.
   if (stats.plants === 0 && silent) {
     markErr("Collection is empty — automatic backup skipped to protect your Drive backup.");
     return { skipped: true, reason: "empty" };
   }
-  const text = JSON.stringify(data);
   try {
     const res = await uploadJson(text);
     markOk();

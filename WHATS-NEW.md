@@ -12,6 +12,11 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v35 — Sprint 5: fixes the attention banner not appearing
+- [ ] **The "Backup needs attention" banner now actually fires** when a backup can't even start — offline, or Google access revoked. (Found on-device: those failures happened *before* the point where the app recorded them, so the banner's trigger never tripped. They're now recorded like every other failure.) *(No visible change when everything is healthy.)*
+- [ ] **Clearer reasons in Settings** — an offline failure now says it couldn't reach Google (not "sign in again").
+- [ ] **Verify on device (the airplane test):** Airplane Mode ON → force-quit and reopen the app → water a plant → wait ~15 seconds → the amber banner appears on Home. Airplane Mode OFF → water another plant → banner clears itself.
+
 ## build v34 — Sprint 5: the app tells you if backup needs attention
 - [ ] **A calm amber banner on Home** — appears **only** when all three are true: Drive is connected, you've made changes since the last successful backup, **and** a backup attempt actually failed. It reads *"Backup needs attention — recent changes aren't backed up yet"* and tapping it opens Settings. *(Home, below the banners.)*
 - [ ] **Settings explains why, in plain words** — e.g. *"Google needs you to sign in again."* — and the button becomes **Try again now**. *(Settings → Back up to Google Drive.)*
