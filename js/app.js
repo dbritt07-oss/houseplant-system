@@ -26,7 +26,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v36";
+const BUILD = "v37";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -137,8 +137,7 @@ function renderToday() {
     </div>
     ${pulse ? `<div style="font-family:var(--font-sans);font-size:12.5px;color:var(--muted);letter-spacing:.02em;margin:2px 2px 0">${pulse}</div>` : ""}
     <div class="cta" data-act="openrun">Find a plant to repot <span class="arw">&rarr;</span></div>
-    <div class="banner" style="margin-top:14px" data-act="supplies"><div class="ic">${ICON.bug}</div><div><div class="bt">Supplies &amp; gnat war</div><div class="bs">Totals for fertilizer, mix, BTI and nematodes from your logs.</div></div></div>
-    ${needM ? `<div class="banner" style="margin-top:10px"><div class="ic">✎</div><div><div class="bt">${needM} of ${ST.order.length} still need measurements</div><div class="bs">Open a plant and fill height, pot, medium, dates.</div></div></div>` : ""}
+    ${needM ? `<div class="banner" style="margin-top:14px"><div class="ic">✎</div><div><div class="bt">${needM} of ${ST.order.length} still need measurements</div><div class="bs">Open a plant and fill height, pot, medium, dates.</div></div></div>` : ""}
     ${backupAttention() ? `<div class="banner" style="margin-top:10px;border-color:var(--border-warn)" data-act="settings" role="button" tabindex="0" aria-label="Backup needs attention. Recent changes aren't backed up yet. Open Settings to reconnect."><div class="ic" style="color:var(--warn)">${ICON.cloud}</div><div><div class="bt">Backup needs attention</div><div class="bs">Recent changes aren’t backed up yet. Open Settings to reconnect.</div></div></div>` : ""}
     <div class="section-h"><h2>Due now</h2></div>
     ${dueCards.length ? dueCards.map(p => queueCard(p, [waterDue(p) ? "water" : "", feedDue(p) ? "feed" : ""].filter(Boolean).join(" + ") + " due", true)).join("")

@@ -12,6 +12,10 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v37 — Sprint 5: Home slims down — Supplies lives in Care
+- [ ] **The "Supplies & gnat war" banner is gone from Home.** Supplies has lived in the **Care** tab since the three-tab redesign, so Home now stays focused on what needs you *today*. One tap on **care** → Supplies, same as before. *(Home + Care tabs.)*
+- [ ] **Verify on device:** Home no longer shows the Supplies banner; Care still opens Supplies with all totals intact.
+
 ## build v36 — Sprint 5: "Specimen incomplete" items no longer look finished
 - [ ] **The to-do chips on a plant's page now lead with an empty ○ instead of ending in a green ✓.** The old check made outstanding measurements *look completed*; the empty circle reads as "still to do — tap to check it off." Same card, same tap-to-complete behavior. *(Open any plant with a "Specimen incomplete" card.)*
 - [ ] **Screen readers now announce them honestly** — each item reads as "Still needed: … Tap to mark it done."
