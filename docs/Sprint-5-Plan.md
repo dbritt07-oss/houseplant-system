@@ -103,7 +103,9 @@
 
 **Recommended order: 4th — decide first, implement only if the audience requires it.**
 
-## S5-5 · Backup failure visibility — ⛔ V1 RELEASE BLOCKER
+## S5-5 · Backup failure visibility — ✅ COMPLETE (release blocker, cleared)
+
+> **Shipped v34 + v35, verified on-device 2026-09-08 — against a real failure, not a simulation.** The v34 attention state (amber Home banner, calm Settings reason, "Try again now") shipped first; on-device testing then exposed a defect — token-phase failures (offline, revoked grant) threw *before* the error was recorded, so the banner could never fire — fixed in **v35**. On deploy, the banner immediately surfaced a **genuine three-week backup outage**: the Google grant had lapsed and the last successful backup was 2026-08-19, honestly shown as a stale date rather than a false "just now." Recovery worked end-to-end: banner → Settings explanation ("Google needs you to sign in again") → Try again now → consent screen → successful backup → **banner cleared itself with no dismissal**. All ten acceptance criteria and the founder's ten test cases pass, including silence when healthy and silence when never connected. *The feature justified its blocker status on its first day live.*
 
 **Exact purpose.** Keep the product **honest** when automatic backup stops. The destructive restore gate proved backup *works*; it did not prove the product stays truthful if authorization later expires or another persistent failure occurs. *Current behaviour:* the failure is written to `localStorage` and surfaced **only** inside Settings → Back up to Google Drive, as a red line reading *"Last attempt: … It will retry on your next change."*
 
