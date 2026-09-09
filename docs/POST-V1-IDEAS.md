@@ -22,6 +22,7 @@ Ideas that are **out of V1 scope** but worth keeping. Captured per the founder's
   - **Operations** — watering, feeding, repotting, daily maintenance.
   - **Workbench** — soil mixing, gnat protocol, repot sessions.
   The design instinct going forward: add *modes*, not pages.
+- **Care hub grows entry buttons for future workflows** — as new collection-level workflows emerge (pest campaigns, propagation batches, seasonal resets…), they enter as buttons on the existing Care hub rather than as new tabs or Home banners. Care is the extensible surface; Home stays *what needs me today*. *(Noted 2026-09-08 from founder direction during the S5-3 removal — "I like the idea of having eventual care buttons for things that could come up in a future version." Works with the add-modes-not-pages instinct above and Progressive Disclosure in the Bible.)*
 
 ## Guardrail for evaluating any of these later
 Favor **reducing friction over adding capability**. For interactions, favor **reliability over cleverness**. Anything that adds a page or a tap must earn it. When in doubt, it stays here.

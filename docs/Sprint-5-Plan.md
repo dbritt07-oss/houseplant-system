@@ -34,7 +34,9 @@
 
 **Recommended order: 7th — last, and only on demand.** Not scheduled. Triggered by observation during S5-6 QA, or deferred to Post-V1.
 
-## S5-2 · Specimen-incomplete affordance clarification
+## S5-2 · Specimen-incomplete affordance clarification — ✅ COMPLETE (v36)
+
+> Shipped v36, founder-confirmed on-device. The trailing green ✓ (which read as *completed*) became a leading muted ○ (empty-checkbox: still to do); each chip gained `role="button"` + an explicit "Still needed: …" aria-label. No redesign, no behavior change.
 
 **Exact purpose.** Make clear that the items listed under "Specimen incomplete" are **outstanding measurements**, not completed ones. *Current UI (for review, not a prescribed fix):* a dashed-border card headed "Specimen incomplete", containing pill-shaped `.titem` chips, each rendered with a **`::after` content `"✓"` in sage green**. Tapping a chip removes it (`data-act="todone"`). The green check reads as *done* while the chip in fact means *still needed*.
 
@@ -50,7 +52,9 @@
 
 **Recommended order: 2nd.**
 
-## S5-3 · Home Supplies banner — DECIDE FROM THE LIVE JOURNEY (removal not assumed)
+## S5-3 · Home Supplies banner — ✅ DECIDED & REMOVED (v37)
+
+> **Founder verdict from the live journey:** "we can remove the supplies banner since it's in care." All three removal conditions held (redundant with the Care entry; Care remains the discoverable home; Home is shorter and means *what needs me today*), and no evidence for keeping was offered — the removal-default applied. Shipped v37 on `feature/s5-3-home-supplies`: Home banner deleted, exactly one `data-act="supplies"` remains (the Care hub entry), no orphaned handler or CSS, `npm run check` + 53/53 tests green. Aligns with Progressive Disclosure (Bible §5) and the Sprint 3 remove-one mandate.
 
 **Exact purpose.** Supplies now lives in **Care** (P1-2, v24), but an identical banner remains on **Home** — `data-act="supplies"` appears at `js/app.js:124` (Home) and `:224` (Care), with identical copy. Removing the Home instance would make Home mean *"what needs me today"* and let Care own collection-level tools, honouring the Sprint 3 ritual mandate that complexity only goes down.
 
@@ -76,7 +80,9 @@
 
 **Recommended order: 3rd.**
 
-## S5-4 · Google Drive Client ID setup — CONDITIONAL ON RELEASE AUDIENCE
+## S5-4 · Google Drive Client ID setup — ✅ DECIDED: DEFERRED (per its own conditional table)
+
+> **Executed as a decision, not an implementation.** The V1 release audience is **founder-only** — the table below says **DEFER** for exactly this case. The founder's Client ID is configured device-local and working; embedding it changes nothing for the only user. This item re-activates automatically the moment a second person is expected to install the app (see Post-V1). No code change; `BAKED_CLIENT_ID` stays `""`.
 
 **Exact purpose.** Evaluate baking the production **public** OAuth Client ID into `BAKED_CLIENT_ID` (currently `""` in `js/drive.js`), removing the paste-a-Client-ID step from first-run setup and an entire class of setup error.
 
@@ -156,8 +162,8 @@
 |---|---|---|---|---|
 | 1 | **S5-5 backup failure visibility** | ⛔ **YES** | `feature/s5-5-backup-visibility` | Protects the guarantee P0-1 just proved; define acceptance criteria first |
 | 2 | S5-2 specimen-incomplete affordance | No | `feature/s5-2-specimen-affordance` | Review live UI → smallest accessible correction |
-| 3 | S5-3 Home Supplies placement | No | `feature/s5-3-home-supplies` | **Decide from the live journey**; keeping it is a valid outcome |
-| 4 | S5-4 Client ID embed | No — **conditional** | `feature/s5-4-client-id` | Decide by audience: defer if founder-only; do it if distributed |
+| 3 | S5-3 Home Supplies placement | No | `feature/s5-3-home-supplies` | ✅ **Removed (v37)** — founder verdict from the live journey |
+| 4 | S5-4 Client ID embed | No — **conditional** | `feature/s5-4-client-id` | ✅ **Decided: DEFERRED** — audience is founder-only |
 | 5 | **S5-6 QA + verified-defect fixes** | ⛔ **YES** | `feature/s5-6-release` | Only after 1–4 are resolved |
 | 6 | **S5-6 release prep + tag `v1.0.0`** | ⛔ **YES** | (same) | Only after every gate passes |
 | 7 | S5-1 tokenization literals | No — **on demand only** | `feature/s5-1-token-tail` | Only if QA observes a real issue; else → Post-V1 |

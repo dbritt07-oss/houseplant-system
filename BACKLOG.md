@@ -238,6 +238,12 @@ Founder-directed content/QA corrections to apply **during the Sprint 5 QA pass**
 
 ---
 
+## Sprint 5 · QA — exit-from-plant friction ⬜ *(evaluate during S5-6; do not redesign now)*
+
+Founder dogfooding observation (2026-09-08, v36): opening a plant by mistake, it was **hard to get back to the Home screen** — the exit affordance wasn't obvious in the moment. During the S5-6 QA pass, walk the open-plant → back journey and evaluate: is the back affordance visible/reachable one-handed, and does the existing swipe-back gesture discover itself? Smallest-correction rule applies (an affordance clarification at most — no new navigation, no redesign). If nothing small fixes it cleanly, log the finding and carry it to post-V1 polish.
+
+---
+
 # V2 — earned after V1's gate
 
 *All V2 UI work (Nightfall dark mode, the living dashboard, analytics surface, AI portrait plates) is bound by `docs/VISUAL-CONSTITUTION.md` — especially §6 (Nightfall is a deep-forest twilight, not an inverted gray dashboard), §5 (AI makes the drawing only), and §10 (never a busy dashboard).*
