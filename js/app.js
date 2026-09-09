@@ -26,7 +26,7 @@ let ST = {
 const P = () => ST.plants[ST.sel];
 const app = () => document.getElementById("app");
 const ovRoot = () => document.getElementById("overlay-root");
-const BUILD = "v35";
+const BUILD = "v36";
 /* Coalesce rapid slider input into one refresh per animation frame (smooth dragging). */
 let _rafPending = false;
 function detailRefreshThrottled() { if (_rafPending) return; _rafPending = true; requestAnimationFrame(() => { _rafPending = false; detailRefresh(); }); }
@@ -360,7 +360,7 @@ function renderDetail() {
     <div class="ph-tags">${p.tox?`<span class="ptag"><span class="w" style="background:var(--terra)"></span>Toxic — keep up</span>`:`<span class="ptag"><span class="w" style="background:var(--sage)"></span>Pet-safe</span>`}</div>
   </div>
 
-  ${(p.todo||[]).length?`<div class="todo"><div class="th">Specimen incomplete</div>${p.todo.map((t,i)=>`<span class="titem" data-act="todone" data-i="${i}">${esc(t)}</span>`).join("")}</div>`:""}
+  ${(p.todo||[]).length?`<div class="todo"><div class="th">Specimen incomplete</div>${p.todo.map((t,i)=>`<span class="titem" data-act="todone" data-i="${i}" role="button" tabindex="0" aria-label="Still needed: ${esc(t)}. Tap to mark it done.">${esc(t)}</span>`).join("")}</div>`:""}
 
   <div class="mount">
     <span class="reg tl"></span><span class="reg tr"></span><span class="reg bl"></span><span class="reg br"></span>

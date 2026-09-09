@@ -12,6 +12,11 @@ Tip: you can tick these boxes right here on GitHub (tap the checkbox in the rend
 
 ---
 
+## build v36 — Sprint 5: "Specimen incomplete" items no longer look finished
+- [ ] **The to-do chips on a plant's page now lead with an empty ○ instead of ending in a green ✓.** The old check made outstanding measurements *look completed*; the empty circle reads as "still to do — tap to check it off." Same card, same tap-to-complete behavior. *(Open any plant with a "Specimen incomplete" card.)*
+- [ ] **Screen readers now announce them honestly** — each item reads as "Still needed: … Tap to mark it done."
+- [ ] **Verify on device:** open a plant with outstanding items → chips show ○, not ✓ → tap one → it completes and disappears, exactly as before.
+
 ## build v35 — Sprint 5: fixes the attention banner not appearing
 - [ ] **The "Backup needs attention" banner now actually fires** when a backup can't even start — offline, or Google access revoked. (Found on-device: those failures happened *before* the point where the app recorded them, so the banner's trigger never tripped. They're now recorded like every other failure.) *(No visible change when everything is healthy.)*
 - [ ] **Clearer reasons in Settings** — an offline failure now says it couldn't reach Google (not "sign in again").

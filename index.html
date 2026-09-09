@@ -125,7 +125,8 @@
   .todo{margin:12px 16px 0;background:var(--card2);border:1.5px dashed var(--border-warn);border-radius:8px;padding:10px 12px}
   .todo .th{font-family:var(--font-hand);font-weight:700;font-size:16px;color:var(--rust);margin-bottom:6px}
   .todo .titem{display:inline-flex;align-items:center;gap:6px;font-size:12px;background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:5px 11px;margin:0 6px 6px 0;cursor:pointer}
-  .todo .titem:after{content:"✓";color:var(--sage);font-weight:700}
+  /* S5-2: leading empty circle = "still to do" (the old trailing green ✓ read as completed) */
+  .todo .titem::before{content:"○";color:var(--pencil);font-weight:700}
   .phero{aspect-ratio:1/.7;margin:12px 16px 0;background:var(--panel);border:1.5px solid var(--line);border-radius:8px;display:grid;place-items:center;overflow:hidden}
   .phero svg{width:80%;height:80%}
   .cap{font-family:var(--font-hand);font-size:16px;color:var(--muted);margin:8px 16px 0;line-height:1.3}
